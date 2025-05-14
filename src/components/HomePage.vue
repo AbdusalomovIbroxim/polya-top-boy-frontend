@@ -4,11 +4,24 @@
       <AppHeader />
       <FilterTabs @tab-changed="filterChanged" />
       
+      <!-- Loading state -->
+      <div v-if="loading" class="flex justify-center items-center p-8">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4ddf20]"></div>
+      </div>
+
+      <!-- Error state -->
+      <div v-else-if="error" class="text-center p-8 text-red-500">
+        {{ error }}
+      </div>
+
+      <!-- Stadiums list -->
+      <template v-else>
       <StadiumCard 
         v-for="stadium in filteredStadiums" 
         :key="stadium.id" 
         :stadium="stadium" 
       />
+      </template>
     </div>
     
     <NavigationBar />
@@ -20,6 +33,7 @@ import AppHeader from './Header.vue'
 import FilterTabs from './FilterTabs.vue'
 import StadiumCard from './StadiumCard.vue'
 import NavigationBar from './NavigationBar.vue'
+import { stadiumService } from '@/services/stadiumService'
 
 export default {
   name: 'HomePage',
@@ -32,459 +46,9 @@ export default {
   data() {
     return {
       activeFilter: 'All',
-      stadiums: [
-        {
-          id: 1,
-          name: 'Бунёдкор',
-          location: 'Ташкент, Узбекистан',
-          price: '$100',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png',
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 2, 
-          name: 'Миллий',
-          location: 'Ташкент, Узбекистан',
-          price: '$80',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 3,
-          name: 'Пахтакор',
-          location: 'Ташкент, Узбекистан', 
-          price: '$90',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 4,
-          name: 'Локомотив',
-          location: 'Ташкент, Узбекистан',
-          price: '$85',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 5,
-          name: 'Джар',
-          location: 'Андижан, Узбекистан',
-          price: '$70',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 6,
-          name: 'Андижан',
-          location: 'Андижан, Узбекистан',
-          price: '$65',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 7,
-          name: 'Насаф',
-          location: 'Карши, Узбекистан',
-          price: '$75',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 8,
-          name: 'Карши',
-          location: 'Карши, Узбекистан',
-          price: '$60',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 9,
-          name: 'Навбахор',
-          location: 'Наманган, Узбекистан',
-          price: '$70',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 10,
-          name: 'Наманган',
-          location: 'Наманган, Узбекистан',
-          price: '$65',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 11,
-          name: 'Согдиана',
-          location: 'Джизак, Узбекистан',
-          price: '$60',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 12,
-          name: 'Джизак',
-          location: 'Джизак, Узбекистан',
-          price: '$55',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 13,
-          name: 'Металлург',
-          location: 'Бекабад, Узбекистан',
-          price: '$65',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 14,
-          name: 'Бекабад',
-          location: 'Бекабад, Узбекистан',
-          price: '$60',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 15,
-          name: 'Динамо',
-          location: 'Самарканд, Узбекистан',
-          price: '$70',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 16,
-          name: 'Самарканд',
-          location: 'Самарканд, Узбекистан',
-          price: '$65',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 17,
-          name: 'Кызылкум',
-          location: 'Навои, Узбекистан',
-          price: '$60',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 18,
-          name: 'Навои',
-          location: 'Навои, Узбекистан',
-          price: '$55',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 19,
-          name: 'Нефтчи',
-          location: 'Фергана, Узбекистан',
-          price: '$65',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 20,
-          name: 'Фергана',
-          location: 'Фергана, Узбекистан',
-          price: '$60',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 21,
-          name: 'Бухара',
-          location: 'Бухара, Узбекистан',
-          price: '$65',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 22,
-          name: 'Ситора',
-          location: 'Бухара, Узбекистан',
-          price: '$60',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 23,
-          name: 'Хорезм',
-          location: 'Ургенч, Узбекистан',
-          price: '$60',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 24,
-          name: 'Ургенч',
-          location: 'Ургенч, Узбекистан',
-          price: '$55',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 25,
-          name: 'Сурхан',
-          location: 'Термез, Узбекистан',
-          price: '$60',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 26,
-          name: 'Термез',
-          location: 'Термез, Узбекистан',
-          price: '$55',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 27,
-          name: 'Нукус',
-          location: 'Нукус, Узбекистан',
-          price: '$55',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 28,
-          name: 'Каракалпак',
-          location: 'Нукус, Узбекистан',
-          price: '$50',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 29,
-          name: 'Гулистан',
-          location: 'Гулистан, Узбекистан',
-          price: '$55',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 30,
-          name: 'Сырдарья',
-          location: 'Гулистан, Узбекистан',
-          price: '$50',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 31,
-          name: 'Зарафшан',
-          location: 'Зарафшан, Узбекистан',
-          price: '$55',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 32,
-          name: 'Горняк',
-          location: 'Зарафшан, Узбекистан',
-          price: '$50',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 33,
-          name: 'Алмалык',
-          location: 'Алмалык, Узбекистан',
-          price: '$60',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 34,
-          name: 'АГМК',
-          location: 'Алмалык, Узбекистан',
-          price: '$55',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 35,
-          name: 'Ангрен',
-          location: 'Ангрен, Узбекистан',
-          price: '$55',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 36,
-          name: 'Шахтер',
-          location: 'Ангрен, Узбекистан',
-          price: '$50',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 37,
-          name: 'Чирчик',
-          location: 'Чирчик, Узбекистан',
-          price: '$55',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 38,
-          name: 'Химик',
-          location: 'Чирчик, Узбекистан',
-          price: '$50',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 39,
-          name: 'Коканд',
-          location: 'Коканд, Узбекистан',
-          price: '$55',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 40,
-          name: 'Шелковик',
-          location: 'Коканд, Узбекистан',
-          price: '$50',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 41,
-          name: 'Маргилан',
-          location: 'Маргилан, Узбекистан',
-          price: '$50',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 42,
-          name: 'Атлас',
-          location: 'Маргилан, Узбекистан',
-          price: '$45',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 43,
-          name: 'Каттакурган',
-          location: 'Каттакурган, Узбекистан',
-          price: '$50',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 44,
-          name: 'Спартак',
-          location: 'Каттакурган, Узбекистан',
-          price: '$45',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 45,
-          name: 'Денау',
-          location: 'Денау, Узбекистан',
-          price: '$50',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 46,
-          name: 'Сурхан-2',
-          location: 'Денау, Узбекистан',
-          price: '$45',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 47,
-          name: 'Шахрисабз',
-          location: 'Шахрисабз, Узбекистан',
-          price: '$50',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 48,
-          name: 'Касри',
-          location: 'Шахрисабз, Узбекистан',
-          price: '$45',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        },
-        {
-          id: 49,
-          name: 'Китаб',
-          location: 'Китаб, Узбекистан',
-          price: '$45',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/bf42910d-1163-453d-b7ba-c82c2460c2af.png'
-          ]
-        },
-        {
-          id: 50,
-          name: 'Насаф-2',
-          location: 'Китаб, Узбекистан',
-          price: '$40',
-          images: [
-            'https://cdn.usegalileo.ai/sdxl10/38c3a894-c363-4b69-9216-296887b19919.png'
-          ]
-        }
-      ]
+      stadiums: [],
+      loading: false,
+      error: null
     }
   },
   computed: {
@@ -492,7 +56,7 @@ export default {
       if (this.activeFilter === 'All') {
         return this.stadiums;
       } else if (this.activeFilter === 'Tashkent') {
-        return this.stadiums.filter(stadium => stadium.location.includes('Tashkent'));
+        return this.stadiums.filter(stadium => stadium.city === 'Tashkent');
       } else if (this.activeFilter === 'Favorites') {
         // В реальном приложении здесь будет логика для избранных стадионов
         return [];
@@ -503,6 +67,35 @@ export default {
   methods: {
     filterChanged(filter) {
       this.activeFilter = filter;
+    },
+    async fetchStadiums() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await stadiumService.getStadiums({
+          city: this.activeFilter === 'Tashkent' ? 'Tashkent' : undefined
+        });
+        this.stadiums = response.results.map(stadium => ({
+          id: stadium.id,
+          name: stadium.name,
+          location: `${stadium.city}, ${stadium.address}`,
+          price: `$${stadium.price_per_hour}`,
+          images: stadium.images.map(img => img.image)
+        }));
+      } catch (error) {
+        this.error = 'Failed to load stadiums';
+        console.error('Error fetching stadiums:', error);
+      } finally {
+        this.loading = false;
+      }
+    }
+  },
+  mounted() {
+    this.fetchStadiums();
+  },
+  watch: {
+    activeFilter() {
+      this.fetchStadiums();
     }
   }
 }

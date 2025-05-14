@@ -6,7 +6,19 @@
         <p class="text-[#131711] tracking-light text-[28px] font-bold leading-tight">My Favorites</p>
       </div>
       
-      <div v-for="stadium in favoriteStadiums" :key="stadium.id" class="p-4">
+      <div v-if="isLoading" class="p-4 text-center text-gray-500">
+        Загрузка...
+      </div>
+      
+      <div v-else-if="error" class="p-4 text-center text-red-500">
+        {{ error }}
+      </div>
+      
+      <div v-else-if="favoriteStadiums.length === 0" class="p-4 text-center text-gray-500">
+        У вас пока нет избранных полей
+      </div>
+      
+      <div v-else v-for="stadium in favoriteStadiums" :key="stadium.id" class="p-4">
         <div
           class="bg-cover bg-center flex flex-col items-stretch justify-end rounded-xl pt-[132px]"
           :style="{
@@ -29,6 +41,7 @@
 
 <script>
 import NavigationBar from './NavigationBar.vue'
+import { favoriteService } from '../services/favoriteService'
 
 export default {
   name: 'FavoritesPage',
@@ -37,26 +50,32 @@ export default {
   },
   data() {
     return {
-      favoriteStadiums: [
-        {
-          id: 1,
-          name: 'Pier 40',
-          location: 'New York, NY',
-          image: 'https://cdn.usegalileo.ai/sdxl10/fb181260-a540-4659-a807-c8362cf91735.png'
-        },
-        {
-          id: 2,
-          name: 'East River Park',
-          location: 'New York, NY',
-          image: 'https://cdn.usegalileo.ai/sdxl10/2d0134a2-67c0-45d8-a439-2e7fd898852e.png'
-        },
-        {
-          id: 3,
-          name: 'Chelsea Piers',
-          location: 'New York, NY',
-          image: 'https://cdn.usegalileo.ai/sdxl10/be45af0d-f473-4ed4-a848-285d6c752490.png'
-        }
-      ]
+      favoriteStadiums: [],
+      isLoading: false,
+      error: null
+    }
+  },
+  async created() {
+    await this.fetchFavorites()
+  },
+  methods: {
+    async fetchFavorites() {
+      this.isLoading = true
+      this.error = null
+      try {
+        const response = await favoriteService.getFavorites()
+        this.favoriteStadiums = response.data.results.map(favorite => ({
+          id: favorite.id,
+          name: favorite.playground_details.name,
+          location: `${favorite.playground_details.city}, ${favorite.playground_details.address}`,
+          image: favorite.playground_details.images?.[0]?.image || 'https://cdn.usegalileo.ai/sdxl10/fb181260-a540-4659-a807-c8362cf91735.png'
+        }))
+      } catch (error) {
+        this.error = 'Не удалось загрузить избранные поля'
+        console.error('Error fetching favorites:', error)
+      } finally {
+        this.isLoading = false
+      }
     }
   }
 }

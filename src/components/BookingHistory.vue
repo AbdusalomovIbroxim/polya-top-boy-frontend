@@ -2,10 +2,9 @@
   <div class="relative flex size-full min-h-screen flex-col bg-white justify-between group/design-root overflow-x-hidden pb-20" style='font-family: Lexend, "Noto Sans", sans-serif;'>
     <div>
       <div class="flex items-center bg-white p-4 pb-2 justify-between">
-        <h2 class="text-[#131711] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pl-12">Профиль</h2>
+        <h2 class="text-[#131711] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pl-12">История бронирований</h2>
         <div class="flex w-12 items-center justify-end">
           <button
-            v-if="isAuthenticated"
             class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-transparent text-[#131711] gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0"
           >
             <div class="text-[#131711]">
@@ -20,39 +19,28 @@
       </div>
       <div class="flex p-4 @container">
         <div class="flex w-full flex-col gap-4 items-start">
-          <div class="flex gap-4 flex-col items-start">
-            <div
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
-              style='background-image: url("https://cdn.usegalileo.ai/sdxl10/40f70546-ecd7-4361-be87-04d23971368e.png");'
-            ></div>
-            <div class="flex flex-col justify-center">
-              <p class="text-[#131711] text-[22px] font-bold leading-tight tracking-[-0.015em]">
-                {{ userData.username }}
-              </p>
-              <p class="text-[#6c8764] text-base font-normal leading-normal">
-                {{ userData.first_name }} {{ userData.last_name }}
-              </p>
-              <p class="text-[#6c8764] text-base font-normal leading-normal">
-                {{ userData.phone || 'Телефон не указан' }}
-              </p>
-              <p v-if="isAuthenticated" class="text-[#6c8764] text-base font-normal leading-normal">
-                В системе с {{ formatDate(userData.date_joined) }}
-              </p>
+          <div v-if="isLoading" class="w-full text-center py-4">
+            Загрузка истории бронирований...
+          </div>
+          <div v-else-if="error" class="w-full text-center py-4 text-red-500">
+            {{ error }}
+          </div>
+          <div v-else-if="bookings.length === 0" class="w-full text-center py-4 text-gray-500">
+            У вас пока нет бронирований
+          </div>
+          <div v-else class="w-full space-y-4">
+            <div v-for="booking in bookings" :key="booking.id" class="bg-white rounded-lg shadow p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-lg font-semibold text-[#131711]">{{ booking.court_name }}</h3>
+                  <p class="text-[#6c8764]">{{ formatDate(booking.date) }} {{ booking.time_slot }}</p>
+                </div>
+                <div class="text-right">
+                  <span :class="getStatusClass(booking.status)">{{ getStatusText(booking.status) }}</span>
+                </div>
+              </div>
             </div>
           </div>
-          <button
-            v-if="isAuthenticated"
-            class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f1f4f0] text-[#131711] text-sm font-bold leading-normal tracking-[0.015em] w-full max-w-[480px] @[480px]:w-auto"
-          >
-            <span class="truncate">Пригласить поиграть</span>
-          </button>
-          <button
-            v-else
-            @click="goToAuth"
-            class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#4a90e2] text-white text-sm font-bold leading-normal tracking-[0.015em] w-full max-w-[480px] @[480px]:w-auto"
-          >
-            <span class="truncate">Войти</span>
-          </button>
         </div>
       </div>
     </div>
@@ -63,55 +51,35 @@
 
 <script>
 import NavigationBar from './NavigationBar.vue'
-import { authService } from '../services/api'
+import { bookingService } from '../services/bookingService'
 
 export default {
-  name: 'ProfilePage',
+  name: 'BookingHistory',
   components: {
     NavigationBar
   },
   data() {
     return {
-      isAuthenticated: false,
-      userData: {
-        id: null,
-        username: '',
-        email: '',
-        first_name: '',
-        last_name: '',
-        role: '',
-        phone: '',
-        address: '',
-        date_joined: null
-      }
+      bookings: [],
+      isLoading: true,
+      error: null
     }
   },
   async created() {
-    await this.checkAuth()
+    await this.fetchBookings()
   },
   methods: {
-    async checkAuth() {
-      const token = localStorage.getItem('access_token')
-      if (token) {
-        try {
-          const response = await authService.getCurrentUser()
-          this.userData = response.data
-          this.isAuthenticated = true
-        } catch (error) {
-          console.error('Error fetching user data:', error)
-          this.isAuthenticated = false
-          this.userData = {
-            id: null,
-            username: '',
-            email: '',
-            first_name: '',
-            last_name: '',
-            role: '',
-            phone: '',
-            address: '',
-            date_joined: null
-          }
-        }
+    async fetchBookings() {
+      this.isLoading = true
+      this.error = null
+      try {
+        const response = await bookingService.getBookings()
+        this.bookings = response.data
+      } catch (error) {
+        console.error('Error fetching bookings:', error)
+        this.error = 'Не удалось загрузить историю бронирований'
+      } finally {
+        this.isLoading = false
       }
     },
     formatDate(dateString) {
@@ -123,8 +91,21 @@ export default {
         day: 'numeric'
       }).format(date)
     },
-    goToAuth() {
-      this.$router.push('/auth')
+    getStatusClass(status) {
+      const classes = {
+        'confirmed': 'text-green-600',
+        'pending': 'text-yellow-600',
+        'cancelled': 'text-red-600'
+      }
+      return classes[status] || 'text-gray-600'
+    },
+    getStatusText(status) {
+      const statusTexts = {
+        'confirmed': 'Подтверждено',
+        'pending': 'Ожидает подтверждения',
+        'cancelled': 'Отменено'
+      }
+      return statusTexts[status] || status
     }
   }
 }
