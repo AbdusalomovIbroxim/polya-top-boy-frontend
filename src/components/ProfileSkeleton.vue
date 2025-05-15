@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full flex-col gap-4 items-start mt-20">
+  <div class="flex w-full flex-col gap-4 items-start mt-30">
     <div class="flex gap-4 flex-col items-start">
       <!-- Аватар скелетон -->
       <div class="skeleton-circle min-h-32 w-32"></div>
