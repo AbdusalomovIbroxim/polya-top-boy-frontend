@@ -19,8 +19,8 @@
       </div>
       <div class="flex p-4 @container">
         <div class="flex w-full flex-col gap-4 items-start">
-          <div v-if="isLoading" class="w-full text-center py-4">
-            Загрузка истории бронирований...
+          <div v-if="isLoading" class="w-full">
+            <BookingHistorySkeleton />
           </div>
           <div v-else-if="error" class="w-full text-center py-4 text-red-500">
             {{ error }}
@@ -51,12 +51,14 @@
 
 <script>
 import NavigationBar from './NavigationBar.vue'
+import BookingHistorySkeleton from './BookingHistorySkeleton.vue'
 import { bookingService } from '../services/bookingService'
 
 export default {
   name: 'BookingHistory',
   components: {
-    NavigationBar
+    NavigationBar,
+    BookingHistorySkeleton
   },
   data() {
     return {

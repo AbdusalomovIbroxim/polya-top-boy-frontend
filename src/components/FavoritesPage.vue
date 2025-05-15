@@ -6,8 +6,8 @@
         <p class="text-[#131711] tracking-light text-[28px] font-bold leading-tight">My Favorites</p>
       </div>
       
-      <div v-if="isLoading" class="p-4 text-center text-gray-500">
-        Загрузка...
+      <div v-if="isLoading" class="p-4">
+        <FavoritesSkeleton />
       </div>
       
       <div v-else-if="error" class="p-4 text-center text-red-500">
@@ -42,11 +42,13 @@
 <script>
 import NavigationBar from './NavigationBar.vue'
 import { favoriteService } from '../services/favoriteService'
+import FavoritesSkeleton from './FavoritesSkeleton.vue'
 
 export default {
   name: 'FavoritesPage',
   components: {
-    NavigationBar
+    NavigationBar,
+    FavoritesSkeleton
   },
   data() {
     return {

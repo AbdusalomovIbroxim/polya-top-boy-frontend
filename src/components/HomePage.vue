@@ -6,7 +6,7 @@
       
       <!-- Loading state -->
       <div v-if="loading" class="flex justify-center items-center p-8">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4ddf20]"></div>
+        <HomeSkeleton />
       </div>
 
       <!-- Error state -->
@@ -33,6 +33,7 @@ import AppHeader from './Header.vue'
 import FilterTabs from './FilterTabs.vue'
 import StadiumCard from './StadiumCard.vue'
 import NavigationBar from './NavigationBar.vue'
+import HomeSkeleton from './HomeSkeleton.vue'
 import { stadiumService } from '@/services/stadiumService'
 
 export default {
@@ -42,6 +43,7 @@ export default {
     FilterTabs,
     StadiumCard,
     NavigationBar,
+    HomeSkeleton
   },
   data() {
     return {
