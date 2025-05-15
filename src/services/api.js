@@ -11,6 +11,11 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
+    console.log('API Request:', {
+      url: config.url,
+      method: config.method,
+      data: config.data
+    })
     const token = localStorage.getItem('access_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -18,18 +23,33 @@ api.interceptors.request.use(
     return config
   },
   (error) => {
+    console.error('API Request Error:', error)
     return Promise.reject(error)
   }
 )
 
 // Добавляем перехватчик для обработки ошибок и обновления токена
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('API Response:', {
+      url: response.config.url,
+      status: response.status,
+      data: response.data
+    })
+    return response
+  },
   async (error) => {
+    console.error('API Response Error:', {
+      url: error.config?.url,
+      status: error.response?.status,
+      data: error.response?.data
+    })
+    
     const originalRequest = error.config
 
     // Если ошибка 401 и это не запрос на обновление токена
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      console.log('Attempting to refresh token')
       originalRequest._retry = true
 
       try {
@@ -45,6 +65,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${access}`
         return api(originalRequest)
       } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError)
         // Если не удалось обновить токен, просто очищаем токены
         localStorage.removeItem('access_token')
         localStorage.removeItem('refresh_token')
@@ -89,7 +110,26 @@ export const authService = {
   logout() {
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
-  }
+    localStorage.removeItem('user')
+  },
+
+  async loginWithTelegram(initData) {
+    console.log('Attempting Telegram login with initData:', initData)
+    try {
+      const response = await api.post('/auth/telegram/', {
+        initData
+      })
+      console.log('Telegram login successful:', response.data)
+      const { access, refresh, user } = response.data
+      localStorage.setItem('access_token', access)
+      localStorage.setItem('refresh_token', refresh)
+      localStorage.setItem('user', JSON.stringify(user))
+      return response.data
+    } catch (error) {
+      console.error('Telegram login failed:', error)
+      throw error
+    }
+  },
 }
 
 export default api;
