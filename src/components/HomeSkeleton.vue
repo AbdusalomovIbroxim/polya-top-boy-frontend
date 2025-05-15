@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-col gap-4 p-4">
+  <div class="flex flex-col gap-4">
     <!-- Скелетон для карточек стадионов -->
-    <div v-for="n in 3" :key="n" class="skeleton-card">
-      <div class="skeleton-image"></div>
+    <div v-for="n in 3" :key="n" class="skeleton-card w-full">
+      <div class="skeleton-image w-full rounded-2xl"></div>
       <div class="p-4 flex flex-col gap-2">
         <div class="skeleton-line title"></div>
         <div class="skeleton-line location"></div>
@@ -24,6 +24,7 @@ export default {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
 }
 
 .skeleton-image {
@@ -31,6 +32,9 @@ export default {
   background: linear-gradient(90deg, #f1f4f0 25%, #e0e0e0 50%, #f1f4f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+  border-radius: 16px 16px 0 0;
+  width: 100%;
+  object-fit: cover;
 }
 
 .skeleton-line {
