@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-4 w-full -mx-4" style="width:100vw;">
     <!-- Скелетон для карточек стадионов -->
     <div v-for="n in 3" :key="n" class="skeleton-card w-full">
       <div class="skeleton-image w-full rounded-2xl"></div>
