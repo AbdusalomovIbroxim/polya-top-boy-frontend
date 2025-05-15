@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-col gap-4 w-full -mx-4" style="width:100vw;">
+  <div class="flex flex-col gap-4 p-4 w-full">
     <!-- Скелетон для избранных стадионов -->
-    <div v-for="n in 3" :key="n" class="skeleton-favorite w-full">
-      <div class="skeleton-image w-full rounded-2xl"></div>
+    <div v-for="n in 3" :key="n" class="skeleton-favorite w-full rounded-xl">
+      <div class="skeleton-image w-full rounded-xl"></div>
       <div class="absolute bottom-0 left-0 right-0 p-4">
         <div class="skeleton-line title"></div>
         <div class="skeleton-line location"></div>
@@ -36,7 +36,7 @@ export default {
   background: linear-gradient(90deg, #f1f4f0 25%, #e0e0e0 50%, #f1f4f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: 16px;
+  border-radius: 12px;
   width: 100%;
   object-fit: cover;
 }
