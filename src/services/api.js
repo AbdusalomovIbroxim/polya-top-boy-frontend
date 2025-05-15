@@ -45,10 +45,9 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${access}`
         return api(originalRequest)
       } catch (refreshError) {
-        // Если не удалось обновить токен, выходим из системы
+        // Если не удалось обновить токен, просто очищаем токены
         localStorage.removeItem('access_token')
         localStorage.removeItem('refresh_token')
-        window.location.href = '/auth'
         return Promise.reject(refreshError)
       }
     }
