@@ -18,12 +18,15 @@
           </button>
         </div>
       </div>
-      <div class="flex p-4 @container">
+      <div v-if="loading" class="flex p-4 @container">
+        <ProfileSkeleton />
+      </div>
+      <div v-else class="flex p-4 @container">
         <div class="flex w-full flex-col gap-4 items-start">
           <div class="flex gap-4 flex-col items-start">
             <div
               class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
-              style='background-image: url("https://cdn.usegalileo.ai/sdxl10/40f70546-ecd7-4361-be87-04d23971368e.png");'
+              :style='{ backgroundImage: `url(${userData.photo_url || "https://cdn.usegalileo.ai/sdxl10/40f70546-ecd7-4361-be87-04d23971368e.png"})` }'
             ></div>
             <div class="flex flex-col justify-center">
               <p class="text-[#131711] text-[22px] font-bold leading-tight tracking-[-0.015em]">
@@ -63,15 +66,18 @@
 
 <script>
 import NavigationBar from './NavigationBar.vue'
+import ProfileSkeleton from './ProfileSkeleton.vue'
 import { authService } from '../services/api'
 
 export default {
   name: 'ProfilePage',
   components: {
-    NavigationBar
+    NavigationBar,
+    ProfileSkeleton
   },
   data() {
     return {
+      loading: true,
       isAuthenticated: false,
       userData: {
         id: null,
@@ -82,7 +88,8 @@ export default {
         role: '',
         phone: '',
         address: '',
-        date_joined: null
+        date_joined: null,
+        photo_url: null
       }
     }
   },
@@ -109,10 +116,12 @@ export default {
             role: '',
             phone: '',
             address: '',
-            date_joined: null
+            date_joined: null,
+            photo_url: null
           }
         }
       }
+      this.loading = false
     },
     formatDate(dateString) {
       if (!dateString) return ''

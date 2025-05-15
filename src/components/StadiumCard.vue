@@ -55,7 +55,7 @@
         <p class="text-[#131711] text-lg font-bold leading-tight tracking-[-0.015em]">{{ stadium.name }}</p>
         <div class="flex items-end gap-3 justify-between">
           <div class="flex flex-col gap-1">
-            <p class="text-[#6c8764] text-base font-normal leading-normal">{{ stadium.location }}</p>
+            <p class="text-[#6c8764] text-base font-normal leading-normal">{{ stadium.address }}</p>
             <p class="text-[#6c8764] text-base font-normal leading-normal">{{ stadium.price }}/hour</p>
           </div>
           <button 

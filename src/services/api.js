@@ -107,6 +107,14 @@ export const authService = {
     return api.get('/users/me/')
   },
 
+  async getUserStats() {
+    return api.get('/users/stats/')
+  },
+
+  async getUserGames() {
+    return api.get('/users/games/')
+  },
+
   logout() {
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
