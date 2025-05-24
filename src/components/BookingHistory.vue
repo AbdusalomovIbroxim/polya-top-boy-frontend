@@ -38,11 +38,11 @@
                 <div class="text-right">
                   <span :class="getStatusClass(booking.status)">{{ getStatusText(booking.status) }}</span>
                   <button 
-                    v-if="booking.status === 'pending'"
-                    @click="cancelBooking(booking.id)"
-                    class="mt-2 block w-full text-sm text-red-600 hover:text-red-800"
+                    v-if="booking.status !== 'cancelled'"
+                    @click="deleteBooking(booking.id)"
+                    class="mt-2 px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
                   >
-                    Отменить бронирование
+                    Отменить
                   </button>
                 </div>
               </div>
