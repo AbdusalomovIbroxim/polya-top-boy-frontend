@@ -37,6 +37,13 @@
                 </div>
                 <div class="text-right">
                   <span :class="getStatusClass(booking.status)">{{ getStatusText(booking.status) }}</span>
+                  <button 
+                    v-if="booking.status === 'pending'"
+                    @click="cancelBooking(booking.id)"
+                    class="mt-2 block w-full text-sm text-red-600 hover:text-red-800"
+                  >
+                    Отменить бронирование
+                  </button>
                 </div>
               </div>
             </div>
@@ -104,10 +111,23 @@ export default {
     getStatusText(status) {
       const statusTexts = {
         'confirmed': 'Подтверждено',
-        'pending': 'Ожидает подтверждения',
+        'pending': 'Ожидает оплату',
         'cancelled': 'Отменено'
       }
       return statusTexts[status] || status
+    },
+    async deleteBooking(bookingId) {
+      if (!confirm('Вы уверены, что хотите отменить бронирование?')) {
+        return
+      }
+      
+      try {
+        await bookingService.deleteBooking(bookingId)
+        await this.fetchBookings()
+      } catch (error) {
+        console.error('Error cancelling booking:', error)
+        this.error = 'Не удалось отменить бронирование'
+      }
     }
   }
 }

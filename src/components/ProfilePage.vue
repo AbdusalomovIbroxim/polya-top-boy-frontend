@@ -3,10 +3,11 @@
     <div>
       <div class="flex items-center bg-white p-4 pb-2 justify-between">
         <h2 class="text-[#131711] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pl-12">Профиль</h2>
-        <div class="flex w-12 items-center justify-end">
+        <div class="flex w-12 items-center justify-end relative">
           <button
             v-if="isAuthenticated"
             class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-transparent text-[#131711] gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0"
+            @click="toggleMenu"
           >
             <div class="text-[#131711]">
               <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
@@ -16,6 +17,12 @@
               </svg>
             </div>
           </button>
+          <div v-if="showMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg z-50 border border-gray-100">
+            <button class="block w-full text-left px-4 py-3 hover:bg-gray-100" @click="logout">Выйти</button>
+            <button class="block w-full text-left px-4 py-3 hover:bg-gray-100" @click="goToFriends">Мои друзья</button>
+            <button class="block w-full text-left px-4 py-3 hover:bg-gray-100" @click="goToBookings">Мои бронирования</button>
+            <button class="block w-full text-left px-4 py-3 hover:bg-gray-100" @click="goToSettings">Настройки профиля</button>
+          </div>
         </div>
       </div>
       <div v-if="loading" class="flex p-4 @container">
@@ -79,6 +86,7 @@ export default {
     return {
       loading: true,
       isAuthenticated: false,
+      showMenu: false,
       userData: {
         id: null,
         username: '',
@@ -134,6 +142,27 @@ export default {
     },
     goToAuth() {
       this.$router.push('/auth')
+    },
+    toggleMenu() {
+      this.showMenu = !this.showMenu
+    },
+    logout() {
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+      this.$router.push('/auth')
+      this.showMenu = false
+    },
+    goToFriends() {
+      this.$router.push('/friends')
+      this.showMenu = false
+    },
+    goToBookings() {
+      this.$router.push('/bookings')
+      this.showMenu = false
+    },
+    goToSettings() {
+      this.$router.push('/profile/settings')
+      this.showMenu = false
     }
   }
 }
