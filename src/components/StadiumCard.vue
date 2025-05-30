@@ -56,12 +56,11 @@
           <div class="flex flex-col gap-1">
             <p class="text-[#6c8764] text-base font-normal leading-normal truncate max-w-[200px]">{{ stadium.address }}</p>
             <p class="text-[#6c8764] text-base font-normal leading-normal">{{ stadium.price_per_hour }} сум/час</p>
-            <p class="text-[#6c8764] text-base font-normal leading-normal">{{ stadium.price }} сум/час</p>
           </div>
           <div class="flex gap-2">
             <button 
               @click="shareToTelegram"
-              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#0088cc] text-white text-sm font-medium leading-normal">
+              class="flex min-w-[84px] max-w-[84px] bg-[#f5f5f5] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#0088cc] text-white text-sm font-medium leading-normal">
               <img src="@/assets/share.svg" alt="Share" class="w-5 h-5" />
             </button>
             <button
