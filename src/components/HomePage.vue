@@ -85,7 +85,7 @@ export default {
             name: stadium.name,
             address: stadium.address,
             price_per_hour: stadium.price_per_hour,
-            images: stadium.images.map(img => img.image),
+            images: stadium.images ? stadium.images.map(img => img.image) : [],
             city: stadium.city
           };
           console.log('Processed stadium:', processedStadium);

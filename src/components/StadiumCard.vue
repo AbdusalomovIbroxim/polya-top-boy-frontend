@@ -109,6 +109,11 @@ export default {
     console.log('Stadium images:', this.stadium.images);
     if (this.stadium.images && this.stadium.images.length > 0) {
       console.log('First image URL:', this.stadium.images[0]);
+      // Проверяем загрузку первого изображения
+      const img = new Image();
+      img.onload = () => console.log('First image loaded successfully');
+      img.onerror = (e) => console.error('Error loading first image:', e);
+      img.src = this.stadium.images[0];
     }
     await this.checkFavoriteStatus()
   },
