@@ -76,14 +76,20 @@ export default {
         const response = await stadiumService.getStadiums({
           city: this.activeFilter === 'Tashkent' ? 'Tashkent' : undefined
         });
-        this.stadiums = response.results.map(stadium => ({
-          id: stadium.id,
-          name: stadium.name,
-          address: stadium.address,
-          price_per_hour: stadium.price_per_hour,
-          images: stadium.images,
-          city: stadium.city
-        }));
+        console.log('API Response:', response);
+        this.stadiums = response.results.map(stadium => {
+          console.log('Processing stadium:', stadium);
+          console.log('Stadium images:', stadium.images);
+          return {
+            id: stadium.id,
+            name: stadium.name,
+            address: stadium.address,
+            price_per_hour: stadium.price_per_hour,
+            images: stadium.images || [],
+            city: stadium.city
+          };
+        });
+        console.log('Processed stadiums:', this.stadiums);
       } catch (error) {
         this.error = 'Failed to load stadiums';
         console.error('Error fetching stadiums:', error);

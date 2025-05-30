@@ -24,14 +24,22 @@
         </button>
 
         <div class="relative w-full h-full">
-          <div v-for="(image, index) in stadium.images" 
+          <div v-if="!stadium.images || stadium.images.length === 0" 
+               class="absolute inset-0 w-full h-full bg-[#f5f5f5] flex items-center justify-center rounded-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+          <div v-else v-for="(image, index) in stadium.images" 
                :key="index"
                class="absolute inset-0 w-full h-full bg-center bg-no-repeat bg-cover rounded-xl transition-all duration-500 cursor-pointer"
                :class="{ 
                  'opacity-100 scale-100': currentImageIndex === index, 
                  'opacity-0 scale-110': currentImageIndex !== index 
                }"
-               :style="{ backgroundImage: `url(${image})` }"
+               :style="{ backgroundImage: `url(${image.image})` }"
                @click="$router.push(`/stadium/${stadium.id}`)"
                @touchstart="touchStart"
                @touchmove="touchMove"
@@ -97,6 +105,8 @@ export default {
     }
   },
   async created() {
+    console.log('StadiumCard created with stadium:', this.stadium);
+    console.log('Stadium images:', this.stadium.images);
     await this.checkFavoriteStatus()
   },
   methods: {
