@@ -55,14 +55,21 @@
         <p class="text-[#131711] text-lg font-bold leading-tight tracking-[-0.015em]">{{ stadium.name }}</p>
         <div class="flex items-end gap-3 justify-between">
           <div class="flex flex-col gap-1">
-            <p class="text-[#6c8764] text-base font-normal leading-normal">{{ stadium.address }}</p>
-            <p class="text-[#6c8764] text-base font-normal leading-normal">{{ stadium.price }}/hour</p>
+            <p class="text-[#6c8764] text-base font-normal leading-normal truncate max-w-[200px]">{{ stadium.address }}</p>
+            <p class="text-[#6c8764] text-base font-normal leading-normal">{{ stadium.price_per_hour }} сум/час</p>
           </div>
-          <button 
-            @click="$router.push(`/stadium/${stadium.id}`)"
-            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#4ddf20] text-[#131711] text-sm font-medium leading-normal">
-            <span class="truncate">Book</span>
-          </button>
+          <div class="flex gap-2">
+            <button 
+              @click="shareToTelegram"
+              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#0088cc] text-white text-sm font-medium leading-normal">
+              <span class="truncate">Share</span>
+            </button>
+            <button 
+              @click="$router.push(`/stadium/${stadium.id}`)"
+              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#4ddf20] text-[#131711] text-sm font-medium leading-normal">
+              <span class="truncate">Book</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -120,6 +127,12 @@ export default {
       } catch (error) {
         console.error('Error toggling favorite:', error)
       }
+    },
+    shareToTelegram() {
+      const url = `${window.location.origin}/stadium/${this.stadium.id}`
+      const text = `Посмотрите это поле: ${this.stadium.name}`
+      const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`
+      window.open(telegramUrl, '_blank')
     },
     touchStart(event) {
       this.touchStartX = event.touches[0].clientX
