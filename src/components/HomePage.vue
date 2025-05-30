@@ -79,9 +79,10 @@ export default {
         this.stadiums = response.results.map(stadium => ({
           id: stadium.id,
           name: stadium.name,
-          location: `${stadium.city}, ${stadium.address}`,
-          price: `$${stadium.price_per_hour}`,
-          images: stadium.images.map(img => img.image)
+          address: stadium.address,
+          price_per_hour: stadium.price_per_hour,
+          images: stadium.images,
+          city: stadium.city
         }));
       } catch (error) {
         this.error = 'Failed to load stadiums';
