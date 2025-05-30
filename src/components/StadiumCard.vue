@@ -39,7 +39,7 @@
                  'opacity-100 scale-100': currentImageIndex === index, 
                  'opacity-0 scale-110': currentImageIndex !== index 
                }"
-               :style="{ backgroundImage: `url(${image.image})` }"
+               :style="{ backgroundImage: `url(${image})` }"
                @click="$router.push(`/stadium/${stadium.id}`)"
                @touchstart="touchStart"
                @touchmove="touchMove"
@@ -68,7 +68,7 @@
           <div class="flex gap-2">
             <button 
               @click="shareToTelegram"
-              class="flex min-w-[84px] max-w-[84px] bg-[#f5f5f5] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#0088cc] text-white text-sm font-medium leading-normal">
+              class="flex w-8 h-8 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#0088cc] text-white">
               <img src="@/assets/share.svg" alt="Share" class="w-5 h-5" />
             </button>
             <button
@@ -107,6 +107,9 @@ export default {
   async created() {
     console.log('StadiumCard created with stadium:', this.stadium);
     console.log('Stadium images:', this.stadium.images);
+    if (this.stadium.images && this.stadium.images.length > 0) {
+      console.log('First image URL:', this.stadium.images[0]);
+    }
     await this.checkFavoriteStatus()
   },
   methods: {

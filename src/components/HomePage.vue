@@ -80,16 +80,18 @@ export default {
         this.stadiums = response.results.map(stadium => {
           console.log('Processing stadium:', stadium);
           console.log('Stadium images:', stadium.images);
-          return {
+          const processedStadium = {
             id: stadium.id,
             name: stadium.name,
             address: stadium.address,
             price_per_hour: stadium.price_per_hour,
-            images: stadium.images || [],
+            images: stadium.images.map(img => img.image),
             city: stadium.city
           };
+          console.log('Processed stadium:', processedStadium);
+          return processedStadium;
         });
-        console.log('Processed stadiums:', this.stadiums);
+        console.log('Final processed stadiums:', this.stadiums);
       } catch (error) {
         this.error = 'Failed to load stadiums';
         console.error('Error fetching stadiums:', error);
