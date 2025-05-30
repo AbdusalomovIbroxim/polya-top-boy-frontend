@@ -27,12 +27,13 @@
         <div class="relative w-full h-full">
           <div v-for="(image, index) in stadium.images" 
                :key="index"
-               class="absolute inset-0 w-full h-full bg-center bg-no-repeat bg-cover rounded-xl transition-all duration-500"
+               class="absolute inset-0 w-full h-full bg-center bg-no-repeat bg-cover rounded-xl transition-all duration-500 cursor-pointer"
                :class="{ 
                  'opacity-100 scale-100': currentImageIndex === index, 
                  'opacity-0 scale-110': currentImageIndex !== index 
                }"
-               :style="{ backgroundImage: `url(${image})` }"
+               :style="{ backgroundImage: `url(${image.image})` }"
+               @click="$router.push(`/stadium/${stadium.id}`)"
                @touchstart="touchStart"
                @touchmove="touchMove"
                @touchend="touchEnd">
@@ -57,12 +58,13 @@
           <div class="flex flex-col gap-1">
             <p class="text-[#6c8764] text-base font-normal leading-normal truncate max-w-[200px]">{{ stadium.address }}</p>
             <p class="text-[#6c8764] text-base font-normal leading-normal">{{ stadium.price_per_hour }} сум/час</p>
+            <p class="text-[#6c8764] text-base font-normal leading-normal">{{ stadium.price }} сум/час</p>
           </div>
           <div class="flex gap-2">
             <button 
               @click="shareToTelegram"
               class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#0088cc] text-white text-sm font-medium leading-normal">
-              <span class="truncate">Share</span>
+              <img src="@/assets/share.svg" alt="Share" class="w-5 h-5" />
             </button>
             <button 
               @click="$router.push(`/stadium/${stadium.id}`)"
