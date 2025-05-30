@@ -60,7 +60,6 @@ export default {
       } else if (this.activeFilter === 'Tashkent') {
         return this.stadiums.filter(stadium => stadium.city === 'Tashkent');
       } else if (this.activeFilter === 'Favorites') {
-        // В реальном приложении здесь будет логика для избранных стадионов
         return [];
       }
       return this.stadiums;

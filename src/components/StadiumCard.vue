@@ -23,7 +23,6 @@
           </svg>
         </button>
 
-        <!-- Слайдер изображений -->
         <div class="relative w-full h-full">
           <div v-for="(image, index) in stadium.images" 
                :key="index"
@@ -32,7 +31,7 @@
                  'opacity-100 scale-100': currentImageIndex === index, 
                  'opacity-0 scale-110': currentImageIndex !== index 
                }"
-               :style="{ backgroundImage: `url(${image.image})` }"
+               :style="{ backgroundImage: `url(${image})` }"
                @click="$router.push(`/stadium/${stadium.id}`)"
                @touchstart="touchStart"
                @touchmove="touchMove"
@@ -40,7 +39,6 @@
           </div>
         </div>
         
-        <!-- Индикаторы слайдов -->
         <div v-if="stadium.images.length > 1" 
              class="absolute bottom-2 left-0 right-0 flex justify-center gap-2 px-2 z-10">
           <button v-for="(_, index) in stadium.images" 
@@ -66,7 +64,7 @@
               class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#0088cc] text-white text-sm font-medium leading-normal">
               <img src="@/assets/share.svg" alt="Share" class="w-5 h-5" />
             </button>
-            <button 
+            <button
               @click="$router.push(`/stadium/${stadium.id}`)"
               class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#4ddf20] text-[#131711] text-sm font-medium leading-normal">
               <span class="truncate">Book</span>
