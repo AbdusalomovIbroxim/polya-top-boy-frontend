@@ -31,7 +31,7 @@
                  'opacity-100 scale-100': currentImageIndex === index, 
                  'opacity-0 scale-110': currentImageIndex !== index 
                }"
-               :style="{ backgroundImage: `url(${image.image})` }"
+               :style="{ backgroundImage: `url(${image})` }"
                @click="$router.push(`/stadium/${stadium.id}`)"
                @touchstart="touchStart"
                @touchmove="touchMove"
