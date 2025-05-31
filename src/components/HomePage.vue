@@ -9,10 +9,7 @@
       
       <!-- Map View -->
       <div v-if="showMap" class="h-[calc(100vh-200px)] w-full">
-        <!-- Здесь будет компонент карты -->
-        <div class="w-full h-full bg-gray-100 flex items-center justify-center">
-          <p class="text-gray-500">Карта будет добавлена позже</p>
-        </div>
+        <MapView :stadiums="filteredStadiums" />
       </div>
 
       <!-- List View -->
@@ -48,6 +45,7 @@ import FilterTabs from './FilterTabs.vue'
 import StadiumCard from './StadiumCard.vue'
 import NavigationBar from './NavigationBar.vue'
 import HomeSkeleton from './HomeSkeleton.vue'
+import MapView from './MapView.vue'
 import { stadiumService } from '@/services/stadiumService'
 
 export default {
@@ -57,7 +55,8 @@ export default {
     FilterTabs,
     StadiumCard,
     NavigationBar,
-    HomeSkeleton
+    HomeSkeleton,
+    MapView
   },
   data() {
     return {
@@ -119,7 +118,9 @@ export default {
             price_per_hour: stadium.price_per_hour,
             images: stadium.images ? stadium.images.map(img => img.image) : [],
             city: stadium.city,
-            type: stadium.type
+            type: stadium.type,
+            latitude: stadium.latitude,
+            longitude: stadium.longitude
           };
           console.log('Processed stadium:', processedStadium);
           return processedStadium;
