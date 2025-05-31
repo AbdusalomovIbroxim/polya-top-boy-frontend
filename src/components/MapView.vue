@@ -51,38 +51,39 @@
         });
   
         props.stadiums.forEach((stadium, index) => {
-            
-          const { latitude, longitude, name, address, price_per_hour } = stadium;
-          const lat = parseFloat(latitude);
-          const lng = parseFloat(longitude);
+            const { latitude, longitude, name, address, price_per_hour } = stadium;
 
-          console.log(`[MapView] Обработка стадиона #${index}:`, stadium);
+            const lat = parseFloat(latitude);
+            const lng = parseFloat(longitude);
 
-          if (!isValidCoords(lat, lng)) {
-            console.warn(`[MapView] Пропущен стадион из-за координат:`, stadium);
-            return;
-          }
-  
-          const placemark = new ymaps.Placemark(
-            [latitude, longitude],
-            {
-              hintContent: name,
-              balloonContent: `
-                <div style="padding: 10px;">
-                  <h3 style="margin: 0 0 10px 0; font-size: 16px;">${name}</h3>
-                  <p style="margin: 0 0 5px 0;">${address}</p>
-                  <p style="margin: 0; color: #4ddf20;">${price_per_hour} сум/час</p>
-                </div>
-              `
-            },
-            {
-              preset: 'islands#greenSportIcon',
-              iconColor: '#4ddf20'
+            console.log(`[MapView] Обработка стадиона #${index}:`, stadium);
+
+            if (!isValidCoords(lat, lng)) {
+                console.warn('[MapView] Неверные координаты:', { lat, lng });
+                console.warn('[MapView] Пропущен стадион из-за координат:', stadium);
+                return;
             }
-          );
-          map.value.geoObjects.add(placemark);
-          console.log(`[MapView] Метка добавлена для: ${name}`);
-        });
+
+            const placemark = new ymaps.Placemark(
+                [lat, lng],
+                {
+                hintContent: name,
+                balloonContent: `
+                    <div style="padding: 10px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px;">${name}</h3>
+                    <p style="margin: 0 0 5px 0;">${address}</p>
+                    <p style="margin: 0; color: #4ddf20;">${price_per_hour} сум/час</p>
+                    </div>
+                `
+                },
+                {
+                preset: 'islands#greenSportIcon',
+                iconColor: '#4ddf20'
+                }
+            );
+
+            map.value.geoObjects.add(placemark);
+            });
       };
   
       onMounted(() => {
