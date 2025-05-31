@@ -4,12 +4,12 @@
       <AppHeader />
       <FilterTabs 
         @filter-changed="handleFilterChange"
-        @toggle-map="toggleMapView"
+        @toggle-map="toggleMap"
       />
       
       <!-- Map View -->
       <div v-if="showMap" class="h-[calc(100vh-200px)] w-full">
-        <MapView :stadiums="filteredStadiums" />
+        <MapView :stadiums="filteredStadiums" @close="showMap = false" />
       </div>
 
       <!-- List View -->
@@ -45,7 +45,7 @@ import FilterTabs from './FilterTabs.vue'
 import StadiumCard from './StadiumCard.vue'
 import NavigationBar from './NavigationBar.vue'
 import HomeSkeleton from './HomeSkeleton.vue'
-import MapView from './MapView.vue'
+import MapView from '@/components/MapView.vue'
 import { stadiumService } from '@/services/stadiumService'
 
 export default {
@@ -96,7 +96,7 @@ export default {
       this.activeFilters = filters;
       this.fetchStadiums();
     },
-    toggleMapView() {
+    toggleMap() {
       this.showMap = !this.showMap;
     },
     async fetchStadiums() {
