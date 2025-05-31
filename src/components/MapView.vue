@@ -20,27 +20,20 @@ export default {
     }
   },
   mounted() {
-    this.initMap();
+    // Инициализируем карту после загрузки компонента
+    ymaps.ready(this.initMap);
   },
   methods: {
     initMap() {
-      // Загружаем API Яндекс Карт
-      const script = document.createElement('script');
-      script.src = `https://api-maps.yandex.ru/2.1/?apikey=d670877f-8f27-402b-a4bf-670d5a034b5d&lang=ru_RU`;
-      script.async = true;
-      script.onload = () => {
-        ymaps.ready(() => {
-          // Создаем карту
-          this.map = new ymaps.Map('map', {
-            center: [41.3111, 69.2797], // Центр Ташкента
-            zoom: 11
-          });
+      // Создаем карту
+      this.map = new ymaps.Map('map', {
+        center: [41.3111, 69.2797], // Центр Ташкента
+        zoom: 11,
+        controls: ['zoomControl', 'fullscreenControl']
+      });
 
-          // Добавляем маркеры для каждого стадиона
-          this.addMarkers();
-        });
-      };
-      document.head.appendChild(script);
+      // Добавляем маркеры для каждого стадиона
+      this.addMarkers();
     },
     addMarkers() {
       // Удаляем старые маркеры
