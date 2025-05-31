@@ -84,7 +84,7 @@ export default {
       this.markers = [];
     },
     addMarkers() {
-      if (!this.map || !this.isMapReady) return;
+      if (!this.map) return;
 
       try {
         console.log('Adding markers for stadiums:', this.stadiums);
