@@ -45,7 +45,12 @@ export default {
     }
   },
   beforeUnmount() {
+    // Очищаем карту при уничтожении компонента
     if (this.map) {
+      // Останавливаем все поведения карты, чтобы избежать ошибок при уничтожении
+      if (this.map.behaviors) {
+        this.map.behaviors.removeAll();
+      }
       this.clearMap();
       this.map.destroy();
       this.map = null;
