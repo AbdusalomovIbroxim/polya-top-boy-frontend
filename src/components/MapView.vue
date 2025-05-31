@@ -21,13 +21,18 @@
       const mapElement = ref(null);
       const map = ref(null);
   
+      const isValidCoords = (lat, lng) => {
+        return typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng);
+      };
+  
       const renderMap = () => {
-        if (map.value) {
+        if (!mapElement.value || !ymaps?.Map) return;
+  
+        // Уничтожаем старую карту, если была
+        if (map.value && typeof map.value.destroy === 'function') {
           map.value.destroy();
           map.value = null;
         }
-  
-        if (!mapElement.value) return;
   
         map.value = new ymaps.Map(mapElement.value, {
           center: [41.2995, 69.2401],
@@ -35,16 +40,21 @@
           controls: ['zoomControl', 'fullscreenControl']
         });
   
+        // Добавление меток
         props.stadiums.forEach(stadium => {
+          const { latitude, longitude, name, address, price_per_hour } = stadium;
+  
+          if (!isValidCoords(latitude, longitude)) return;
+  
           const placemark = new ymaps.Placemark(
-            [stadium.latitude, stadium.longitude],
+            [latitude, longitude],
             {
-              hintContent: stadium.name,
+              hintContent: name,
               balloonContent: `
                 <div style="padding: 10px;">
-                  <h3 style="margin: 0 0 10px 0; font-size: 16px;">${stadium.name}</h3>
-                  <p style="margin: 0 0 5px 0;">${stadium.address}</p>
-                  <p style="margin: 0; color: #4ddf20;">${stadium.price_per_hour} сум/час</p>
+                  <h3 style="margin: 0 0 10px 0; font-size: 16px;">${name}</h3>
+                  <p style="margin: 0 0 5px 0;">${address}</p>
+                  <p style="margin: 0; color: #4ddf20;">${price_per_hour} сум/час</p>
                 </div>
               `
             },
@@ -58,18 +68,23 @@
       };
   
       onMounted(() => {
-        ymaps.ready(renderMap);
+        ymaps.ready(() => {
+          setTimeout(() => {
+            renderMap();
+          }, 0); // Отложенный вызов — даёт DOM "дозагрузиться"
+        });
       });
   
-      // Обновление карты при изменении стадионов (если динамически меняется)
       watch(() => props.stadiums, () => {
-        if (ymaps && ymaps.Map) {
-          renderMap();
+        if (ymaps?.Map) {
+          setTimeout(() => {
+            renderMap();
+          }, 100); // чуть позже — после возможного DOM-обновления
         }
       });
   
       onBeforeUnmount(() => {
-        if (map.value) {
+        if (map.value && typeof map.value.destroy === 'function') {
           map.value.destroy();
           map.value = null;
         }
