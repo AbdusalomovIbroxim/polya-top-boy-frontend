@@ -68,12 +68,12 @@
           <div class="flex gap-2">
             <button 
               @click="shareToTelegram"
-              class="flex w-8 h-8 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#0088cc] text-white">
+              class="flex w-8 h-8 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#6EDE8A] text-[#000000]">
               <img src="@/assets/share.svg" alt="Share" class="w-5 h-5" />
             </button>
             <button
               @click="$router.push(`/stadium/${stadium.id}`)"
-              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#25A244] text-[#131711] text-sm font-medium leading-normal">
+              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#25A244] text-[white] text-sm font-medium leading-normal">
               <span class="truncate">Book</span>
             </button>
           </div>
