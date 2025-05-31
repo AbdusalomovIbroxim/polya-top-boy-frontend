@@ -30,7 +30,7 @@ export default {
       console.error('Yandex Maps API not loaded');
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     // Очищаем карту при уничтожении компонента
     if (this.map) {
       this.clearMap();
@@ -106,7 +106,6 @@ export default {
     handleBoundsChange() {
       // Обработка изменения границ карты
       if (this.map) {
-        const zoom = this.map.getZoom();
         // Можно добавить дополнительную логику при изменении масштаба
       }
     },
