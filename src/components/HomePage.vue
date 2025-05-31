@@ -2,25 +2,39 @@
   <div class="relative flex size-full min-h-screen flex-col bg-white justify-between group/design-root overflow-x-hidden pb-20" style='font-family: Lexend, "Noto Sans", sans-serif;'>
     <div>
       <AppHeader />
-      <FilterTabs @tab-changed="filterChanged" />
-      
-      <!-- Loading state -->
-      <div v-if="loading" class="flex justify-center items-center p-8">
-        <HomeSkeleton />
-      </div>
-
-      <!-- Error state -->
-      <div v-else-if="error" class="text-center p-8 text-red-500">
-        {{ error }}
-      </div>
-
-      <!-- Stadiums list -->
-      <template v-else>
-      <StadiumCard 
-        v-for="stadium in filteredStadiums" 
-        :key="stadium.id" 
-        :stadium="stadium" 
+      <FilterTabs 
+        @filter-changed="handleFilterChange"
+        @toggle-map="toggleMapView"
       />
+      
+      <!-- Map View -->
+      <div v-if="showMap" class="h-[calc(100vh-200px)] w-full">
+        <!-- Здесь будет компонент карты -->
+        <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+          <p class="text-gray-500">Карта будет добавлена позже</p>
+        </div>
+      </div>
+
+      <!-- List View -->
+      <template v-else>
+        <!-- Loading state -->
+        <div v-if="loading" class="flex justify-center items-center p-8">
+          <HomeSkeleton />
+        </div>
+
+        <!-- Error state -->
+        <div v-else-if="error" class="text-center p-8 text-red-500">
+          {{ error }}
+        </div>
+
+        <!-- Stadiums list -->
+        <template v-else>
+          <StadiumCard 
+            v-for="stadium in filteredStadiums" 
+            :key="stadium.id" 
+            :stadium="stadium" 
+          />
+        </template>
       </template>
     </div>
     
@@ -47,7 +61,11 @@ export default {
   },
   data() {
     return {
-      activeFilter: 'All',
+      showMap: false,
+      activeFilters: {
+        region: null,
+        type: null
+      },
       stadiums: [],
       loading: false,
       error: null
@@ -55,26 +73,40 @@ export default {
   },
   computed: {
     filteredStadiums() {
-      if (this.activeFilter === 'All') {
-        return this.stadiums;
-      } else if (this.activeFilter === 'Tashkent') {
-        return this.stadiums.filter(stadium => stadium.city === 'Tashkent');
-      } else if (this.activeFilter === 'Favorites') {
-        return [];
-      }
-      return this.stadiums;
+      return this.stadiums.filter(stadium => {
+        // Filter by region
+        if (this.activeFilters.region && this.activeFilters.region !== 'Все') {
+          if (stadium.city !== this.activeFilters.region) {
+            return false;
+          }
+        }
+
+        // Filter by type
+        if (this.activeFilters.type && this.activeFilters.type !== 'Все') {
+          if (stadium.type !== this.activeFilters.type) {
+            return false;
+          }
+        }
+
+        return true;
+      });
     }
   },
   methods: {
-    filterChanged(filter) {
-      this.activeFilter = filter;
+    handleFilterChange(filters) {
+      this.activeFilters = filters;
+      this.fetchStadiums();
+    },
+    toggleMapView() {
+      this.showMap = !this.showMap;
     },
     async fetchStadiums() {
       this.loading = true;
       this.error = null;
       try {
         const response = await stadiumService.getStadiums({
-          city: this.activeFilter === 'Tashkent' ? 'Tashkent' : undefined
+          city: this.activeFilters.region === 'Все' ? undefined : this.activeFilters.region,
+          type: this.activeFilters.type === 'Все' ? undefined : this.activeFilters.type
         });
         console.log('API Response:', response);
         this.stadiums = response.results.map(stadium => {
@@ -86,7 +118,8 @@ export default {
             address: stadium.address,
             price_per_hour: stadium.price_per_hour,
             images: stadium.images ? stadium.images.map(img => img.image) : [],
-            city: stadium.city
+            city: stadium.city,
+            type: stadium.type
           };
           console.log('Processed stadium:', processedStadium);
           return processedStadium;
@@ -102,11 +135,6 @@ export default {
   },
   mounted() {
     this.fetchStadiums();
-  },
-  watch: {
-    activeFilter() {
-      this.fetchStadiums();
-    }
   }
 }
 </script> 
