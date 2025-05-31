@@ -68,7 +68,7 @@
           <div class="flex gap-2">
             <button 
               @click="shareToTelegram"
-              class="flex w-8 h-8 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#6EDE8A] text-[#000000]">
+              class="flex w-8 h-8 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#6EDE8A] color-[white]">
               <img src="@/assets/share.svg" alt="Share" class="w-5 h-5" />
             </button>
             <button
