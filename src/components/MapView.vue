@@ -22,14 +22,24 @@
       const map = ref(null);
   
       const isValidCoords = (lat, lng) => {
-        return typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng);
+        const valid = typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng);
+        if (!valid) {
+          console.warn('Неверные координаты:', { lat, lng });
+        }
+        return valid;
       };
   
       const renderMap = () => {
-        if (!mapElement.value || !ymaps?.Map) return;
+        console.log('[MapView] renderMap вызван');
+        console.log('[MapView] props.stadiums:', props.stadiums);
   
-        // Уничтожаем старую карту, если была
+        if (!mapElement.value || !ymaps?.Map) {
+          console.warn('[MapView] mapElement или ymaps.Map недоступны');
+          return;
+        }
+  
         if (map.value && typeof map.value.destroy === 'function') {
+          console.log('[MapView] Удаление старой карты');
           map.value.destroy();
           map.value = null;
         }
@@ -40,11 +50,14 @@
           controls: ['zoomControl', 'fullscreenControl']
         });
   
-        // Добавление меток
-        props.stadiums.forEach(stadium => {
+        props.stadiums.forEach((stadium, index) => {
+          console.log(`[MapView] Обработка стадиона #${index}:`, stadium);
           const { latitude, longitude, name, address, price_per_hour } = stadium;
   
-          if (!isValidCoords(latitude, longitude)) return;
+          if (!isValidCoords(latitude, longitude)) {
+            console.warn(`[MapView] Пропущен стадион из-за координат:`, stadium);
+            return;
+          }
   
           const placemark = new ymaps.Placemark(
             [latitude, longitude],
@@ -64,26 +77,31 @@
             }
           );
           map.value.geoObjects.add(placemark);
+          console.log(`[MapView] Метка добавлена для: ${name}`);
         });
       };
   
       onMounted(() => {
+        console.log('[MapView] onMounted вызван');
         ymaps.ready(() => {
+          console.log('[MapView] ymaps готов');
           setTimeout(() => {
             renderMap();
-          }, 0); // Отложенный вызов — даёт DOM "дозагрузиться"
+          }, 0);
         });
       });
   
-      watch(() => props.stadiums, () => {
+      watch(() => props.stadiums, (newVal) => {
+        console.log('[MapView] stadiums обновились:', newVal);
         if (ymaps?.Map) {
           setTimeout(() => {
             renderMap();
-          }, 100); // чуть позже — после возможного DOM-обновления
+          }, 100);
         }
       });
   
       onBeforeUnmount(() => {
+        console.log('[MapView] onBeforeUnmount: очистка карты');
         if (map.value && typeof map.value.destroy === 'function') {
           map.value.destroy();
           map.value = null;
