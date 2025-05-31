@@ -83,7 +83,7 @@ export default {
         setTimeout(() => {
            this.addMarkers();
            console.log('addMarkers called after timeout.');
-        }, 100); // Задержка 100 мс
+        }, 300); // Увеличиваем задержку до 300 мс
 
       } catch (error) {
         console.error('Error initializing map:', error);
