@@ -8,7 +8,7 @@
         :class="[
           activeTab === index 
             ? 'border-b-[#131711] text-[#131711]' 
-            : 'border-b-transparent text-[#6c8764]'
+            : 'border-b-transparent text-[#808080]'
         ]"
         href="#"
         @click.prevent="selectTab(index)"
@@ -16,7 +16,7 @@
         <p class="text-sm font-bold leading-normal tracking-[0.015em]">{{ tab }}</p>
       </a>
     </div>
-  </div>
+  </div>  
 </template>
 
 <script>

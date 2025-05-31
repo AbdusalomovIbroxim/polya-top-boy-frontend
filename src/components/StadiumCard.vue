@@ -62,8 +62,8 @@
         <p class="text-[#131711] text-lg font-bold leading-tight tracking-[-0.015em]">{{ stadium.name }}</p>
         <div class="flex items-end gap-3 justify-between">
           <div class="flex flex-col gap-1">
-            <p class="text-[#6c8764] text-base font-normal leading-normal truncate max-w-[200px]">{{ stadium.address }}</p>
-            <p class="text-[#6c8764] text-base font-normal leading-normal">{{ stadium.price_per_hour }} сум/час</p>
+            <p class="text-[#808080] text-base font-normal leading-normal truncate max-w-[200px]">{{ stadium.address }}</p>
+            <p class="text-[#808080] text-base font-normal leading-normal">{{ stadium.price_per_hour }} сум/час</p>
           </div>
           <div class="flex gap-2">
             <button 
@@ -73,7 +73,7 @@
             </button>
             <button
               @click="$router.push(`/stadium/${stadium.id}`)"
-              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#4ddf20] text-[#131711] text-sm font-medium leading-normal">
+              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#25A244] text-[#131711] text-sm font-medium leading-normal">
               <span class="truncate">Book</span>
             </button>
           </div>

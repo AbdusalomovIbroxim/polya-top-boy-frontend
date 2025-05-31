@@ -33,7 +33,7 @@
               <div class="flex justify-between items-start">
                 <div>
                   <h3 class="text-lg font-semibold text-[#131711]">{{ booking.court_name }}</h3>
-                  <p class="text-[#6c8764]">{{ formatDate(booking.date) }} {{ booking.time_slot }}</p>
+                  <p class="text-[#808080]">{{ formatDate(booking.date) }} {{ booking.time_slot }}</p>
                 </div>
                 <div class="text-right">
                   <span :class="getStatusClass(booking.status)">{{ getStatusText(booking.status) }}</span>
