@@ -1,24 +1,6 @@
 <template>
-  <div class="w-full h-full relative">
+  <div class="w-full h-full">
     <div id="map" class="w-full h-full"></div>
-    <div class="absolute bottom-4 right-4 flex flex-col gap-2">
-      <button 
-        @click="zoomIn" 
-        class="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-      </button>
-      <button 
-        @click="zoomOut" 
-        class="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-        </svg>
-      </button>
-    </div>
   </div>
 </template>
 
@@ -103,7 +85,12 @@ export default {
                     <h3 class="font-bold text-lg">${stadium.name}</h3>
                     <p class="text-gray-600">${stadium.address}</p>
                     <p class="text-green-600 font-medium">${stadium.price_per_hour} сум/час</p>
-                    <a href="/stadium/${stadium.id}" class="text-blue-600 hover:underline">Подробнее</a>
+                    <button 
+                      onclick="window.location.href='/stadium/${stadium.id}'"
+                      class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    >
+                      Подробнее
+                    </button>
                   </div>
                 `
               },
@@ -112,6 +99,11 @@ export default {
                 openBalloonOnClick: true
               }
             );
+
+            // Добавляем обработчик клика на маркер
+            marker.events.add('click', () => {
+              window.location.href = `/stadium/${stadium.id}`;
+            });
 
             this.map.geoObjects.add(marker);
             this.markers.push(marker);
@@ -131,18 +123,6 @@ export default {
       // Обработка окончания действия (зум, перемещение и т.д.)
       if (this.map) {
         // Можно добавить дополнительную логику после завершения действия
-      }
-    },
-    zoomIn() {
-      if (this.map) {
-        const currentZoom = this.map.getZoom();
-        this.map.setZoom(currentZoom + 1);
-      }
-    },
-    zoomOut() {
-      if (this.map) {
-        const currentZoom = this.map.getZoom();
-        this.map.setZoom(currentZoom - 1);
       }
     }
   },
