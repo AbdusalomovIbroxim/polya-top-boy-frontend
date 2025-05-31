@@ -35,7 +35,11 @@ export default {
   mounted() {
     console.log('Mounted MapView with stadiums:', this.stadiums);
     if (typeof ymaps !== 'undefined') {
-      ymaps.ready(this.initMap);
+      ymaps.ready(this.initMap).then(() => {
+        console.log('Yandex Maps API is ready.');
+      }).catch(error => {
+        console.error('Yandex Maps API ready() failed:', error);
+      });
     } else {
       console.error('Yandex Maps API not loaded');
     }
@@ -60,6 +64,8 @@ export default {
           controls: [] 
         });
 
+        console.log('Map object created:', this.map);
+
         this.map.events.add('boundschange', this.handleBoundsChange);
         this.map.events.add('actionend', this.handleActionEnd);
 
@@ -71,11 +77,11 @@ export default {
     },
     clearMap() {
       // Удаляем все маркеры
-    //   this.markers.forEach(marker => {
-    //     this.map.geoObjects.remove(marker);
-    //     marker.destroy();
-    //   });
-    //   this.markers = [];
+      this.markers.forEach(marker => {
+        this.map.geoObjects.remove(marker);
+        marker.destroy();
+      });
+      this.markers = [];
     },
     addMarkers() {
       if (!this.map || !this.isMapReady) return;
