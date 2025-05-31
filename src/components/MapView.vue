@@ -51,10 +51,14 @@
         });
   
         props.stadiums.forEach((stadium, index) => {
-          console.log(`[MapView] Обработка стадиона #${index}:`, stadium);
+            
           const { latitude, longitude, name, address, price_per_hour } = stadium;
-  
-          if (!isValidCoords(latitude, longitude)) {
+          const lat = parseFloat(latitude);
+          const lng = parseFloat(longitude);
+
+          console.log(`[MapView] Обработка стадиона #${index}:`, stadium);
+
+          if (!isValidCoords(lat, lng)) {
             console.warn(`[MapView] Пропущен стадион из-за координат:`, stadium);
             return;
           }
