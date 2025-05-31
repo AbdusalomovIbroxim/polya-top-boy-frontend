@@ -15,6 +15,7 @@
 </template>
 
 <script>
+/* global ymaps */
 
 export default {
   name: 'MapView',
