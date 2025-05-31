@@ -44,7 +44,9 @@
           const { latitude, longitude, name, address, price_per_hour } = stadium;
           const lat = parseFloat(latitude);
           const lng = parseFloat(longitude);
-  
+            
+          console.log('123 ', lat, lng);
+          
           if (!isValidCoords(lat, lng)) {
             console.warn(`[MapView] Неверные координаты для стадиона #${index}:`, stadium);
             return;
