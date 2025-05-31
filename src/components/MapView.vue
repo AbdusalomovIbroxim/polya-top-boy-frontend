@@ -34,7 +34,6 @@ export default {
   },
   mounted() {
     console.log('Mounted MapView with stadiums:', this.stadiums);
-    // Проверяем, загружен ли API Яндекс Карт
     if (typeof ymaps !== 'undefined') {
       ymaps.ready(this.initMap);
     } else {
@@ -42,7 +41,6 @@ export default {
     }
   },
   beforeUnmount() {
-    // Очищаем карту при уничтожении компонента
     if (this.map) {
       this.clearMap();
       this.map.destroy();
@@ -56,18 +54,15 @@ export default {
     initMap() {
       try {
         console.log('Initializing map...');
-        // Создаем карту без стандартных элементов управления
         this.map = new ymaps.Map('map', {
-          center: [41.3111, 69.2797], // Центр Ташкента
+          center: [41.3111, 69.2797],
           zoom: 11,
-          controls: [] // Убираем все стандартные элементы управления
+          controls: [] 
         });
 
-        // Добавляем обработчики событий
         this.map.events.add('boundschange', this.handleBoundsChange);
         this.map.events.add('actionend', this.handleActionEnd);
 
-        // Добавляем маркеры для каждого стадиона
         this.addMarkers();
         this.isMapReady = true;
       } catch (error) {
@@ -76,21 +71,19 @@ export default {
     },
     clearMap() {
       // Удаляем все маркеры
-      this.markers.forEach(marker => {
-        this.map.geoObjects.remove(marker);
-        marker.destroy();
-      });
-      this.markers = [];
+    //   this.markers.forEach(marker => {
+    //     this.map.geoObjects.remove(marker);
+    //     marker.destroy();
+    //   });
+    //   this.markers = [];
     },
     addMarkers() {
       if (!this.map || !this.isMapReady) return;
 
       try {
         console.log('Adding markers for stadiums:', this.stadiums);
-        // Очищаем старые маркеры
         this.clearMap();
 
-        // Добавляем новые маркеры
         this.stadiums.forEach(stadium => {
           console.log('Processing stadium:', stadium);
           if (stadium.latitude && stadium.longitude) {
@@ -118,7 +111,6 @@ export default {
               }
             );
 
-            // Добавляем обработчик клика на маркер
             marker.events.add('click', () => {
               window.location.href = `/stadium/${stadium.id}`;
             });
@@ -130,7 +122,6 @@ export default {
           }
         });
 
-        // Если есть маркеры, центрируем карту по ним
         if (this.markers.length > 0) {
           console.log('Centering map on markers');
           const bounds = this.map.geoObjects.getBounds();
@@ -147,15 +138,11 @@ export default {
       }
     },
     handleBoundsChange() {
-      // Обработка изменения границ карты
       if (this.map) {
-        // Можно добавить дополнительную логику при изменении масштаба
       }
     },
     handleActionEnd() {
-      // Обработка окончания действия (зум, перемещение и т.д.)
       if (this.map) {
-        // Можно добавить дополнительную логику после завершения действия
       }
     }
   },
