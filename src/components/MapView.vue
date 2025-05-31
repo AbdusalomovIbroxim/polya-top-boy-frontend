@@ -1,6 +1,16 @@
 <template>
-  <div class="w-full h-full">
-    <div id="map" class="w-full h-full"></div>
+  <div class="fixed inset-0 z-50 bg-white">
+    <div class="relative w-full h-full">
+      <button 
+        @click="$emit('close')" 
+        class="absolute top-4 right-4 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <div id="map" class="w-full h-full"></div>
+    </div>
   </div>
 </template>
 
@@ -109,6 +119,16 @@ export default {
             this.markers.push(marker);
           }
         });
+
+        // Если есть маркеры, центрируем карту по ним
+        if (this.markers.length > 0) {
+          const bounds = this.map.geoObjects.getBounds();
+          if (bounds) {
+            this.map.setBounds(bounds, {
+              checkZoomRange: true
+            });
+          }
+        }
       } catch (error) {
         console.error('Error adding markers:', error);
       }
@@ -143,6 +163,6 @@ export default {
 #map {
   width: 100%;
   height: 100%;
-  min-height: 500px;
+  min-height: 100vh;
 }
 </style> 
