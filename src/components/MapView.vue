@@ -78,8 +78,12 @@ export default {
           controls: [] // Убираем все стандартные элементы управления
         });
         console.log('Map initialized.');
-        // Добавляем маркеры после инициализации карты
-        this.addMarkers();
+        // Добавляем маркеры после инициализации карты с небольшой задержкой
+        // Это может помочь избежать ошибок, связанных с готовностью карты
+        setTimeout(() => {
+           this.addMarkers();
+           console.log('addMarkers called after timeout.');
+        }, 100); // Задержка 100 мс
 
       } catch (error) {
         console.error('Error initializing map:', error);
