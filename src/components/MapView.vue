@@ -18,7 +18,8 @@ export default {
   data() {
     return {
       map: null,
-      markers: []
+      markers: [],
+      isMapReady: false
     }
   },
   mounted() {
@@ -27,6 +28,14 @@ export default {
       ymaps.ready(this.initMap);
     } else {
       console.error('Yandex Maps API not loaded');
+    }
+  },
+  beforeDestroy() {
+    // Очищаем карту при уничтожении компонента
+    if (this.map) {
+      this.clearMap();
+      this.map.destroy();
+      this.map = null;
     }
   },
   methods: {
@@ -39,17 +48,31 @@ export default {
           controls: ['zoomControl', 'fullscreenControl']
         });
 
+        // Добавляем обработчики событий
+        this.map.events.add('boundschange', this.handleBoundsChange);
+        this.map.events.add('actionend', this.handleActionEnd);
+
         // Добавляем маркеры для каждого стадиона
         this.addMarkers();
+        this.isMapReady = true;
       } catch (error) {
         console.error('Error initializing map:', error);
       }
     },
+    clearMap() {
+      // Удаляем все маркеры
+      this.markers.forEach(marker => {
+        this.map.geoObjects.remove(marker);
+        marker.destroy();
+      });
+      this.markers = [];
+    },
     addMarkers() {
+      if (!this.map || !this.isMapReady) return;
+
       try {
-        // Удаляем старые маркеры
-        this.markers.forEach(marker => marker.destroy());
-        this.markers = [];
+        // Очищаем старые маркеры
+        this.clearMap();
 
         // Добавляем новые маркеры
         this.stadiums.forEach(stadium => {
@@ -67,7 +90,8 @@ export default {
                 `
               },
               {
-                preset: 'islands#greenDotIcon'
+                preset: 'islands#greenDotIcon',
+                openBalloonOnClick: true
               }
             );
 
@@ -78,12 +102,25 @@ export default {
       } catch (error) {
         console.error('Error adding markers:', error);
       }
+    },
+    handleBoundsChange() {
+      // Обработка изменения границ карты
+      if (this.map) {
+        const zoom = this.map.getZoom();
+        // Можно добавить дополнительную логику при изменении масштаба
+      }
+    },
+    handleActionEnd() {
+      // Обработка окончания действия (зум, перемещение и т.д.)
+      if (this.map) {
+        // Можно добавить дополнительную логику после завершения действия
+      }
     }
   },
   watch: {
     stadiums: {
       handler() {
-        if (this.map) {
+        if (this.map && this.isMapReady) {
           this.addMarkers();
         }
       },
