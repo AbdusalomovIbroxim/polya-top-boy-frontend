@@ -138,8 +138,12 @@ export default {
              marker.events.add('click', () => {
                 window.location.href = `/stadium/${stadium.id}`;
               });
+
+            // Добавляем маркер сразу на карту
+            this.map.geoObjects.add(marker);
             newMarkers.push(marker);
             console.log(`Added marker for ${stadium.name} at [${lat}, ${lon}]`);
+
           } else {
              console.warn(`Invalid coordinates for stadium ${stadium.name}:`, stadium.latitude, stadium.longitude);
           }
@@ -148,10 +152,11 @@ export default {
         }
       });
 
-      if (newMarkers.length > 0) {
-         this.map.geoObjects.addAll(newMarkers);
-         this.markers = newMarkers; // Обновляем локальный массив маркеров
-         console.log(`Added ${newMarkers.length} markers to map.`);
+      // После добавления всех маркеров обновляем локальный массив
+      this.markers = newMarkers; 
+
+      if (this.markers.length > 0) {
+         console.log(`Attempting to center map on ${this.markers.length} markers.`);
          // Попробуем центрировать карту по добавленным объектам
          const bounds = this.map.geoObjects.getBounds();
           if (bounds) {
@@ -161,10 +166,10 @@ export default {
             });
             console.log('Map centered on markers bounds:', bounds);
           } else {
-             console.warn('Could not get bounds for geoObjects.');
+             console.warn('Could not get bounds for geoObjects after adding markers.');
           }
       } else {
-          console.log('No valid markers to add to map.');
+          console.log('No valid markers were added to map, cannot center.');
           // Возможно, центрировать на исходной точке или показать сообщение
       }
     },
