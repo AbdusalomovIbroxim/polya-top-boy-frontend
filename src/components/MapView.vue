@@ -1,185 +1,142 @@
 <template>
-  <div class="fixed inset-0 z-50 bg-white">
-    <div class="relative w-full h-full">
-      <button 
-        @click="closeMap" 
-        class="absolute top-4 right-4 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <div id="map" class="w-full h-full"></div>
-    </div>
+  <div class="map-container">
+    <div id="map" ref="mapElement"></div>
+    <button class="close-button" @click="$emit('close')">Закрыть карту</button>
+    <div v-if="loading" class="loading-indicator">Загрузка карты...</div>
+    <div v-if="error" class="error-message">{{ error }}</div>
   </div>
 </template>
 
 <script>
 /* global ymaps */
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 
 export default {
   name: 'MapView',
   props: {
     stadiums: {
       type: Array,
-      required: true
-    }
+      default: () => [],
+    },
   },
-  data() {
-    return {
-      map: null,
-      markers: []
+  setup(props) {
+    const mapElement = ref(null);
+    const map = ref(null);
+    const loading = ref(true);
+    const error = ref(null);
+    let objectManager = null;
+
+    const initMap = () => {
+      try {
+        ymaps.ready(() => {
+          if (!mapElement.value) return;
+
+          map.value = new ymaps.Map(mapElement.value, {
+            center: [41.2995, 69.2401], // Центр Ташкента
+            zoom: 10,
+            controls: ['zoomControl', 'fullscreenControl'],
+          });
+
+          objectManager = new ymaps.ObjectManager({
+            clusterize: true,
+            gridSize: 32,
+            clusterDisableClickZoom: false
+          });
+          map.value.geoObjects.add(objectManager);
+
+          addMarkers(props.stadiums);
+
+          loading.value = false;
+        });
+      } catch (e) {
+        console.error("Error initializing Yandex Map:", e);
+        error.value = "Ошибка загрузки карты. Попробуйте позже.";
+        loading.value = false;
+      }
     };
+
+    const addMarkers = (stadiums) => {
+      if (!objectManager) return;
+
+      const features = stadiums.map((stadium) => ({
+        type: 'Feature',
+        id: stadium.id,
+        geometry: {
+          type: 'Point',
+          coordinates: [stadium.latitude, stadium.longitude],
+        },
+        properties: {
+          hintContent: stadium.name,
+        },
+      }));
+
+      objectManager.removeAll();
+      objectManager.add(features);
+    };
+
+    onMounted(() => {
+      if (typeof ymaps === 'undefined') {
+        error.value = "Яндекс Карты не загружены. Проверьте подключение или ключ API.";
+        loading.value = false;
+      } else {
+        initMap();
+      }
+    });
+
+    onBeforeUnmount(() => {
+      if (map.value) {
+        map.value.destroy();
+        map.value = null;
+        objectManager = null;
+      }
+    });
+
+    watch(() => props.stadiums, (newStadiums) => {
+      addMarkers(newStadiums);
+    });
+
+    return { mapElement, loading, error };
   },
-  watch: {
-    stadiums: {
-      handler: 'addMarkers',
-      deep: true
-    }
-  },
-  mounted() {
-    console.log('MapView mounted. Stadiums:', this.stadiums);
-    if (typeof ymaps !== 'undefined') {
-      ymaps.ready(this.initMap);
-    } else {
-      console.error('Yandex Maps API not loaded');
-    }
-  },
-  beforeUnmount() {
-    console.log('MapView beforeUnmount. Destroying map.');
-    if (this.map) {
-      this.clearMarkers();
-      if (this.map.behaviors) {
-        this.map.behaviors.removeAll();
-      }
-      this.map.events.removeAll();
-      this.map.destroy();
-      this.map = null;
-      console.log('Map destroyed.');
-    }
-  },
-  methods: {
-    closeMap() {
-      setTimeout(() => {
-        this.$emit('close');
-        console.log('Emitting close event after timeout.');
-      }, 50);
-    },
-    initMap() {
-      console.log('Initializing map...');
-      try {
-        this.map = new ymaps.Map('map', {
-          center: [41.3111, 69.2797], // Центр Ташкента
-          zoom: 11,
-          controls: []
-        });
-        console.log('Map initialized.');
-        
-        // Вызываем addMarkers после инициализации карты
-        this.addMarkers();
-
-      } catch (error) {
-        console.error('Error initializing map:', error);
-      }
-    },
-    clearMarkers() {
-       if (this.map && this.map.geoObjects) {
-         console.log('Clearing existing markers.');
-         this.map.geoObjects.removeAll();
-         this.markers = [];
-       }
-    },
-    addMarkers() {
-      if (!this.map) {
-        console.warn('Map not initialized, cannot add markers.');
-        return;
-      }
-      console.log('Attempting to add markers. Stadiums count:', this.stadiums ? this.stadiums.length : 0);
-
-      this.clearMarkers(); // Всегда очищаем перед добавлением новых
-
-      if (!this.stadiums || this.stadiums.length === 0) {
-        console.log('No stadiums to add markers for.');
-        return;
-      }
-
-      const newMarkers = [];
-      // Оборачиваем добавление маркеров в try...catch
-      try {
-        this.stadiums.forEach(stadium => {
-          if (stadium.latitude && stadium.longitude) {
-            const lat = parseFloat(stadium.latitude);
-            const lon = parseFloat(stadium.longitude);
-            if (!isNaN(lat) && !isNaN(lon)) {
-               const marker = new ymaps.Placemark(
-                [lat, lon],
-                {
-                  balloonContent: `
-                    <div class="p-2">
-                      <h3 class="font-bold text-lg">${stadium.name}</h3>
-                      <p class="text-gray-600">${stadium.address}</p>
-                      <p class="text-green-600 font-medium">${stadium.price_per_hour} сум/час</p>
-                      <button
-                        onclick="window.location.href='/stadium/${stadium.id}'"
-                        class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                      >
-                        Подробнее
-                      </button>
-                    </div>
-                  `
-                },
-                {
-                  preset: 'islands#greenDotIcon',
-                  openBalloonOnClick: true
-                }
-              );
-               marker.events.add('click', () => {
-                  window.location.href = `/stadium/${stadium.id}`;
-                });
-
-              // Добавляем маркер сразу на карту
-              this.map.geoObjects.add(marker);
-              newMarkers.push(marker);
-              console.log(`Added marker for ${stadium.name} at [${lat}, ${lon}]`);
-
-            } else {
-               console.warn(`Invalid coordinates for stadium ${stadium.name}:`, stadium.latitude, stadium.longitude);
-            }
-          } else {
-            console.warn(`Stadium missing coordinates for ${stadium.name}:`, stadium);
-          }
-        });
-
-         this.markers = newMarkers;
-
-        // Попробуем центрировать карту по добавленным объектам только если есть маркеры
-        if (this.markers.length > 0) {
-           console.log(`Attempting to center map on ${this.markers.length} markers.`);
-           const bounds = this.map.geoObjects.getBounds();
-            if (bounds) {
-              this.map.setBounds(bounds, {
-                checkZoomRange: true,
-                duration: 0
-              });
-              console.log('Map centered on markers bounds:', bounds);
-            } else {
-               console.warn('Could not get bounds for geoObjects after adding markers.');
-            }
-        } else {
-            console.log('No valid markers were added to map, cannot center.');
-        }
-      } catch (error) {
-         console.error('Error adding markers in catch block:', error);
-      }
-    },
-  }
 };
 </script>
 
 <style scoped>
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
 #map {
   width: 100%;
   height: 100%;
-  min-height: 100vh;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  padding: 5px 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.loading-indicator,
+.error-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.error-message {
+  color: red;
 }
 </style> 
