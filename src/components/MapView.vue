@@ -1,6 +1,24 @@
 <template>
-  <div class="w-full h-full">
+  <div class="w-full h-full relative">
     <div id="map" class="w-full h-full"></div>
+    <div class="absolute bottom-4 right-4 flex flex-col gap-2">
+      <button 
+        @click="zoomIn" 
+        class="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+      </button>
+      <button 
+        @click="zoomOut" 
+        class="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+        </svg>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -41,11 +59,11 @@ export default {
   methods: {
     initMap() {
       try {
-        // Создаем карту
+        // Создаем карту без стандартных элементов управления
         this.map = new ymaps.Map('map', {
           center: [41.3111, 69.2797], // Центр Ташкента
           zoom: 11,
-          controls: ['zoomControl', 'fullscreenControl']
+          controls: [] // Убираем все стандартные элементы управления
         });
 
         // Добавляем обработчики событий
@@ -113,6 +131,18 @@ export default {
       // Обработка окончания действия (зум, перемещение и т.д.)
       if (this.map) {
         // Можно добавить дополнительную логику после завершения действия
+      }
+    },
+    zoomIn() {
+      if (this.map) {
+        const currentZoom = this.map.getZoom();
+        this.map.setZoom(currentZoom + 1);
+      }
+    },
+    zoomOut() {
+      if (this.map) {
+        const currentZoom = this.map.getZoom();
+        this.map.setZoom(currentZoom - 1);
       }
     }
   },
