@@ -138,11 +138,17 @@ export default {
       }
     },
     handleBoundsChange() {
+      // Обработка изменения границ карты
       if (this.map) {
+        // eslint-disable-next-line no-empty
+        // Можно добавить дополнительную логику при изменении масштаба
       }
     },
     handleActionEnd() {
+      // Обработка окончания действия (зум, перемещение и т.д.)
       if (this.map) {
+        // eslint-disable-next-line no-empty
+        // Можно добавить дополнительную логику после завершения действия
       }
     }
   },
