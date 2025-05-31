@@ -2,14 +2,12 @@
   <div class="map-container">
     <div id="map" ref="mapElement"></div>
     <button class="close-button" @click="$emit('close')">Закрыть карту</button>
-    <div v-if="loading" class="loading-indicator">Загрузка карты...</div>
-    <div v-if="error" class="error-message">{{ error }}</div>
   </div>
 </template>
 
 <script>
 /* global ymaps */
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 export default {
   name: 'MapView',
@@ -22,80 +20,52 @@ export default {
   setup(props) {
     const mapElement = ref(null);
     const map = ref(null);
-    const loading = ref(true);
-    const error = ref(null);
-    let objectManager = null;
 
     const initMap = () => {
-      try {
-        ymaps.ready(() => {
-          if (!mapElement.value) return;
+      ymaps.ready(() => {
+        if (!mapElement.value) return;
 
-          map.value = new ymaps.Map(mapElement.value, {
-            center: [41.2995, 69.2401], // Центр Ташкента
-            zoom: 10,
-            controls: ['zoomControl', 'fullscreenControl'],
-          });
-
-          objectManager = new ymaps.ObjectManager({
-            clusterize: true,
-            gridSize: 32,
-            clusterDisableClickZoom: false
-          });
-          map.value.geoObjects.add(objectManager);
-
-          addMarkers(props.stadiums);
-
-          loading.value = false;
+        map.value = new ymaps.Map(mapElement.value, {
+          center: [41.2995, 69.2401],
+          zoom: 10,
+          controls: ['zoomControl', 'fullscreenControl']
         });
-      } catch (e) {
-        console.error("Error initializing Yandex Map:", e);
-        error.value = "Ошибка загрузки карты. Попробуйте позже.";
-        loading.value = false;
-      }
-    };
 
-    const addMarkers = (stadiums) => {
-      if (!objectManager) return;
-
-      const features = stadiums.map((stadium) => ({
-        type: 'Feature',
-        id: stadium.id,
-        geometry: {
-          type: 'Point',
-          coordinates: [stadium.latitude, stadium.longitude],
-        },
-        properties: {
-          hintContent: stadium.name,
-        },
-      }));
-
-      objectManager.removeAll();
-      objectManager.add(features);
+        props.stadiums.forEach(stadium => {
+          const placemark = new ymaps.Placemark(
+            [stadium.latitude, stadium.longitude],
+            {
+              hintContent: stadium.name,
+              balloonContent: `
+                <div style="padding: 10px;">
+                  <h3 style="margin: 0 0 10px 0; font-size: 16px;">${stadium.name}</h3>
+                  <p style="margin: 0 0 5px 0;">${stadium.address}</p>
+                  <p style="margin: 0; color: #4ddf20;">${stadium.price_per_hour} сум/час</p>
+                </div>
+              `
+            },
+            {
+              preset: 'islands#greenStadiumIcon',
+              iconColor: '#4ddf20'
+            }
+          );
+          map.value.geoObjects.add(placemark);
+        });
+      });
     };
 
     onMounted(() => {
-      if (typeof ymaps === 'undefined') {
-        error.value = "Яндекс Карты не загружены. Проверьте подключение или ключ API.";
-        loading.value = false;
-      } else {
-        initMap();
-      }
+      initMap();
     });
 
     onBeforeUnmount(() => {
       if (map.value) {
         map.value.destroy();
         map.value = null;
-        objectManager = null;
       }
     });
 
-    watch(() => props.stadiums, (newStadiums) => {
-      addMarkers(newStadiums);
-    });
-
-    return { mapElement, loading, error };
+    return { mapElement };
   },
 };
 </script>
@@ -118,25 +88,10 @@ export default {
   right: 10px;
   z-index: 1000;
   padding: 5px 10px;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: white;
   border: 1px solid #ccc;
   cursor: pointer;
-}
-
-.loading-indicator,
-.error-message {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1001;
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 15px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.error-message {
-  color: red;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style> 
