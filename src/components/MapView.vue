@@ -128,16 +128,21 @@ export default {
           }
         });
 
-        if (this.markers.length > 0) {
-          console.log('Centering map on markers');
+        // Если есть геообъекты на карте, центрируем карту по ним
+        if (this.map.geoObjects && this.map.geoObjects.getLength() > 0) {
+          console.log('Centering map on geoObjects...');
           const bounds = this.map.geoObjects.getBounds();
           if (bounds) {
             this.map.setBounds(bounds, {
-              checkZoomRange: true
+              checkZoomRange: true,
+              duration: 0 // Убираем анимацию центрирования, чтобы исключить ее влияние
             });
+             console.log('Map centered on bounds:', bounds);
+          } else {
+             console.warn('getBounds() returned null or undefined despite having geoObjects.');
           }
         } else {
-          console.warn('No markers were added to the map');
+          console.warn('No geoObjects were added to the map, cannot center.');
         }
       } catch (error) {
         console.error('Error adding markers:', error);
