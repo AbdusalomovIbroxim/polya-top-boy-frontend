@@ -2,7 +2,7 @@
   <div class="fixed inset-0 z-50 bg-white">
     <div class="relative w-full h-full">
       <button 
-        @click="$emit('close')" 
+        @click="closeMap" 
         class="absolute top-4 right-4 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -33,6 +33,7 @@ export default {
     }
   },
   mounted() {
+    console.log('Mounted MapView with stadiums:', this.stadiums);
     // Проверяем, загружен ли API Яндекс Карт
     if (typeof ymaps !== 'undefined') {
       ymaps.ready(this.initMap);
@@ -49,8 +50,12 @@ export default {
     }
   },
   methods: {
+    closeMap() {
+      this.$emit('close');
+    },
     initMap() {
       try {
+        console.log('Initializing map...');
         // Создаем карту без стандартных элементов управления
         this.map = new ymaps.Map('map', {
           center: [41.3111, 69.2797], // Центр Ташкента
@@ -81,12 +86,15 @@ export default {
       if (!this.map || !this.isMapReady) return;
 
       try {
+        console.log('Adding markers for stadiums:', this.stadiums);
         // Очищаем старые маркеры
         this.clearMap();
 
         // Добавляем новые маркеры
         this.stadiums.forEach(stadium => {
+          console.log('Processing stadium:', stadium);
           if (stadium.latitude && stadium.longitude) {
+            console.log('Adding marker for stadium:', stadium.name, 'at coordinates:', stadium.latitude, stadium.longitude);
             const marker = new ymaps.Placemark(
               [parseFloat(stadium.latitude), parseFloat(stadium.longitude)],
               {
@@ -117,17 +125,22 @@ export default {
 
             this.map.geoObjects.add(marker);
             this.markers.push(marker);
+          } else {
+            console.warn('Stadium missing coordinates:', stadium);
           }
         });
 
         // Если есть маркеры, центрируем карту по ним
         if (this.markers.length > 0) {
+          console.log('Centering map on markers');
           const bounds = this.map.geoObjects.getBounds();
           if (bounds) {
             this.map.setBounds(bounds, {
               checkZoomRange: true
             });
           }
+        } else {
+          console.warn('No markers were added to the map');
         }
       } catch (error) {
         console.error('Error adding markers:', error);
@@ -148,7 +161,8 @@ export default {
   },
   watch: {
     stadiums: {
-      handler() {
+      handler(newStadiums) {
+        console.log('Stadiums updated:', newStadiums);
         if (this.map && this.isMapReady) {
           this.addMarkers();
         }
