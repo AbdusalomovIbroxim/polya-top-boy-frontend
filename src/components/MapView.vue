@@ -67,7 +67,12 @@ export default {
   },
   methods: {
     closeMap() {
-      this.$emit('close');
+      // Добавляем небольшую задержку перед эмитом события close
+      // Это может дать карте время для завершения текущих операций
+      setTimeout(() => {
+        this.$emit('close');
+        console.log('Emitting close event after timeout.');
+      }, 50); // Задержка 50 мс
     },
     initMap() {
       console.log('Initializing map...');
