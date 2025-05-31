@@ -31,6 +31,12 @@ export default {
       markers: []
     };
   },
+  watch: {
+    stadiums: {
+      handler: 'addMarkers',
+      deep: true
+    }
+  },
   mounted() {
     console.log('MapView mounted. Stadiums:', this.stadiums);
     if (typeof ymaps !== 'undefined') {
@@ -65,13 +71,15 @@ export default {
         this.map = new ymaps.Map('map', {
           center: [41.3111, 69.2797], // Центр Ташкента
           zoom: 11,
-          controls: [] // Убираем все стандартные элементы управления
+          controls: []
         });
         console.log('Map initialized.');
+        
+        // Вызываем addMarkers после инициализации карты
+        this.addMarkers();
 
       } catch (error) {
         console.error('Error initializing map:', error);
-        // Можно добавить отображение ошибки пользователю
       }
     },
     clearMarkers() {
@@ -80,6 +88,89 @@ export default {
          this.map.geoObjects.removeAll();
          this.markers = [];
        }
+    },
+    addMarkers() {
+      if (!this.map) {
+        console.warn('Map not initialized, cannot add markers.');
+        return;
+      }
+      console.log('Attempting to add markers. Stadiums count:', this.stadiums ? this.stadiums.length : 0);
+
+      this.clearMarkers(); // Всегда очищаем перед добавлением новых
+
+      if (!this.stadiums || this.stadiums.length === 0) {
+        console.log('No stadiums to add markers for.');
+        return;
+      }
+
+      const newMarkers = [];
+      // Оборачиваем добавление маркеров в try...catch
+      try {
+        this.stadiums.forEach(stadium => {
+          if (stadium.latitude && stadium.longitude) {
+            const lat = parseFloat(stadium.latitude);
+            const lon = parseFloat(stadium.longitude);
+            if (!isNaN(lat) && !isNaN(lon)) {
+               const marker = new ymaps.Placemark(
+                [lat, lon],
+                {
+                  balloonContent: `
+                    <div class="p-2">
+                      <h3 class="font-bold text-lg">${stadium.name}</h3>
+                      <p class="text-gray-600">${stadium.address}</p>
+                      <p class="text-green-600 font-medium">${stadium.price_per_hour} сум/час</p>
+                      <button
+                        onclick="window.location.href='/stadium/${stadium.id}'"
+                        class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                      >
+                        Подробнее
+                      </button>
+                    </div>
+                  `
+                },
+                {
+                  preset: 'islands#greenDotIcon',
+                  openBalloonOnClick: true
+                }
+              );
+               marker.events.add('click', () => {
+                  window.location.href = `/stadium/${stadium.id}`;
+                });
+
+              // Добавляем маркер сразу на карту
+              this.map.geoObjects.add(marker);
+              newMarkers.push(marker);
+              console.log(`Added marker for ${stadium.name} at [${lat}, ${lon}]`);
+
+            } else {
+               console.warn(`Invalid coordinates for stadium ${stadium.name}:`, stadium.latitude, stadium.longitude);
+            }
+          } else {
+            console.warn(`Stadium missing coordinates for ${stadium.name}:`, stadium);
+          }
+        });
+
+         this.markers = newMarkers;
+
+        // Попробуем центрировать карту по добавленным объектам только если есть маркеры
+        if (this.markers.length > 0) {
+           console.log(`Attempting to center map on ${this.markers.length} markers.`);
+           const bounds = this.map.geoObjects.getBounds();
+            if (bounds) {
+              this.map.setBounds(bounds, {
+                checkZoomRange: true,
+                duration: 0
+              });
+              console.log('Map centered on markers bounds:', bounds);
+            } else {
+               console.warn('Could not get bounds for geoObjects after adding markers.');
+            }
+        } else {
+            console.log('No valid markers were added to map, cannot center.');
+        }
+      } catch (error) {
+         console.error('Error adding markers in catch block:', error);
+      }
     },
   }
 };
