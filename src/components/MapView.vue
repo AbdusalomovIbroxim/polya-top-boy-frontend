@@ -15,7 +15,6 @@
 </template>
 
 <script>
-/* global ymaps */
 
 export default {
   name: 'MapView',
@@ -28,32 +27,41 @@ export default {
   data() {
     return {
       map: null,
-      markers: [],
-      isMapReady: false
+      markers: []
+    };
+  },
+  watch: {
+    stadiums: {
+      handler: 'addMarkers',
+      deep: true
     }
   },
   mounted() {
-    console.log('Mounted MapView with stadiums:', this.stadiums);
+    console.log('MapView mounted. Stadiums:', this.stadiums);
+    // Проверяем, загружен ли API Яндекс Карт и ждем его готовности
     if (typeof ymaps !== 'undefined') {
-      ymaps.ready(this.initMap).then(() => {
-        console.log('Yandex Maps API is ready.');
-      }).catch(error => {
-        console.error('Yandex Maps API ready() failed:', error);
-      });
+      ymaps.ready(this.initMap);
     } else {
       console.error('Yandex Maps API not loaded');
+      // Можно добавить отображение ошибки пользователю
     }
   },
   beforeUnmount() {
-    // Очищаем карту при уничтожении компонента
+    console.log('MapView beforeUnmount. Destroying map.');
+    // Очищаем и уничтожаем карту при уничтожении компонента
     if (this.map) {
-      // Останавливаем все поведения карты, чтобы избежать ошибок при уничтожении
+      // Удаляем все геообъекты с карты
+      this.clearMarkers();
+       // Останавливаем все поведения карты
       if (this.map.behaviors) {
         this.map.behaviors.removeAll();
       }
-      this.clearMap();
+      // Удаляем все обработчики событий карты
+      this.map.events.removeAll();
+      // Уничтожаем экземпляр карты
       this.map.destroy();
       this.map = null;
+      console.log('Map destroyed.');
     }
   },
   methods: {
@@ -61,53 +69,58 @@ export default {
       this.$emit('close');
     },
     initMap() {
+      console.log('Initializing map...');
       try {
-        console.log('Initializing map...');
         this.map = new ymaps.Map('map', {
-          center: [41.3111, 69.2797],
+          center: [41.3111, 69.2797], // Центр Ташкента
           zoom: 11,
-          controls: [] 
+          controls: [] // Убираем все стандартные элементы управления
         });
-
-        console.log('Map object created:', this.map);
-
-        this.map.events.add('boundschange', this.handleBoundsChange);
-        this.map.events.add('actionend', this.handleActionEnd);
-
+        console.log('Map initialized.');
+        // Добавляем маркеры после инициализации карты
         this.addMarkers();
-        this.isMapReady = true;
+
       } catch (error) {
         console.error('Error initializing map:', error);
+        // Можно добавить отображение ошибки пользователю
       }
     },
-    clearMap() {
-      // Удаляем все маркеры
-      this.markers.forEach(marker => {
-        this.map.geoObjects.remove(marker);
-        marker.destroy();
-      });
-      this.markers = [];
+    clearMarkers() {
+       if (this.map && this.map.geoObjects) {
+         console.log('Clearing existing markers.');
+         this.map.geoObjects.removeAll();
+         this.markers = [];
+       }
     },
     addMarkers() {
-      if (!this.map) return;
+      if (!this.map) {
+        console.warn('Map not initialized, cannot add markers.');
+        return;
+      }
+      console.log('Attempting to add markers. Stadiums count:', this.stadiums ? this.stadiums.length : 0);
 
-      try {
-        console.log('Adding markers for stadiums:', this.stadiums);
-        this.clearMap();
+      this.clearMarkers(); // Всегда очищаем перед добавлением новых
 
-        this.stadiums.forEach(stadium => {
-          console.log('Processing stadium:', stadium);
-          if (stadium.latitude && stadium.longitude) {
-            console.log('Adding marker for stadium:', stadium.name, 'at coordinates:', stadium.latitude, stadium.longitude);
-            const marker = new ymaps.Placemark(
-              [parseFloat(stadium.latitude), parseFloat(stadium.longitude)],
+      if (!this.stadiums || this.stadiums.length === 0) {
+        console.log('No stadiums to add markers for.');
+        return;
+      }
+
+      const newMarkers = [];
+      this.stadiums.forEach(stadium => {
+        if (stadium.latitude && stadium.longitude) {
+          const lat = parseFloat(stadium.latitude);
+          const lon = parseFloat(stadium.longitude);
+          if (!isNaN(lat) && !isNaN(lon)) {
+             const marker = new ymaps.Placemark(
+              [lat, lon],
               {
                 balloonContent: `
                   <div class="p-2">
                     <h3 class="font-bold text-lg">${stadium.name}</h3>
                     <p class="text-gray-600">${stadium.address}</p>
                     <p class="text-green-600 font-medium">${stadium.price_per_hour} сум/час</p>
-                    <button 
+                    <button
                       onclick="window.location.href='/stadium/${stadium.id}'"
                       class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                     >
@@ -121,65 +134,41 @@ export default {
                 openBalloonOnClick: true
               }
             );
-
-            marker.events.add('click', () => {
-              window.location.href = `/stadium/${stadium.id}`;
-            });
-
-            this.map.geoObjects.add(marker);
-            this.markers.push(marker);
+             marker.events.add('click', () => {
+                window.location.href = `/stadium/${stadium.id}`;
+              });
+            newMarkers.push(marker);
+            console.log(`Added marker for ${stadium.name} at [${lat}, ${lon}]`);
           } else {
-            console.warn('Stadium missing coordinates:', stadium);
+             console.warn(`Invalid coordinates for stadium ${stadium.name}:`, stadium.latitude, stadium.longitude);
           }
-        });
+        } else {
+          console.warn(`Stadium missing coordinates for ${stadium.name}:`, stadium);
+        }
+      });
 
-        // Если есть геообъекты на карте, центрируем карту по ним
-        if (this.map.geoObjects && this.map.geoObjects.getLength() > 0) {
-          console.log('Centering map on geoObjects...');
-          const bounds = this.map.geoObjects.getBounds();
+      if (newMarkers.length > 0) {
+         this.map.geoObjects.addAll(newMarkers);
+         this.markers = newMarkers; // Обновляем локальный массив маркеров
+         console.log(`Added ${newMarkers.length} markers to map.`);
+         // Попробуем центрировать карту по добавленным объектам
+         const bounds = this.map.geoObjects.getBounds();
           if (bounds) {
             this.map.setBounds(bounds, {
               checkZoomRange: true,
-              duration: 0 // Убираем анимацию центрирования, чтобы исключить ее влияние
+              duration: 0
             });
-             console.log('Map centered on bounds:', bounds);
+            console.log('Map centered on markers bounds:', bounds);
           } else {
-             console.warn('getBounds() returned null or undefined despite having geoObjects.');
+             console.warn('Could not get bounds for geoObjects.');
           }
-        } else {
-          console.warn('No geoObjects were added to the map, cannot center.');
-        }
-      } catch (error) {
-        console.error('Error adding markers:', error);
+      } else {
+          console.log('No valid markers to add to map.');
+          // Возможно, центрировать на исходной точке или показать сообщение
       }
     },
-    handleBoundsChange() {
-      // Обработка изменения границ карты
-      if (this.map) {
-        // eslint-disable-next-line no-empty
-        // Можно добавить дополнительную логику при изменении масштаба
-      }
-    },
-    handleActionEnd() {
-      // Обработка окончания действия (зум, перемещение и т.д.)
-      if (this.map) {
-        // eslint-disable-next-line no-empty
-        // Можно добавить дополнительную логику после завершения действия
-      }
-    }
-  },
-  watch: {
-    stadiums: {
-      handler(newStadiums) {
-        console.log('Stadiums updated:', newStadiums);
-        if (this.map && this.isMapReady) {
-          this.addMarkers();
-        }
-      },
-      deep: true
-    }
   }
-}
+};
 </script>
 
 <style scoped>
