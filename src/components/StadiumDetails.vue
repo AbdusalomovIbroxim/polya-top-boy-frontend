@@ -23,41 +23,28 @@
   
         <template v-else-if="stadium">
           <!-- Stadium Image Slider -->
-          <div class="relative w-full h-64">
-            <div class="relative w-full h-full">
-              <div v-for="(image, index) in stadium.images" 
-                   :key="index"
-                   class="absolute inset-0 w-full h-full bg-center bg-no-repeat bg-cover transition-all duration-500"
-                   :class="{ 
-                     'opacity-100 scale-100': currentImageIndex === index, 
-                     'opacity-0 scale-110': currentImageIndex !== index 
-                   }"
-                   :style="{ backgroundImage: `url(${image})` }"
-                   @touchstart="touchStart"
-                   @touchmove="touchMove"
-                   @touchend="touchEnd">
-              </div>
+          <div class="relative w-full aspect-video">
+            <div v-if="!stadium.images || stadium.images.length === 0" 
+                 class="absolute inset-0 w-full h-full bg-[#f5f5f5] flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
             </div>
-  
-            <!-- Navigation Arrows -->
-            <button v-if="stadium.images.length > 1" 
-                    @click="prevImage" 
-                    class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-              </svg>
-            </button>
-            <button v-if="stadium.images.length > 1" 
-                    @click="nextImage" 
-                    class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
-            </button>
-  
-            <!-- Image Indicators -->
+            <div v-else v-for="(image, index) in stadium.images" 
+                 :key="index"
+                 class="absolute inset-0 w-full h-full bg-center bg-no-repeat bg-cover transition-all duration-500"
+                 :class="{ 
+                   'opacity-100 scale-100': currentImageIndex === index, 
+                   'opacity-0 scale-110': currentImageIndex !== index 
+                 }"
+                 :style="{ backgroundImage: `url(${image.image})` }">
+            </div>
+            
+            <!-- Image Navigation Dots -->
             <div v-if="stadium.images.length > 1" 
-                 class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 px-2 z-10">
+                 class="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
               <button v-for="(_, index) in stadium.images" 
                       :key="index"
                       @click="currentImageIndex = index"
@@ -67,40 +54,46 @@
             </div>
           </div>
   
-          <div class="p-4">
-            <h2 class="text-xl font-bold text-[#131711] mb-1">{{ stadium.name }}</h2>
-            <p class="text-[#6c8764] text-sm">{{ stadium.location }}</p>
-            <p class="text-[#131711] text-base mt-4">{{ stadium.description }}</p>
-          </div>
-  
-          <div class="p-4 border-t border-[#f1f4f0]">
-            <h3 class="text-lg font-bold text-[#131711] mb-4">Стоимость</h3>
-            <div class="flex justify-between items-center">
-              <p class="text-[#131711] text-base">За час</p>
-              <p class="text-[#131711] text-xl font-bold">{{ stadium.price }}</p>
+          <div class="p-4 flex flex-col gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-[#131711] mb-2">{{ stadium.name }}</h2>
+              <p class="text-[#6c8764] text-base">{{ stadium.price_per_hour }} сум/час</p>
             </div>
-          </div>
   
-          <!-- Company Info -->
-          <div class="p-4 border-t border-[#f1f4f0]">
-            <h3 class="text-lg font-bold text-[#131711] mb-4">Информация о компании</h3>
-            <div class="flex items-center gap-2">
-              <div class="text-[#131711] flex items-center justify-center rounded-lg bg-[#f1f4f0] shrink-0 w-10 h-10">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                  <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm48-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h40A8,8,0,0,1,176,128Z"></path>
+            <!-- Location Info -->
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-2 text-[#6c8764]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
                 </svg>
+                <span>{{ stadium.city }}</span>
               </div>
-              <p class="text-[#131711] text-base">{{ stadium.company.username }}</p>
+              <p class="text-[#6c8764] text-sm">{{ stadium.address }}</p>
+              <a :href="stadium.yandex_map_url" target="_blank" class="flex items-center gap-2 text-[#4ddf20] text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                Открыть на Яндекс Картах
+              </a>
             </div>
+  
+            <!-- Description -->
+            <div class="flex flex-col gap-2">
+              <h3 class="text-lg font-semibold text-[#131711]">Описание</h3>
+              <p class="text-[#6c8764] text-sm whitespace-pre-line">{{ stadium.description }}</p>
+            </div>
+  
+            <!-- Book Button -->
+            <button 
+              @click="goToBooking"
+              class="w-full bg-[#4ddf20] text-white py-4 rounded-xl font-bold text-base mt-4"
+            >
+              Забронировать
+            </button>
           </div>
         </template>
-      </div>
-  
-      <!-- Book Button -->
-      <div v-if="stadium" class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-[#f1f4f0]">
-        <button @click="goToBooking" class="w-full py-3 px-4 bg-[#4ddf20] text-[#131711] rounded-xl font-medium">
-          Забронировать
-        </button>
       </div>
     </div>
   </template>
