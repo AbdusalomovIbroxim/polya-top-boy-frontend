@@ -25,7 +25,7 @@
       </div>
 
       <!-- Map View Button -->
-      <button 
+      <!-- <button 
         class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100"
         @click="toggleMapView"
       >
@@ -34,7 +34,7 @@
           <circle cx="12" cy="10" r="3"/>
         </svg>
         <span class="text-sm font-medium text-[#131711]">Карта</span>
-      </button>
+      </button> -->
 
       <!-- Field Type Filter -->
       <div class="relative">

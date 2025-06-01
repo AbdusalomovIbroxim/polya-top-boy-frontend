@@ -6,7 +6,6 @@
   </template>
   
   <script>
-  /* global ymaps */
   import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
   
   export default {
@@ -31,7 +30,7 @@
         }
   
         if (map.value) {
-          map.value.destroy(); // Чистим перед повторной инициализацией
+          map.value.destroy();
         }
   
         map.value = new ymaps.Map(mapElement.value, {
