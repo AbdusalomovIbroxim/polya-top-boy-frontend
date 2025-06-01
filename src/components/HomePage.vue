@@ -4,34 +4,26 @@
       <AppHeader />
       <FilterTabs 
         @filter-changed="handleFilterChange"
-        @toggle-map="toggleMap"
       />
       
-      <!-- Map View -->
-      <div v-if="showMap" class="h-[calc(100vh-200px)] w-full">
-        <MapView :stadiums="filteredStadiums" @close="showMap = false" />
+      <!-- List View -->
+      <!-- Loading state -->
+      <div v-if="loading" class="flex justify-center items-center p-8">
+        <HomeSkeleton />
       </div>
 
-      <!-- List View -->
+      <!-- Error state -->
+      <div v-else-if="error" class="text-center p-8 text-red-500">
+        {{ error }}
+      </div>
+
+      <!-- Stadiums list -->
       <template v-else>
-        <!-- Loading state -->
-        <div v-if="loading" class="flex justify-center items-center p-8">
-          <HomeSkeleton />
-        </div>
-
-        <!-- Error state -->
-        <div v-else-if="error" class="text-center p-8 text-red-500">
-          {{ error }}
-        </div>
-
-        <!-- Stadiums list -->
-        <template v-else>
-          <StadiumCard 
-            v-for="stadium in filteredStadiums" 
-            :key="stadium.id" 
-            :stadium="stadium" 
-          />
-        </template>
+        <StadiumCard 
+          v-for="stadium in filteredStadiums" 
+          :key="stadium.id" 
+          :stadium="stadium" 
+        />
       </template>
     </div>
     
@@ -45,7 +37,6 @@ import FilterTabs from './FilterTabs.vue'
 import StadiumCard from './StadiumCard.vue'
 import NavigationBar from './NavigationBar.vue'
 import HomeSkeleton from './HomeSkeleton.vue'
-import MapView from '@/components/MapView.vue'
 import { stadiumService } from '@/services/stadiumService'
 
 export default {
@@ -55,12 +46,10 @@ export default {
     FilterTabs,
     StadiumCard,
     NavigationBar,
-    HomeSkeleton,
-    MapView
+    HomeSkeleton
   },
   data() {
     return {
-      showMap: false,
       activeFilters: {
         region: null,
         type: null
@@ -96,9 +85,6 @@ export default {
       this.activeFilters = filters;
       this.fetchStadiums();
     },
-    toggleMap() {
-      this.showMap = !this.showMap;
-    },
     async fetchStadiums() {
       this.loading = true;
       this.error = null;
@@ -118,9 +104,7 @@ export default {
             price_per_hour: stadium.price_per_hour,
             images: stadium.images ? stadium.images.map(img => img.image) : [],
             city: stadium.city,
-            type: stadium.type,
-            latitude: stadium.latitude,
-            longitude: stadium.longitude
+            type: stadium.type
           };
           console.log('Processed stadium:', processedStadium);
           return processedStadium;
