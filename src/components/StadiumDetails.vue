@@ -139,26 +139,42 @@
         }
       },
       nextImage() {
+        if (!this.stadium?.images?.length) return;
         this.currentImageIndex = (this.currentImageIndex + 1) % this.stadium.images.length
       },
       prevImage() {
+        if (!this.stadium?.images?.length) return;
         this.currentImageIndex = this.currentImageIndex === 0 
           ? this.stadium.images.length - 1 
           : this.currentImageIndex - 1
       },
       goToBooking() {
+        if (!this.id) {
+          this.error = 'ID стадиона не найден';
+          return;
+        }
         this.$router.push(`/stadium/${this.id}/book`);
       },
       async fetchStadiumDetails() {
+        if (!this.id) {
+          this.error = 'ID стадиона не найден';
+          this.loading = false;
+          return;
+        }
+
         this.loading = true;
         this.error = null;
         
         try {
-          this.stadium = await stadiumService.getStadiumDetails(this.id);
-          console.log(this.stadium);
+          const response = await stadiumService.getStadiumDetails(this.id);
+          if (!response?.data) {
+            throw new Error('Данные стадиона не найдены');
+          }
+          this.stadium = response.data;
         } catch (error) {
           console.error('Ошибка при загрузке деталей стадиона:', error);
           this.error = 'Не удалось загрузить информацию о стадионе. Пожалуйста, попробуйте позже.';
+          this.stadium = null;
         } finally {
           this.loading = false;
         }
@@ -166,6 +182,16 @@
     },
     created() {
       this.fetchStadiumDetails();
+    },
+    watch: {
+      id: {
+        immediate: true,
+        handler(newId) {
+          if (newId) {
+            this.fetchStadiumDetails();
+          }
+        }
+      }
     }
   }
   </script> 
