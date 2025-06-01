@@ -67,7 +67,7 @@
           </div>
           <div class="flex gap-2">
             <button @click="shareToTelegram"
-              class="flex w-8 h-8 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[rgb(215 215 215)]">
+              class="flex w-8 h-8 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#90caf9]">
               <img src="@/assets/share.svg" alt="Share" class="w-5 h-5" />
             </button>
             <button @click="$router.push(`/stadium/${stadium.id}`)"
