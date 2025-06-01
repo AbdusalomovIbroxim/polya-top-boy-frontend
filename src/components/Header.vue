@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center bg-white p-4 pb-2 justify-between">
     <h2 class="text-[#131711] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pl-12">Football Field</h2>
-    <div class="flex w-12 items-center justify-end">
+    <!-- <div class="flex w-12 items-center justify-end">
       <button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-transparent text-[#131711] gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
         <div class="text-[#131711]">
           <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
@@ -9,7 +9,7 @@
           </svg>
         </div>
       </button>
-    </div>
+    </div> -->
   </div>
 </template>
 

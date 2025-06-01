@@ -23,7 +23,7 @@
           </button>
         </div>
       </div>
-ы
+
       <div class="relative">
         <button 
           class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100"
