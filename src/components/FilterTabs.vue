@@ -1,6 +1,6 @@
 <template>
   <div class="pb-3">
-    <div class="flex border-b border-[#dee5dc] px-4 gap-4">
+    <div class="flex border-b border-[#dee5dc] p-4 gap-4">
       <!-- Region Filter -->
       <div class="relative">
         <button 
