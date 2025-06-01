@@ -155,6 +155,7 @@
         
         try {
           this.stadium = await stadiumService.getStadiumDetails(this.id);
+          console.log(this.stadium);
         } catch (error) {
           console.error('Ошибка при загрузке деталей стадиона:', error);
           this.error = 'Не удалось загрузить информацию о стадионе. Пожалуйста, попробуйте позже.';
