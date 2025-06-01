@@ -17,7 +17,7 @@
               </svg>
             </div>
           </button>
-          <div v-if="showMenu" class="absolute right-0 top-16 mt-2 w-48 bg-white rounded-xl shadow-lg z-50 border border-gray-100">
+          <div v-if="showMenu" class="absolute right-0 top-12 mt-2 w-48 bg-white rounded-xl shadow-lg z-50 border border-gray-100">
             <button class="block w-full text-left px-4 py-3 hover:bg-gray-100 text-red-500" @click="logout">Выйти</button>
             <button class="block w-full text-left px-4 py-3 hover:bg-gray-100" @click="goToFriends">Мои друзья</button>
             <button class="block w-full text-left px-4 py-3 hover:bg-gray-100" @click="goToBookings">Мои бронирования</button>
