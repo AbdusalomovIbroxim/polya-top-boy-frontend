@@ -7,6 +7,7 @@ import BookingDetailsPage from '../components/BookingDetailsPage.vue'
 import StadiumDetails from '../components/StadiumDetails.vue'
 import StadiumBooking from '../components/StadiumBooking.vue'
 import AuthPage from '../components/Auth.vue'
+import ProfileSettings from '../components/ProfileSettings.vue'
 
 const routes = [
   {
@@ -28,6 +29,11 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: ProfilePage
+  },
+  {
+    path: '/profile/settings',
+    name: 'ProfileSettings',
+    component: ProfileSettings
   },
   {
     path: '/bookings',

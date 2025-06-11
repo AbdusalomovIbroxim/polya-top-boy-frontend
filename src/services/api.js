@@ -117,6 +117,10 @@ export const authService = {
     return api.get('/users/me/')
   },
 
+  async updateProfile(profileData) {
+    return api.patch('/users/me/', profileData)
+  },
+
   async getUserStats() {
     return api.get('/users/stats/')
   },
