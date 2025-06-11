@@ -35,15 +35,12 @@
           <circle cx="12" cy="12" r="10"></circle>
           <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
-        <span>{{ booking.start_time }} - {{ booking.end_time }}</span>
+        <span>{{ formatDateTime(booking.start_time) }} - {{ formatTime(booking.end_time) }}</span>
       </div>
 
       <div class="flex gap-4">
         <div class="flex items-center gap-2">
-          <span>{{ booking.status }}</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span>{{ booking.payment_status }}</span>
+          <span>{{ getCombinedStatus(booking.status, booking.payment_status) }}</span>
         </div>
       </div>
 
@@ -72,6 +69,40 @@ export default {
     }
   },
   methods: {
+    getCombinedStatus(status, paymentStatus) {
+      if (status === 'PENDING' && paymentStatus === 'PENDING') {
+        return 'Ожидает оплаты'
+      }
+      if (paymentStatus === 'PAID' && status === 'PENDING') {
+        return 'Ожидает подтверждения'
+      }
+      if (status === 'CONFIRMED') {
+        return 'Подтверждено'
+      }
+      if (status === 'CANCELLED') {
+        return 'Отменено'
+      }
+      return status
+    },
+    formatDateTime(dateString) {
+      if (!dateString) return ''
+      const date = new Date(dateString)
+      return new Intl.DateTimeFormat('ru-RU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(date)
+    },
+    formatTime(dateString) {
+      if (!dateString) return ''
+      const date = new Date(dateString)
+      return new Intl.DateTimeFormat('ru-RU', {
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(date)
+    },
     openPaymentUrl() {
       if (this.booking.payment_url) {
         window.open(this.booking.payment_url, '_blank')
