@@ -82,16 +82,16 @@
 
       <div class="flex gap-4">
         <button 
-          @click="confirmCancel"
+          @click="showCancelModal = false"
           class="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
         >
-          Отменить бронирование
+          Нет
         </button>
         <button 
-          @click="showCancelModal = false"
+          @click="confirmCancel"
           class="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
         >
-          Закрыть
+          Да
         </button>
       </div>
     </div>
