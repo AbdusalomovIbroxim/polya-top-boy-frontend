@@ -31,13 +31,8 @@
       <div v-else class="flex p-4 @container">
         <div class="flex w-full flex-col gap-4 items-start">
           <div class="flex gap-4 flex-col items-start">
-            <div v-if="isAuthenticated"
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
-              :style='{ backgroundImage: `url(${userData.photo_url || "./src/assets/user.png"})` }'
-            ></div>
-            <div v-else
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
-              :style='{ backgroundImage: `url(${"./src/assets/user.png"})` }'
+            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
+              :style='{ backgroundImage: `url(${userData.photo_url || defaultUserImage})` }'
             ></div>
             <div class="flex flex-col justify-center">
               <p class="text-[#131711] text-[22px] font-bold leading-tight tracking-[-0.015em]">
@@ -54,14 +49,14 @@
               </p>
             </div>
           </div>
-          <button
+          <!-- <button
             v-if="isAuthenticated"
             class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f1f4f0] text-[#131711] text-sm font-bold leading-normal tracking-[0.015em] w-full max-w-[480px] @[480px]:w-auto"
           >
-            <!-- <span class="truncate">Пригласить поиграть</span> -->
-          </button>
+            <span class="truncate">Пригласить поиграть</span>
+          </button> -->
           <button
-            v-else
+            v-if="!isAuthenticated"
             @click="goToAuth"
             class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#4a90e2] text-white text-sm font-bold leading-normal tracking-[0.015em] w-full max-w-[480px] @[480px]:w-auto"
           >
@@ -79,6 +74,7 @@
 import NavigationBar from './NavigationBar.vue'
 import ProfileSkeleton from './ProfileSkeleton.vue'
 import { authService } from '../services/api'
+import defaultUserImage from '@/assets/user.png'
 
 export default {
   name: 'ProfilePage',
@@ -91,6 +87,7 @@ export default {
       loading: true,
       isAuthenticated: false,
       showMenu: false,
+      defaultUserImage,
       userData: {
         id: null,
         username: '',
