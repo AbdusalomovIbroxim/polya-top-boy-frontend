@@ -1,6 +1,6 @@
 <template>
     <div class="relative flex size-full min-h-screen flex-col bg-white" style='font-family: Lexend, "Noto Sans", sans-serif;'>
-      <div class="flex-1 overflow-y-auto pb-36">
+      <div class="flex-1 overflow-y-auto pb-20">
         <div class="flex items-center bg-white p-4 gap-4">
           <router-link to="/" class="text-[#131711]">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
@@ -79,15 +79,17 @@
               <h3 class="text-lg font-semibold text-[#131711]">Описание</h3>
               <p class="text-[#6c8764] text-sm whitespace-pre-line">{{ stadium.description }}</p>
             </div>
-  
-            <button 
-              @click="goToBooking"
-              class="w-full bg-[#4ddf20] text-white py-4 rounded-xl font-bold text-base mt-4"
-            >
-              Забронировать
-            </button>
           </div>
         </template>
+      </div>
+
+      <div class="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200">
+        <button 
+          @click="goToBooking"
+          class="w-full bg-[#4ddf20] text-white py-4 rounded-xl font-bold text-base"
+        >
+          Забронировать
+        </button>
       </div>
     </div>
   </template>
