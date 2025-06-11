@@ -179,9 +179,6 @@
         }
       }
     },
-    created() {
-      this.fetchStadiumDetails();
-    },
     watch: {
       id: {
         immediate: true,
