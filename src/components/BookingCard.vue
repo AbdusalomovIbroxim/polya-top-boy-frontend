@@ -38,12 +38,19 @@
         <span>{{ formatDateTime(booking.start_time) }} - {{ formatTime(booking.end_time) }}</span>
       </div>
 
-      <div class="flex gap-4">
+      <div class="flex gap-4 items-center">
         <div class="flex items-center gap-2">
           <span :class="getStatusClass(booking.status, booking.payment_status)">
             {{ getCombinedStatus(booking.status, booking.payment_status) }}
           </span>
         </div>
+        <button 
+          v-if="canBeCancelled(booking.status, booking.payment_status)"
+          @click="cancelBooking"
+          class="text-red-600 hover:text-red-700 text-sm font-medium"
+        >
+          Отменить
+        </button>
       </div>
 
       <div v-if="booking.qr_code" class="flex justify-center">
@@ -71,6 +78,26 @@ export default {
     }
   },
   methods: {
+    canBeCancelled(status, paymentStatus) {
+      // Можно отменить только если статус PENDING или CONFIRMED
+      return (status === 'PENDING' || status === 'CONFIRMED') && paymentStatus !== 'REFUNDED'
+    },
+    async cancelBooking() {
+      let message = 'Вы уверены, что хотите отменить бронирование?'
+      
+      if (this.booking.payment_status === 'PAID') {
+        message += '\n\nВнимание! При отмене бронирования депозит не подлежит возврату.'
+      }
+      
+      if (confirm(message)) {
+        try {
+          // TODO: Добавить вызов API для отмены бронирования
+          console.log('Cancelling booking:', this.booking.id)
+        } catch (error) {
+          console.error('Error cancelling booking:', error)
+        }
+      }
+    },
     getStatusClass(status, paymentStatus) {
       // Если бронирование отменено или возвращено - красный
       if (status === 'CANCELLED' || paymentStatus === 'REFUNDED') {
