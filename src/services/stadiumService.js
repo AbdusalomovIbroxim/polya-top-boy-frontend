@@ -27,24 +27,18 @@ export const stadiumService = {
             const response = await api.get(`/playgrounds/${id}/`, {
                 withCredentials: true
             });
-            console.log('API: Stadium details response:', response.data)
-            return {
-                id: response.data.id,
-                name: response.data.name,
-                city: response.data.company.city || 'Ташкент',
-                address: response.data.company.address || 'Ташкент, Узбекистан',
-                price_per_hour: response.data.price_per_hour,
-                description: response.data.description || '',
-                images: response.data.images.map(img => ({
-                    image: img.image
-                })),
-                yandex_map_url: response.data.yandex_map_url || '',
-                company: {
-                    id: response.data.company.id,
-                    username: response.data.company.username,
-                    role: response.data.company.role
-                }
-            };
+            console.log('API: Raw stadium details response:', response.data)
+            
+            if (!response.data) {
+                throw new Error('Данные стадиона не найдены');
+            }
+
+            // Проверяем наличие необходимых полей
+            if (!response.data.id || !response.data.name) {
+                throw new Error('Неполные данные стадиона');
+            }
+
+            return response.data;
         } catch (error) {
             console.error('API: Error fetching stadium details:', error)
             throw error;
