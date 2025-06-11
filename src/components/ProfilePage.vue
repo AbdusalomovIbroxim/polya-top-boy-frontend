@@ -31,9 +31,13 @@
       <div v-else class="flex p-4 @container">
         <div class="flex w-full flex-col gap-4 items-start">
           <div class="flex gap-4 flex-col items-start">
-            <div
+            <div v-if="isAuthenticated"
               class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
-              :style='{ backgroundImage: `url(${userData.photo_url || "https://cdn.usegalileo.ai/sdxl10/40f70546-ecd7-4361-be87-04d23971368e.png"})` }'
+              :style='{ backgroundImage: `url(${userData.photo_url || "./src/assets/user.png"})` }'
+            ></div>
+            <div v-else
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
+              :style='{ backgroundImage: `url(${"./src/assets/user.png"})` }'
             ></div>
             <div class="flex flex-col justify-center">
               <p class="text-[#131711] text-[22px] font-bold leading-tight tracking-[-0.015em]">
@@ -54,7 +58,7 @@
             v-if="isAuthenticated"
             class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f1f4f0] text-[#131711] text-sm font-bold leading-normal tracking-[0.015em] w-full max-w-[480px] @[480px]:w-auto"
           >
-            <span class="truncate">Пригласить поиграть</span>
+            <!-- <span class="truncate">Пригласить поиграть</span> -->
           </button>
           <button
             v-else
