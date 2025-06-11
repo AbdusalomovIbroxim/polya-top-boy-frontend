@@ -66,6 +66,36 @@
       </button>
     </div>
   </div>
+
+  <!-- Модальное окно подтверждения отмены -->
+  <div v-if="showCancelModal" class="fixed inset-0 z-50 flex items-center justify-center">
+    <!-- Затемненный фон с блюром -->
+    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+    
+    <!-- Модальное окно -->
+    <div class="relative bg-white rounded-xl p-6 max-w-md w-full mx-4">
+      <h3 class="text-lg font-semibold text-[#131711] mb-4">Отмена бронирования</h3>
+      
+      <p class="text-[#6c8764] mb-6">
+        {{ cancelModalMessage }}
+      </p>
+
+      <div class="flex gap-4">
+        <button 
+          @click="confirmCancel"
+          class="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+        >
+          Отменить бронирование
+        </button>
+        <button 
+          @click="showCancelModal = false"
+          class="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+        >
+          Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -77,25 +107,33 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      showCancelModal: false,
+      cancelModalMessage: ''
+    }
+  },
   methods: {
     canBeCancelled(status, paymentStatus) {
       // Можно отменить только если статус PENDING или CONFIRMED
       return (status === 'PENDING' || status === 'CONFIRMED') && paymentStatus !== 'REFUNDED'
     },
-    async cancelBooking() {
-      let message = 'Вы уверены, что хотите отменить бронирование?'
+    cancelBooking() {
+      this.cancelModalMessage = 'Вы уверены, что хотите отменить бронирование?'
       
       if (this.booking.payment_status === 'PAID') {
-        message += '\n\nВнимание! При отмене бронирования депозит не подлежит возврату.'
+        this.cancelModalMessage += '\n\nВнимание! При отмене бронирования депозит не подлежит возврату.'
       }
       
-      if (confirm(message)) {
-        try {
-          // TODO: Добавить вызов API для отмены бронирования
-          console.log('Cancelling booking:', this.booking.id)
-        } catch (error) {
-          console.error('Error cancelling booking:', error)
-        }
+      this.showCancelModal = true
+    },
+    async confirmCancel() {
+      try {
+        // TODO: Добавить вызов API для отмены бронирования
+        console.log('Cancelling booking:', this.booking.id)
+        this.showCancelModal = false
+      } catch (error) {
+        console.error('Error cancelling booking:', error)
       }
     },
     getStatusClass(status, paymentStatus) {
