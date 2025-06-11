@@ -25,8 +25,8 @@
           >
             {{ booking.playground_details?.name }}
           </router-link>
-          <p class="text-[#6c8764] text-sm">{{ formatPrice(booking.total_price) }} ₽</p>
-          <p class="text-[#6c8764] text-sm">Депозит: {{ formatPrice(booking.deposit_amount) }} ₽</p>
+          <p class="text-[#6c8764] text-sm">{{ booking.total_price }} ₽</p>
+          <p class="text-[#6c8764] text-sm">Депозит: {{ booking.deposit_amount }} ₽</p>
         </div>
       </div>
 
@@ -35,17 +35,15 @@
           <circle cx="12" cy="12" r="10"></circle>
           <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
-        <span>{{ formatDateTime(booking.start_time) }} - {{ formatTime(booking.end_time) }}</span>
+        <span>{{ booking.start_time }} - {{ booking.end_time }}</span>
       </div>
 
       <div class="flex gap-4">
         <div class="flex items-center gap-2">
-          <span :class="getStatusClass(booking.status)">{{ getStatusText(booking.status) }}</span>
+          <span>{{ booking.status }}</span>
         </div>
         <div class="flex items-center gap-2">
-          <span :class="getPaymentStatusClass(booking.payment_status)">
-            {{ getPaymentStatusText(booking.payment_status) }}
-          </span>
+          <span>{{ booking.payment_status }}</span>
         </div>
       </div>
 
@@ -74,60 +72,6 @@ export default {
     }
   },
   methods: {
-    formatPrice(price) {
-      return new Intl.NumberFormat('ru-RU').format(price)
-    },
-    formatDateTime(dateString) {
-      if (!dateString) return ''
-      const date = new Date(dateString)
-      return new Intl.DateTimeFormat('ru-RU', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      }).format(date)
-    },
-    formatTime(dateString) {
-      if (!dateString) return ''
-      const date = new Date(dateString)
-      return new Intl.DateTimeFormat('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit'
-      }).format(date)
-    },
-    getStatusClass(status) {
-      const classes = {
-        'CONFIRMED': 'text-green-600',
-        'PENDING': 'text-yellow-600',
-        'CANCELLED': 'text-red-600'
-      }
-      return classes[status] || 'text-gray-600'
-    },
-    getStatusText(status) {
-      const statusTexts = {
-        'CONFIRMED': 'Подтверждено',
-        'PENDING': 'Ожидает подтверждения',
-        'CANCELLED': 'Отменено'
-      }
-      return statusTexts[status] || status
-    },
-    getPaymentStatusClass(status) {
-      const classes = {
-        'PAID': 'text-green-600',
-        'PENDING': 'text-yellow-600',
-        'FAILED': 'text-red-600'
-      }
-      return classes[status] || 'text-gray-600'
-    },
-    getPaymentStatusText(status) {
-      const statusTexts = {
-        'PAID': 'Оплачено',
-        'PENDING': 'Ожидает оплаты',
-        'FAILED': 'Ошибка оплаты'
-      }
-      return statusTexts[status] || status
-    },
     openPaymentUrl() {
       if (this.booking.payment_url) {
         window.open(this.booking.payment_url, '_blank')
