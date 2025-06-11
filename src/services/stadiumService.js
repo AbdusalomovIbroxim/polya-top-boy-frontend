@@ -24,9 +24,7 @@ export const stadiumService = {
     async getStadiumDetails(id) {
         console.log('API: Fetching stadium details for ID:', id)
         try {
-            const response = await api.get(`/playgrounds/${id}/`, {
-                withCredentials: true
-            });
+            const response = await api.get(`/playgrounds/${id}/`);
             console.log('API: Raw stadium details response:', response.data)
             
             if (!response.data) {
