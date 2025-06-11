@@ -31,9 +31,14 @@ export const stadiumService = {
             return {
                 id: response.data.id,
                 name: response.data.name,
-                location: response.data.company.address || 'Ташкент, Узбекистан',
+                city: response.data.company.city || 'Ташкент',
+                address: response.data.company.address || 'Ташкент, Узбекистан',
                 price_per_hour: response.data.price_per_hour,
-                images: response.data.images.map(img => img.image),
+                description: response.data.description || '',
+                images: response.data.images.map(img => ({
+                    image: img.image
+                })),
+                yandex_map_url: response.data.yandex_map_url || '',
                 company: {
                     id: response.data.company.id,
                     username: response.data.company.username,
