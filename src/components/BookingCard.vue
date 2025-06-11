@@ -40,7 +40,9 @@
 
       <div class="flex gap-4">
         <div class="flex items-center gap-2">
-          <span>{{ getCombinedStatus(booking.status, booking.payment_status) }}</span>
+          <span :class="getStatusClass(booking.status, booking.payment_status)">
+            {{ getCombinedStatus(booking.status, booking.payment_status) }}
+          </span>
         </div>
       </div>
 
@@ -69,18 +71,44 @@ export default {
     }
   },
   methods: {
+    getStatusClass(status, paymentStatus) {
+      // Если бронирование отменено или возвращено - красный
+      if (status === 'CANCELLED' || paymentStatus === 'REFUNDED') {
+        return 'text-red-600'
+      }
+      // Если подтверждено или завершено - зеленый
+      if (status === 'CONFIRMED' || status === 'COMPLETED') {
+        return 'text-green-600'
+      }
+      // Если ожидает оплаты - желтый
+      if (status === 'PENDING' && paymentStatus === 'PENDING') {
+        return 'text-yellow-600'
+      }
+      // Если оплачено, но ожидает подтверждения - синий
+      if (paymentStatus === 'PAID' && status === 'PENDING') {
+        return 'text-blue-600'
+      }
+      // По умолчанию серый
+      return 'text-gray-600'
+    },
     getCombinedStatus(status, paymentStatus) {
+      if (status === 'CANCELLED') {
+        return 'Отменено'
+      }
+      if (status === 'COMPLETED') {
+        return 'Завершено'
+      }
+      if (status === 'CONFIRMED') {
+        return 'Подтверждено'
+      }
+      if (paymentStatus === 'REFUNDED') {
+        return 'Возвращено'
+      }
       if (status === 'PENDING' && paymentStatus === 'PENDING') {
         return 'Ожидает оплаты'
       }
       if (paymentStatus === 'PAID' && status === 'PENDING') {
         return 'Ожидает подтверждения'
-      }
-      if (status === 'CONFIRMED') {
-        return 'Подтверждено'
-      }
-      if (status === 'CANCELLED') {
-        return 'Отменено'
       }
       return status
     },
