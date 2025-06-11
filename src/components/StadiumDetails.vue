@@ -149,6 +149,16 @@
           this.error = 'ID стадиона не найден';
           return;
         }
+
+        // Проверяем наличие токена доступа
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+          // Если пользователь не авторизован, перенаправляем на страницу авторизации
+          this.$router.push('/auth');
+          return;
+        }
+
+        // Если пользователь авторизован, перенаправляем на страницу бронирования
         this.$router.push(`/stadium/${this.id}/book`);
       },
       async fetchStadiumDetails() {
