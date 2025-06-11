@@ -118,8 +118,13 @@ export default {
   methods: {
     async checkFavoriteStatus() {
       try {
-        const response = await favoriteService.getFavorites()
-        const favorite = response.data.results.find(f => f.playground === this.stadium.id)
+        // Используем глобальное хранилище для кэширования избранного
+        if (!this.$root.favoritesCache) {
+          const response = await favoriteService.getFavorites()
+          this.$root.favoritesCache = response.data.results
+        }
+        
+        const favorite = this.$root.favoritesCache.find(f => f.playground === this.stadium.id)
         if (favorite) {
           this.isFavorite = true
           this.favoriteId = favorite.id
@@ -134,10 +139,18 @@ export default {
           await favoriteService.removeFromFavorites(this.favoriteId)
           this.isFavorite = false
           this.favoriteId = null
+          // Обновляем кэш
+          if (this.$root.favoritesCache) {
+            this.$root.favoritesCache = this.$root.favoritesCache.filter(f => f.id !== this.favoriteId)
+          }
         } else {
           const response = await favoriteService.addToFavorites(this.stadium.id)
           this.isFavorite = true
           this.favoriteId = response.data.id
+          // Обновляем кэш
+          if (this.$root.favoritesCache) {
+            this.$root.favoritesCache.push(response.data)
+          }
         }
       } catch (error) {
         console.error('Error toggling favorite:', error)
