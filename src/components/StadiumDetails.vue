@@ -1,7 +1,6 @@
 <template>
     <div class="relative flex size-full min-h-screen flex-col bg-white" style='font-family: Lexend, "Noto Sans", sans-serif;'>
       <div class="flex-1 overflow-y-auto pb-36">
-        <!-- Header -->
         <div class="flex items-center bg-white p-4 gap-4">
           <router-link to="/" class="text-[#131711]">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
@@ -10,19 +9,16 @@
           </router-link>
           <h1 class="text-[#131711] text-lg font-bold">Детали стадиона</h1>
         </div>
-  
-        <!-- Loading State -->
+
         <div v-if="loading" class="flex justify-center items-center p-8">
           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4ddf20]"></div>
         </div>
   
-        <!-- Error State -->
         <div v-else-if="error" class="p-4 text-center text-red-500">
           {{ error }}
         </div>
   
         <template v-else-if="stadium">
-          <!-- Stadium Image Slider -->
           <div class="relative w-full aspect-video">
             <div v-if="!stadium.images || stadium.images.length === 0" 
                  class="absolute inset-0 w-full h-full bg-[#f5f5f5] flex items-center justify-center">
@@ -32,6 +28,7 @@
                 <polyline points="21 15 16 10 5 21"></polyline>
               </svg>
             </div>
+
             <div v-else v-for="(image, index) in stadium.images" 
                  :key="index"
                  class="absolute inset-0 w-full h-full bg-center bg-no-repeat bg-cover transition-all duration-500"
@@ -42,10 +39,10 @@
                  :style="{ backgroundImage: `url(${image.image})` }">
             </div>
             
-            <!-- Image Navigation Dots -->
             <div v-if="stadium.images.length > 1" 
                  class="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-              <button v-for="(_, index) in stadium.images" 
+            
+                 <button v-for="(_, index) in stadium.images" 
                       :key="index"
                       @click="currentImageIndex = index"
                       class="w-2 h-2 rounded-full transition-all duration-300"
@@ -53,14 +50,13 @@
               </button>
             </div>
           </div>
-  
           <div class="p-4 flex flex-col gap-4">
+          
             <div>
               <h2 class="text-2xl font-bold text-[#131711] mb-2">{{ stadium.name }}</h2>
               <p class="text-[#6c8764] text-base">{{ stadium.price_per_hour }} сум/час</p>
             </div>
   
-            <!-- Location Info -->
             <div class="flex flex-col gap-2">
               <div class="flex items-center gap-2 text-[#6c8764]">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -79,13 +75,11 @@
               </a>
             </div>
   
-            <!-- Description -->
             <div class="flex flex-col gap-2">
               <h3 class="text-lg font-semibold text-[#131711]">Описание</h3>
               <p class="text-[#6c8764] text-sm whitespace-pre-line">{{ stadium.description }}</p>
             </div>
   
-            <!-- Book Button -->
             <button 
               @click="goToBooking"
               class="w-full bg-[#4ddf20] text-white py-4 rounded-xl font-bold text-base mt-4"
@@ -166,14 +160,18 @@
         this.error = null;
         
         try {
+          console.log('Fetching stadium details for ID:', this.id);
           const response = await stadiumService.getStadiumDetails(this.id);
-          if (!response?.data) {
-            throw new Error('Данные стадиона не найдены');
+          console.log('Received stadium data:', response);
+          
+          if (!response) {
+            throw new Error('Пустой ответ от сервера');
           }
-          this.stadium = response.data;
+          
+          this.stadium = response;
         } catch (error) {
           console.error('Ошибка при загрузке деталей стадиона:', error);
-          this.error = 'Не удалось загрузить информацию о стадионе. Пожалуйста, попробуйте позже.';
+          this.error = error.message || 'Не удалось загрузить информацию о стадионе. Пожалуйста, попробуйте позже.';
           this.stadium = null;
         } finally {
           this.loading = false;
