@@ -5,8 +5,10 @@ const API_URL = 'https://polya-top-bot-backend.onrender.com/api'
 const api = axios.create({
   baseURL: API_URL,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  },
+  withCredentials: true
 })
 
 api.interceptors.request.use(
@@ -14,7 +16,8 @@ api.interceptors.request.use(
     console.log('API Request:', {
       url: config.url,
       method: config.method,
-      data: config.data
+      data: config.data,
+      headers: config.headers
     })
     const token = localStorage.getItem('access_token')
     if (token) {
@@ -28,7 +31,6 @@ api.interceptors.request.use(
   }
 )
 
-// Добавляем перехватчик для обработки ошибок и обновления токена
 api.interceptors.response.use(
   (response) => {
     console.log('API Response:', {
@@ -42,18 +44,22 @@ api.interceptors.response.use(
     console.error('API Response Error:', {
       url: error.config?.url,
       status: error.response?.status,
-      data: error.response?.data
+      data: error.response?.data,
+      message: error.message
     })
     
     const originalRequest = error.config
 
-    // Если ошибка 401 и это не запрос на обновление токена
     if (error.response?.status === 401 && !originalRequest._retry) {
       console.log('Attempting to refresh token')
       originalRequest._retry = true
 
       try {
         const refreshToken = localStorage.getItem('refresh_token')
+        if (!refreshToken) {
+          throw new Error('No refresh token available')
+        }
+
         const response = await api.post('/token/refresh/', {
           refresh: refreshToken
         })
@@ -61,16 +67,21 @@ api.interceptors.response.use(
         const { access } = response.data
         localStorage.setItem('access_token', access)
 
-        // Повторяем оригинальный запрос с новым токеном
         originalRequest.headers.Authorization = `Bearer ${access}`
         return api(originalRequest)
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError)
-        // Если не удалось обновить токен, просто очищаем токены
         localStorage.removeItem('access_token')
         localStorage.removeItem('refresh_token')
+        localStorage.removeItem('user')
+        window.location.href = '/auth'
         return Promise.reject(refreshError)
       }
+    }
+
+    if (error.message === 'Network Error') {
+      console.error('Network error occurred. Please check your internet connection.')
+      return Promise.reject(new Error('Ошибка сети. Пожалуйста, проверьте подключение к интернету.'))
     }
 
     return Promise.reject(error)

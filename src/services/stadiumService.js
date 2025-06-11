@@ -25,7 +25,7 @@ export const stadiumService = {
         console.log('API: Fetching stadium details for ID:', id)
         try {
             const response = await api.get(`/playgrounds/${id}/`, {
-                withCredentials: true,
+                withCredentials: true
             });
             console.log('API: Raw stadium details response:', response.data)
             
@@ -41,7 +41,16 @@ export const stadiumService = {
             return response.data;
         } catch (error) {
             console.error('API: Error fetching stadium details:', error)
-            throw error;
+            if (error.response) {
+                // Сервер ответил с кодом ошибки
+                throw new Error(error.response.data.detail || 'Ошибка при загрузке данных стадиона')
+            } else if (error.request) {
+                // Запрос был отправлен, но нет ответа
+                throw new Error('Нет ответа от сервера. Пожалуйста, проверьте подключение к интернету')
+            } else {
+                // Ошибка при настройке запроса
+                throw new Error('Ошибка при отправке запроса: ' + error.message)
+            }
         }
     },
 
