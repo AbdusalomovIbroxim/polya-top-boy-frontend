@@ -167,8 +167,9 @@
           if (!response) {
             throw new Error('Пустой ответ от сервера');
           }
-          
+
           this.stadium = response;
+          console.log('Processed stadium data:', this.stadium);
         } catch (error) {
           console.error('Ошибка при загрузке деталей стадиона:', error);
           this.error = error.message || 'Не удалось загрузить информацию о стадионе. Пожалуйста, попробуйте позже.';
@@ -190,6 +191,12 @@
           }
         }
       }
+    },
+    beforeRouteUpdate(to, from, next) {
+      if (to.params.id !== from.params.id) {
+        this.fetchStadiumDetails();
+      }
+      next();
     }
   }
   </script> 

@@ -25,7 +25,14 @@ export const stadiumService = {
         console.log('API: Fetching stadium details for ID:', id)
         try {
             const response = await api.get(`/playgrounds/${id}/`, {
-                withCredentials: true
+                withCredentials: true,
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                },
+                params: {
+                    _t: new Date().getTime() // Добавляем timestamp для предотвращения кэширования
+                }
             });
             console.log('API: Raw stadium details response:', response.data)
             
