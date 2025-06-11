@@ -26,13 +26,6 @@ export const stadiumService = {
         try {
             const response = await api.get(`/playgrounds/${id}/`, {
                 withCredentials: true,
-                headers: {
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache'
-                },
-                params: {
-                    _t: new Date().getTime() // Добавляем timestamp для предотвращения кэширования
-                }
             });
             console.log('API: Raw stadium details response:', response.data)
             
