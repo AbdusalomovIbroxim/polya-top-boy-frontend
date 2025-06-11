@@ -77,20 +77,37 @@ export default {
     }
   },
   async created() {
+    const token = localStorage.getItem('access_token')
+    if (!token) {
+      this.$router.push('/auth')
+      return
+    }
     await this.loadUserData()
+  },
+  beforeRouteEnter(to, from, next) {
+    const token = localStorage.getItem('access_token')
+    if (!token) {
+      next('/auth')
+    } else {
+      next()
+    }
   },
   methods: {
     async loadUserData() {
       try {
         const response = await authService.getCurrentUser()
+        console.log('User data loaded:', response.data)
         this.formData = {
-          username: response.data.username,
-          first_name: response.data.first_name,
-          last_name: response.data.last_name
+          username: response.data.username || '',
+          first_name: response.data.first_name || '',
+          last_name: response.data.last_name || ''
         }
       } catch (error) {
         console.error('Error loading user data:', error)
         this.error = 'Не удалось загрузить данные пользователя'
+        if (error.response?.status === 401) {
+          this.$router.push('/auth')
+        }
       }
     },
     async updateProfile() {
@@ -98,11 +115,16 @@ export default {
       this.error = null
 
       try {
-        await authService.updateProfile(this.formData)
+        console.log('Updating profile with data:', this.formData)
+        const response = await authService.updateProfile(this.formData)
+        console.log('Profile update response:', response)
         this.$router.push('/profile')
       } catch (error) {
         console.error('Error updating profile:', error)
         this.error = error.response?.data?.detail || 'Не удалось обновить профиль'
+        if (error.response?.status === 401) {
+          this.$router.push('/auth')
+        }
       } finally {
         this.loading = false
       }
