@@ -72,7 +72,7 @@
             </button>
             <button @click="$router.push(`/stadium/${stadium.id}`)"
               class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#25A244] text-[white] text-sm font-medium leading-normal">
-              <span class="truncate">Book</span>
+              <span class="truncate">Забронировать</span>
             </button>
           </div>
         </div>

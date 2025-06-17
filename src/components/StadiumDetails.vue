@@ -1,14 +1,12 @@
 <template>
     <div class="relative flex size-full min-h-screen flex-col bg-white" style='font-family: Lexend, "Noto Sans", sans-serif;'>
       <div class="flex-1 overflow-y-auto pb-20">
-        <div class="flex items-center bg-white p-4 gap-4">
-          <router-link to="/" class="text-[#131711]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m0 0l7 7m-7-7l7-7"/>
-            </svg>
-          </router-link>
-          <h1 class="text-[#131711] text-lg font-bold">Детали стадиона</h1>
-        </div>
+        <AppHeader 
+          title="Детали стадиона"
+          :showBackButton="true"
+          :showSettings="false"
+          backRoute="/"
+        />
 
         <div v-if="loading" class="flex justify-center items-center p-8">
           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4ddf20]"></div>

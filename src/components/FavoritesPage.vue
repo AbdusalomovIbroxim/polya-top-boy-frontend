@@ -3,7 +3,7 @@
     <div>
       <div class="flex flex-col gap-2 bg-white p-4 pb-2">
         <div class="flex items-center h-12 justify-end"></div>
-        <p class="text-[#131711] tracking-light text-[28px] font-bold leading-tight">My Favorites</p>
+        <p class="text-[#131711] tracking-light text-[28px] font-bold leading-tight">Избранное</p>
       </div>
       
       <div v-if="isLoading" class="p-4">

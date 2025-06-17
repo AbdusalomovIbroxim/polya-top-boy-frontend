@@ -1,7 +1,11 @@
 <template>
   <div class="relative flex size-full min-h-screen flex-col bg-white justify-between group/design-root overflow-x-hidden pb-20" style='font-family: Lexend, "Noto Sans", sans-serif;'>
     <div>
-      <AppHeader />
+      <AppHeader 
+        title="Футбольные поля"
+        :showBackButton="false"
+        :showSettings="false"
+      />
       <FilterTabs 
         @filter-changed="handleFilterChange"
       />
@@ -111,7 +115,7 @@ export default {
         });
         console.log('Final processed stadiums:', this.stadiums);
       } catch (error) {
-        this.error = 'Failed to load stadiums';
+        this.error = 'Не удалось загрузить стадионы';
         console.error('Error fetching stadiums:', error);
       } finally {
         this.loading = false;

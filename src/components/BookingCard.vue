@@ -115,7 +115,6 @@ export default {
   },
   methods: {
     canBeCancelled(status, paymentStatus) {
-      // Можно отменить только если статус PENDING или CONFIRMED
       return (status === 'PENDING' || status === 'CONFIRMED') && paymentStatus !== 'REFUNDED'
     },
     cancelBooking() {
@@ -129,7 +128,6 @@ export default {
     },
     async confirmCancel() {
       try {
-        // TODO: Добавить вызов API для отмены бронирования
         console.log('Cancelling booking:', this.booking.id)
         this.showCancelModal = false
       } catch (error) {
@@ -137,23 +135,18 @@ export default {
       }
     },
     getStatusClass(status, paymentStatus) {
-      // Если бронирование отменено или возвращено - красный
       if (status === 'CANCELLED' || paymentStatus === 'REFUNDED') {
         return 'text-red-600'
       }
-      // Если подтверждено или завершено - зеленый
       if (status === 'CONFIRMED' || status === 'COMPLETED') {
         return 'text-green-600'
       }
-      // Если ожидает оплаты - желтый
       if (status === 'PENDING' && paymentStatus === 'PENDING') {
         return 'text-yellow-600'
       }
-      // Если оплачено, но ожидает подтверждения - синий
       if (paymentStatus === 'PAID' && status === 'PENDING') {
         return 'text-blue-600'
       }
-      // По умолчанию серый
       return 'text-gray-600'
     },
     getCombinedStatus(status, paymentStatus) {
