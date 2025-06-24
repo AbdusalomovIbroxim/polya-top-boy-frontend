@@ -37,11 +37,11 @@
         <div v-if="showTypeDropdown" class="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-100 z-50">
           <button 
             v-for="type in fieldTypes" 
-            :key="type"
+            :key="type.id"
             class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
             @click="selectType(type)"
           >
-            {{ type }}
+            {{ type.name }}
           </button>
         </div>
       </div>
@@ -50,6 +50,8 @@
 </template>
 
 <script>
+import typesService from '@/services/typesServise';
+
 export default {
   name: 'FilterTabs',
   data() {
@@ -59,7 +61,18 @@ export default {
       selectedRegion: null,
       selectedType: null,
       regions: ['Ташкент', 'Самарканд', 'Бухара', 'Андижан', 'Наманган'],
-      fieldTypes: ['Футбол', 'Теннис', 'Волейбол', 'Баскетбол', 'Все']
+      fieldTypes: []
+    }
+  },
+  async created() {
+    try {
+      const response = await typesService.getTypes();
+      console.log('Ответ от API типов:', response.data);
+      this.fieldTypes = response.data.results;
+      console.log('Типы полей после загрузки:', this.fieldTypes);
+    } catch (error) {
+      console.error('Ошибка при получении типов полей:', error);
+      this.fieldTypes = []; // В случае ошибки оставляем список пустым
     }
   },
   methods: {
@@ -84,7 +97,7 @@ export default {
       this.showTypeDropdown = false;
       this.$emit('filter-changed', {
         region: this.selectedRegion,
-        type: type
+        type: type.name
       });
     },
     toggleMapView() {
