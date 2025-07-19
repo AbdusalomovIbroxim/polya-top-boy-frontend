@@ -50,14 +50,12 @@ export default {
       authLoading.value = true;
       authError.value = '';
       try {
-        // 1. Check/refresh token if already logged in
         let authed = false;
         if (localStorage.getItem('access') && localStorage.getItem('refresh')) {
           authed = await checkAndRefreshToken();
         }
-        // 2. If not authed, try Telegram WebApp auth
         if (!authed) {
-          const tg = window.Telegram?.WebApp;
+          const tg = window.location?.hash;
           const initData = tg?.initData || '';
           console.log('Telegram:', window.Telegram);
           console.log('Telegram.WebApp:', tg);
