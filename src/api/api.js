@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://10.12.0.191:8000/api/',
+  baseURL: 'https://polya-top-bot-backend.onrender.com/api/',
   headers: {
     'Content-Type': 'application/json'
   }
