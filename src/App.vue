@@ -12,6 +12,7 @@ export default {
     const isAuth = ref(false);
     const authLoading = ref(true);
     const authError = ref('');
+    const debugInfo = ref('');
 
     // --- Token refresh logic ---
     async function tryRefreshToken() {
@@ -58,6 +59,10 @@ export default {
         if (!authed) {
           const tg = window.Telegram?.WebApp;
           const initData = tg?.initData || '';
+          console.log('Telegram:', window.Telegram);
+          console.log('Telegram.WebApp:', tg);
+          console.log('initData:', initData);
+          debugInfo.value = `Telegram: ${!!window.Telegram}, WebApp: ${!!tg}, initData: ${initData}`;
           if (initData) {
             const data = await telegramAuth(initData);
             localStorage.setItem('access', data.access);
@@ -66,7 +71,11 @@ export default {
             isAuth.value = true;
           } else {
             isAuth.value = false;
-            authError.value = 'Нет данных Telegram WebApp';
+            if (!window.Telegram) {
+              authError.value = 'Вы не в Telegram Web App. Откройте сайт через Telegram.';
+            } else {
+              authError.value = 'Нет данных Telegram WebApp (initData пустой).';
+            }
           }
         } else {
           isAuth.value = true;
@@ -91,7 +100,7 @@ export default {
       }
     }, 10 * 60 * 1000);
 
-    return { user, isAuth, authLoading, authError, logout };
+    return { user, isAuth, authLoading, authError, logout, debugInfo };
   }
 }
 </script>
@@ -99,7 +108,10 @@ export default {
 <template>
   <div>
     <div v-if="authLoading" style="padding:2rem;text-align:center;">Авторизация через Telegram...</div>
-    <div v-else-if="!isAuth" style="padding:2rem;text-align:center;color:red;">Ошибка авторизации: {{ authError }}</div>
+    <div v-else-if="!isAuth" style="padding:2rem;text-align:center;color:red;">
+      Ошибка авторизации: {{ authError }}
+      <div style="color:#888;font-size:0.95em;margin-top:1em;">{{ debugInfo }}</div>
+    </div>
     <div v-else>
       <div style="padding:0.5rem 1rem 0 1rem;font-size:0.98rem;color:#6d8566;">
         <span style="font-weight:600;color:#131712;">@{{ user.username }}</span>
