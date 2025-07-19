@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900&display=swap');
+
+body {
+  font-family: 'Manrope', 'Noto Sans', sans-serif;
+  background: #fff;
+  color: #131712;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: inherit;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+} 
