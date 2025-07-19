@@ -1,7 +1,7 @@
 import api from './api';
 
 async function telegramAuth(initData) {
-  const response = await api.post('/telegram-auth/telegram_auth/', { init_data: initData });
+  const response = await api.post('/telegram-auth/', { init_data: initData });
   return response.data;
 }
 
