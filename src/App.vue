@@ -4,6 +4,18 @@ import './assets/css/main.css'
 import { ref, onMounted } from 'vue';
 import { telegramAuth, refreshToken, verifyToken } from './api/auth';
 
+function getTelegramInitData() {
+  // Всегда используем window.location.hash (tgWebAppData)
+  const hash = window.location.hash;
+  if (hash) {
+    const match = hash.match(/tgWebAppData=([^&]+)/);
+    if (match && match[1]) {
+      return decodeURIComponent(match[1]);
+    }
+  }
+  return '';
+}
+
 export default {
   name: 'App',
   components: { HomePage },
@@ -55,12 +67,9 @@ export default {
           authed = await checkAndRefreshToken();
         }
         if (!authed) {
-          const tg = window.location?.hash;
-          const initData = tg?.initData || '';
-          console.log('Telegram:', window.Telegram);
-          console.log('Telegram.WebApp:', tg);
+          const initData = getTelegramInitData();
           console.log('initData:', initData);
-          debugInfo.value = `Telegram: ${!!window.Telegram}, WebApp: ${!!tg}, initData: ${initData}`;
+          debugInfo.value = `initData: ${initData}`;
           if (initData) {
             const data = await telegramAuth(initData);
             localStorage.setItem('access', data.access);
@@ -69,11 +78,7 @@ export default {
             isAuth.value = true;
           } else {
             isAuth.value = false;
-            if (!window.Telegram) {
-              authError.value = 'Вы не в Telegram Web App. Откройте сайт через Telegram.';
-            } else {
-              authError.value = 'Нет данных Telegram WebApp (initData пустой).';
-            }
+            authError.value = 'Нет данных Telegram WebApp (initData пустой).';
           }
         } else {
           isAuth.value = true;
