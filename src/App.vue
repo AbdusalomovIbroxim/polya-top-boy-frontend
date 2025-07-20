@@ -73,7 +73,7 @@ export default {
           if (hasRequiredFields) {
             const userProfile = await telegramAuth(initData);
             console.log('userProfile from API:', userProfile);
-            user.value = userProfile;
+            user.value = userProfile.user;
             isAuth.value = true;
             console.log('isAuth:', isAuth.value, 'user:', user.value);
           } else {
@@ -108,7 +108,7 @@ export default {
           if (hasRequiredFields) {
             const userProfile = await telegramAuth(initData);
             console.log('userProfile from API:', userProfile);
-            user.value = userProfile;
+            user.value = userProfile.user;
             isAuth.value = true;
             console.log('isAuth:', isAuth.value, 'user:', user.value);
           } else {
