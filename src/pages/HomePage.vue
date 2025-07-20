@@ -1,5 +1,11 @@
 <template>
   <div class="home-root">
+    <Navbar title="Fields" />
+      <FiltersRow 
+        :openFilter="openFilter"
+        @openRegionDropdown="openRegionDropdown"
+        @openTypeDropdown="openTypeDropdown"
+      />
     <div class="filters-bar">
       <FilterDropdown
         :items="regionOptions"

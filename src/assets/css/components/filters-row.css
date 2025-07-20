@@ -91,11 +91,25 @@
   padding: 1rem 1.5rem 0.5rem 1.5rem;
   background: #fff;
   border-bottom: 1px solid #e9ecef;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
 }
 .filter-dropdown-inline {
-  flex: 1 1 0;
+  flex: 0 0 auto;
   min-width: 120px;
-  max-width: 220px;
+  max-width: 180px;
+}
+.filter-dropdown-btn {
+  font-size: 0.97rem;
+}
+.filter-dropdown-btn span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 110px;
+  font-size: 0.97rem;
 }
 
 .filter-dropdown-root {
