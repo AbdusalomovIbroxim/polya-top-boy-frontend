@@ -43,13 +43,7 @@ export default {
 }
 </script>
 
-<style scoped>
-/* .stadium-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-  min-height: 400px;
-} */
+<style src="@/assets/css/home.css">
 
 .loading {
   grid-column: 1 / -1;
