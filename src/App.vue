@@ -88,7 +88,7 @@ export default {
                                   (initData.includes('signature=') || initData.includes('hash='));
           if (hasRequiredFields) {
             const userProfile = await telegramAuth(initData);
-            user.value = userProfile;
+            user.value = userProfile.user;
             isAuth.value = true;
           } else {
             isAuth.value = false;
@@ -125,7 +125,7 @@ export default {
                                   (initData.includes('signature=') || initData.includes('hash='));
           if (hasRequiredFields) {
             const userProfile = await telegramAuth(initData);
-            user.value = userProfile;
+            user.value = userProfile.user;
             isAuth.value = true;
           } else {
             isAuth.value = false;
