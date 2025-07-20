@@ -1,11 +1,6 @@
 <template>
   <div class="home-root">
     <Navbar title="Fields" />
-      <FiltersRow 
-        :openFilter="openFilter"
-        @openRegionDropdown="openRegionDropdown"
-        @openTypeDropdown="openTypeDropdown"
-      />
     <div class="filters-bar">
       <FilterDropdown
         :items="regionOptions"
@@ -42,6 +37,7 @@ import {
   FilterDropdown, 
   Tabbar 
 } from '../components';
+
 
 export default {
   name: 'HomePage',
