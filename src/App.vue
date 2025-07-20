@@ -145,8 +145,7 @@ export default {
           // Валидация initData
           if (initData && initData.length > 0) {
             // Проверяем, что initData содержит необходимые поля
-            const hasRequiredFields = initData.includes('query_id=') && 
-                                    initData.includes('user=') && 
+            const hasRequiredFields = initData.includes('user=') && 
                                     initData.includes('auth_date=') && 
                                     (initData.includes('signature=') || initData.includes('hash='));
             
@@ -161,6 +160,7 @@ export default {
               isAuth.value = false;
               authError.value = 'Некорректный формат initData. Отсутствуют обязательные поля.';
               console.error('initData validation failed - missing required fields');
+              console.error('initData content:', initData);
             }
           } else {
             isAuth.value = false;
