@@ -1,6 +1,6 @@
 <script>
 import HomePage from './pages/HomePage.vue'
-import { LoadingScreen, ErrorScreen } from './components'
+import { LoadingScreen, ErrorScreen, Tabbar } from './components'
 import './assets/css/main.css'
 import { ref, onMounted, provide } from 'vue';
 import { telegramAuth } from './api/auth';
@@ -63,7 +63,8 @@ export default {
   components: { 
     HomePage,
     LoadingScreen,
-    ErrorScreen
+    ErrorScreen,
+    Tabbar
   },
   setup() {
     const user = ref(null);
@@ -162,7 +163,8 @@ export default {
       :debugInfo="debugInfo"
       @retry="retryAuth"
     />
-    <router-view />
+    <HomePage v-else />
+    <Tabbar />
   </div>
 </template>
 
