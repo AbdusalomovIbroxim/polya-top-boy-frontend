@@ -44,7 +44,14 @@ export default {
 </script>
 
 <style scoped>
-@import url("@/assets/css/home.css");
+.stadium-list {
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  background: #ffffff;
+  min-height: 400px;
+}
 
 .loading {
   grid-column: 1 / -1;

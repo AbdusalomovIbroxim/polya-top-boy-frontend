@@ -1,6 +1,7 @@
 <script>
 import HomePage from './pages/HomePage.vue'
 import './assets/css/main.css'
+import './assets/css/home.css'
 import { ref, onMounted } from 'vue';
 import { telegramAuth, refreshToken, verifyToken } from './api/auth';
 
