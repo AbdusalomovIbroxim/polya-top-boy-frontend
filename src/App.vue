@@ -90,6 +90,7 @@ export default {
             const userProfile = await telegramAuth(initData);
             user.value = userProfile.user;
             isAuth.value = true;
+            console.log("User set: " + user);
           } else {
             isAuth.value = false;
             authError.value = 'Некорректный формат initData. Отсутствуют обязательные поля.';
