@@ -84,7 +84,7 @@
 .stadium-list {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
   /* padding: 0.5rem 0 2rem 0; */
   text-align: start;
 }

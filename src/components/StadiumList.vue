@@ -44,14 +44,12 @@ export default {
 </script>
 
 <style scoped>
-.stadium-list {
-  padding: 1rem;
+/* .stadium-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1rem;
-  background: #f8f9fa;
   min-height: 400px;
-}
+} */
 
 .loading {
   grid-column: 1 / -1;
