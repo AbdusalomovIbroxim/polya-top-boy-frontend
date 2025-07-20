@@ -79,7 +79,7 @@ export default {
       if (openFilter.value === 'region' && regions.value.length === 0) {
         regionsLoading.value = true;
         getRegions().then(data => {
-          regions.value = data;
+          regions.value = data.results || data;
         }).finally(() => {
           regionsLoading.value = false;
         });
@@ -92,7 +92,7 @@ export default {
       if (openFilter.value === 'type' && types.value.length === 0) {
         typesLoading.value = true;
         getTypes().then(data => {
-          types.value = data;
+          types.value = data.results || data;
         }).finally(() => {
           typesLoading.value = false;
         });
