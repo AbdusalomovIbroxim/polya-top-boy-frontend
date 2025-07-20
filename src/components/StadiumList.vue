@@ -43,21 +43,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.stadium-list {
-  padding: 1rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-  background: #ffffff;
-  min-height: 400px;
-}
-
-.loading {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 2rem;
-  color: #6d8566;
-  font-size: 1rem;
-}
-</style> 
+<style src="../assets/css/components/stadium-list.css"></style> 

@@ -70,44 +70,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.tabbar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  border-top: 1px solid #e9ecef;
-  display: flex;
-  padding: 0.5rem 0;
-  z-index: 100;
-}
-
-.tabbar-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0.5rem;
-  text-decoration: none;
-  color: #6d8566;
-  transition: color 0.2s ease;
-}
-
-.tabbar-item.active {
-  color: #131712;
-}
-
-.tabbar-icon {
-  margin-bottom: 0.25rem;
-}
-
-.tabbar-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.tabbar-spacer {
-  height: 80px;
-}
-</style> 
+<style src="../assets/css/components/tabbar.css"></style> 

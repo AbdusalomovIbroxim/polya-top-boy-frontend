@@ -161,9 +161,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.home-root {
-  min-height: 100vh;
-  background: #f8f9fa;
-}
-</style> 
+<style src="../assets/css/pages/home.css"></style> 

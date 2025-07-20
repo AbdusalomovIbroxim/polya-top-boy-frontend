@@ -32,38 +32,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.filters-row {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  background: white;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #131712;
-  transition: all 0.2s ease;
-}
-
-.filter-btn:hover {
-  background: #e9ecef;
-}
-
-.filter-arrow {
-  transition: transform 0.2s ease;
-}
-
-.filter-arrow.open {
-  transform: rotate(180deg);
-}
-</style> 
+<style src="../assets/css/components/filters-row.css"></style> 

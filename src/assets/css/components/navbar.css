@@ -1,0 +1,44 @@
+/* Navbar Component Styles */
+.navbar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 0.5rem 0 0 0;
+  justify-content: space-between;
+}
+
+.navbar-title {
+  color: #131712;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+  flex: 1;
+  text-align: center;
+  letter-spacing: -0.015em;
+}
+
+.navbar-btn-wrap {
+  display: flex;
+  width: 3rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.navbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  background: transparent;
+  color: #131712;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  padding: 0;
+}
+
+.navbar-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 

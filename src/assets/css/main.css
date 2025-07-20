@@ -1,21 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900&display=swap');
+/* Main CSS File - Imports all component and page styles */
 
-body {
-  font-family: 'Manrope', 'Noto Sans', sans-serif;
-  background: #fff;
-  color: #131712;
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  box-sizing: border-box;
-  overflow-x: hidden;
-}
+/* App Styles */
+@import './app.css';
 
-* {
-  box-sizing: inherit;
-}
+/* Component Styles */
+@import './components/navbar.css';
+@import './components/filters-row.css';
+@import './components/stadium-card.css';
+@import './components/stadium-list.css';
+@import './components/filter-modal.css';
+@import './components/tabbar.css';
+@import './components/hello-world.css';
 
-img, svg {
-  display: block;
-  max-width: 100%;
-} 
+/* Page Styles */
+@import './pages/home.css';
+@import './pages/profile.css'; 

@@ -16,17 +16,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.navbar {
-  padding: 1rem;
-  background: white;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.navbar-title {
-  margin: 0;
-  color: #131712;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-</style> 
+<style src="../assets/css/components/navbar.css"></style> 

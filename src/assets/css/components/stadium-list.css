@@ -1,0 +1,14 @@
+/* StadiumList Component Styles */
+.stadium-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: start;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6d8566;
+  font-size: 1rem;
+} 
