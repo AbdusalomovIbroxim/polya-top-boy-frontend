@@ -7,7 +7,10 @@
       <div class="stadium-info-row">
         <div class="stadium-info">
           <p>Narxi: {{ formatPrice(stadium.price_per_hour) }} so'm/soat</p>
-          <p>4.8 (120 reviews)</p>
+          <p class="rating">
+            <span class="star">⭐</span>
+            4.8 (120 reviews)
+          </p>
         </div>
         <button class="stadium-open-btn" @click.stop="$emit('open', stadium)">
           <span>Open</span>
@@ -93,6 +96,18 @@ export default {
 
 .stadium-info p:last-child {
   color: #6d8566;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #6d8566;
+}
+
+.star {
+  font-size: 0.9rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .stadium-open-btn {
