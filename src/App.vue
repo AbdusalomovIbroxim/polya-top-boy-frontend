@@ -5,7 +5,13 @@ import { ref, onMounted } from 'vue';
 import { telegramAuth, refreshToken, verifyToken } from './api/auth';
 
 function getTelegramInitData() {
-  // Проверяем, есть ли Telegram Web App SDK
+  console.log('=== DEBUG: Getting Telegram InitData ===');
+  console.log('window.Telegram:', window.Telegram);
+  console.log('window.Telegram.WebApp:', window.Telegram?.WebApp);
+  
+  let initData = '';
+  
+  // Метод 1: Из window.Telegram.WebApp.initData (основной способ)
   if (window.Telegram && window.Telegram.WebApp) {
     const tg = window.Telegram.WebApp;
     
@@ -13,21 +19,62 @@ function getTelegramInitData() {
     tg.ready(); // Сообщаем Telegram что приложение готово
     tg.expand(); // Разворачиваем на весь экран
     
-    // Получаем initData из Telegram Web App
+    console.log('tg.initData:', tg.initData);
+    console.log('tg.initDataUnsafe:', tg.initDataUnsafe);
+    console.log('tg.initDataUnsafe.user:', tg.initDataUnsafe?.user);
+    
     if (tg.initData) {
-      return tg.initData;
+      initData = tg.initData;
+      console.log('Method 1 - Using tg.initData:', initData);
     }
   }
   
-  // Fallback для web.telegram.org - используем window.location.hash
-  const hash = window.location.hash;
-  if (hash) {
-    const match = hash.match(/tgWebAppData=([^&]+)/);
-    if (match && match[1]) {
-      return decodeURIComponent(match[1]);
+  // Метод 2: Из URL hash (для web.telegram.org)
+  if (!initData) {
+    const hash = window.location.hash;
+    console.log('window.location.hash:', hash);
+    
+    if (hash) {
+      const match = hash.match(/tgWebAppData=([^&]+)/);
+      if (match && match[1]) {
+        const decoded = decodeURIComponent(match[1]);
+        initData = decoded;
+        console.log('Method 2 - Using hash tgWebAppData:', initData);
+      }
     }
   }
-  return '';
+  
+  // Метод 3: Из URL search params
+  if (!initData) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tgWebAppData = urlParams.get('tgWebAppData');
+    if (tgWebAppData) {
+      initData = decodeURIComponent(tgWebAppData);
+      console.log('Method 3 - Using URL params tgWebAppData:', initData);
+    }
+  }
+  
+  // Метод 4: Из URL path (если данные передаются в пути)
+  if (!initData) {
+    const path = window.location.pathname;
+    console.log('window.location.pathname:', path);
+    
+    // Проверяем, есть ли данные в пути
+    const pathMatch = path.match(/\/tgWebAppData\/([^\/]+)/);
+    if (pathMatch && pathMatch[1]) {
+      const decoded = decodeURIComponent(pathMatch[1]);
+      initData = decoded;
+      console.log('Method 4 - Using path tgWebAppData:', initData);
+    }
+  }
+  
+  if (!initData) {
+    console.log('No initData found in any method');
+  } else {
+    console.log('Final initData:', initData);
+  }
+  
+  return initData;
 }
 
 export default {
@@ -95,15 +142,30 @@ export default {
           console.log('initData:', initData);
           debugInfo.value = `initData: ${initData}`;
           
-          if (initData) {
-            const data = await telegramAuth(initData);
-            localStorage.setItem('access', data.access);
-            localStorage.setItem('refresh', data.refresh);
-            user.value = data.user;
-            isAuth.value = true;
+          // Валидация initData
+          if (initData && initData.length > 0) {
+            // Проверяем, что initData содержит необходимые поля
+            const hasRequiredFields = initData.includes('query_id=') && 
+                                    initData.includes('user=') && 
+                                    initData.includes('auth_date=') && 
+                                    (initData.includes('signature=') || initData.includes('hash='));
+            
+            if (hasRequiredFields) {
+              console.log('initData validation passed');
+              const data = await telegramAuth(initData);
+              localStorage.setItem('access', data.access);
+              localStorage.setItem('refresh', data.refresh);
+              user.value = data.user;
+              isAuth.value = true;
+            } else {
+              isAuth.value = false;
+              authError.value = 'Некорректный формат initData. Отсутствуют обязательные поля.';
+              console.error('initData validation failed - missing required fields');
+            }
           } else {
             isAuth.value = false;
             authError.value = 'Нет данных Telegram WebApp (initData пустой).';
+            console.error('initData is empty');
           }
         } else {
           isAuth.value = true;
