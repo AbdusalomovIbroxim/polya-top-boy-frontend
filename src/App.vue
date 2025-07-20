@@ -1,5 +1,6 @@
 <script>
 import HomePage from './pages/HomePage.vue'
+import { LoadingScreen, ErrorScreen } from './components'
 import './assets/css/main.css'
 import { ref, onMounted } from 'vue';
 import { telegramAuth, refreshToken, verifyToken } from './api/auth';
@@ -79,7 +80,11 @@ function getTelegramInitData() {
 
 export default {
   name: 'App',
-  components: { HomePage },
+  components: { 
+    HomePage,
+    LoadingScreen,
+    ErrorScreen
+  },
   setup() {
     const user = ref(null);
     const isAuth = ref(false);
@@ -148,6 +153,40 @@ export default {
       localStorage.removeItem('refresh');
       user.value = null;
       isAuth.value = false;
+    }
+
+    async function retryAuth() {
+      authLoading.value = true;
+      authError.value = '';
+      
+      try {
+        const initData = getTelegramInitData();
+        if (initData && initData.length > 0) {
+          const hasRequiredFields = initData.includes('user=') && 
+                                  initData.includes('auth_date=') && 
+                                  (initData.includes('signature=') || initData.includes('hash='));
+          
+          if (hasRequiredFields) {
+            const data = await telegramAuth(initData);
+            localStorage.setItem('access', data.access);
+            localStorage.setItem('refresh', data.refresh);
+            user.value = data.user;
+            isAuth.value = true;
+          } else {
+            isAuth.value = false;
+            authError.value = 'Некорректный формат initData. Отсутствуют обязательные поля.';
+          }
+        } else {
+          isAuth.value = false;
+          authError.value = 'Нет данных Telegram WebApp (initData пустой).';
+        }
+      } catch (e) {
+        isAuth.value = false;
+        authError.value = e?.response?.data?.error || e.message || 'Ошибка авторизации';
+        await logout();
+      } finally {
+        authLoading.value = false;
+      }
     }
 
     onMounted(async () => {
@@ -223,21 +262,21 @@ export default {
       }
     }, 10 * 60 * 1000);
 
-    return { user, isAuth, authLoading, authError, logout, debugInfo };
+    return { user, isAuth, authLoading, authError, logout, debugInfo, retryAuth };
   }
 }
 </script>
 
 <template>
   <div>
-    <div v-if="authLoading" style="padding:2rem;text-align:center;">Авторизация через Telegram...</div>
-    <div v-else-if="!isAuth" style="padding:2rem;text-align:center;color:red;">
-      Ошибка авторизации: {{ authError }}
-      <div style="color:#888;font-size:0.95em;margin-top:1em;">{{ debugInfo }}</div>
-    </div>
-    <div v-else>
-      <HomePage />
-    </div>
+    <LoadingScreen v-if="authLoading" />
+    <ErrorScreen 
+      v-else-if="!isAuth" 
+      :error="authError"
+      :debugInfo="debugInfo"
+      @retry="retryAuth"
+    />
+    <HomePage v-else />
   </div>
 </template>
 

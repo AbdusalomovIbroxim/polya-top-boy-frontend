@@ -11,6 +11,7 @@
 @import './components/filter-modal.css';
 @import './components/tabbar.css';
 @import './components/hello-world.css';
+@import './components/loading.css';
 
 /* Page Styles */
 @import './pages/home.css';
