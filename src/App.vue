@@ -6,10 +6,6 @@ import { ref, onMounted, provide } from 'vue';
 import { telegramAuth, refreshToken, verifyToken, getCurrentUser } from './api/auth';
 
 function getTelegramInitData() {
-  console.log('=== DEBUG: Getting Telegram InitData ===');
-  console.log('window.Telegram:', window.Telegram);
-  console.log('window.Telegram.WebApp:', window.Telegram?.WebApp);
-  
   let initData = '';
   
   // Метод 1: Из window.Telegram.WebApp.initData (основной способ)
@@ -20,27 +16,20 @@ function getTelegramInitData() {
     tg.ready(); // Сообщаем Telegram что приложение готово
     tg.expand(); // Разворачиваем на весь экран
     
-    console.log('tg.initData:', tg.initData);
-    console.log('tg.initDataUnsafe:', tg.initDataUnsafe);
-    console.log('tg.initDataUnsafe.user:', tg.initDataUnsafe?.user);
-    
     if (tg.initData) {
       initData = tg.initData;
-      console.log('Method 1 - Using tg.initData:', initData);
     }
   }
   
   // Метод 2: Из URL hash (для web.telegram.org)
   if (!initData) {
     const hash = window.location.hash;
-    console.log('window.location.hash:', hash);
     
     if (hash) {
       const match = hash.match(/tgWebAppData=([^&]+)/);
       if (match && match[1]) {
         const decoded = decodeURIComponent(match[1]);
         initData = decoded;
-        console.log('Method 2 - Using hash tgWebAppData:', initData);
       }
     }
   }
@@ -51,28 +40,19 @@ function getTelegramInitData() {
     const tgWebAppData = urlParams.get('tgWebAppData');
     if (tgWebAppData) {
       initData = decodeURIComponent(tgWebAppData);
-      console.log('Method 3 - Using URL params tgWebAppData:', initData);
     }
   }
   
   // Метод 4: Из URL path (если данные передаются в пути)
   if (!initData) {
     const path = window.location.pathname;
-    console.log('window.location.pathname:', path);
     
     // Проверяем, есть ли данные в пути
     const pathMatch = path.match(/\/tgWebAppData\/([^\/]+)/);
     if (pathMatch && pathMatch[1]) {
       const decoded = decodeURIComponent(pathMatch[1]);
       initData = decoded;
-      console.log('Method 4 - Using path tgWebAppData:', initData);
     }
-  }
-  
-  if (!initData) {
-    console.log('No initData found in any method');
-  } else {
-    console.log('Final initData:', initData);
   }
   
   return initData;
@@ -109,34 +89,32 @@ export default {
       const access = localStorage.getItem('access');
       if (!access) return false;
       try {
-        const verify = await verifyToken(access);
+        await verifyToken(access);
         // verify.user_id есть, токен валиден
         const userData = await getCurrentUser(access);
         if (userData && userData.id) {
           user.value = userData;
+          isAuth.value = true;
           return true;
         } else {
-          console.error('Unexpected user data format:', userData);
           return false;
         }
       } catch (e) {
-        console.error('Token verification failed:', e);
         // access token is invalid/expired, try refresh
         const refreshed = await tryRefreshToken();
         if (refreshed) {
           try {
             const newAccess = localStorage.getItem('access');
-            const verify = await verifyToken(newAccess);
+            await verifyToken(newAccess);
             const userData = await getCurrentUser(newAccess);
             if (userData && userData.id) {
               user.value = userData;
+              isAuth.value = true;
               return true;
             } else {
-              console.error('Unexpected user data format after refresh:', userData);
               return false;
             }
           } catch (refreshError) {
-            console.error('Error getting user data after token refresh:', refreshError);
             return false;
           }
         }
@@ -206,7 +184,6 @@ export default {
         
         if (!authed) {
           const initData = getTelegramInitData();
-          console.log('initData:', initData);
           debugInfo.value = `initData: ${initData}`;
           
           // Валидация initData
@@ -217,7 +194,6 @@ export default {
                                     (initData.includes('signature=') || initData.includes('hash='));
             
             if (hasRequiredFields) {
-              console.log('initData validation passed');
               const data = await telegramAuth(initData);
               localStorage.setItem('access', data.access);
               localStorage.setItem('refresh', data.refresh);
@@ -226,18 +202,13 @@ export default {
             } else {
               isAuth.value = false;
               authError.value = 'Некорректный формат initData. Отсутствуют обязательные поля.';
-              console.error('initData validation failed - missing required fields');
-              console.error('initData content:', initData);
             }
           } else {
             isAuth.value = false;
             authError.value = 'Нет данных Telegram WebApp (initData пустой).';
-            console.error('initData is empty');
           }
         } else {
           isAuth.value = true;
-          console.log('User already authenticated, checking user data...');
-          console.log('Current user value:', user.value);
         }
       } catch (e) {
         isAuth.value = false;
