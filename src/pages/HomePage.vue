@@ -4,8 +4,8 @@
       <Navbar title="Fields" />
       <FiltersRow 
         :openFilter="openFilter"
-        @openRegionModal="openRegionModal"
-        @openTypeModal="openTypeModal"
+        @openRegionDropdown="openRegionDropdown"
+        @openTypeDropdown="openTypeDropdown"
       />
       <StadiumList 
         :stadiums="stadiums"
@@ -14,26 +14,27 @@
         @stadium-open="handleStadiumOpen"
       />
     </div>
-    
-    <!-- Filter Modals -->
-    <FilterModal
+    <!-- Filter Dropdowns -->
+    <FilterDropdown
+      v-if="openFilter === 'region'"
       :isOpen="openFilter === 'region'"
       title="Выберите регион"
       :items="regions"
       :loading="regionsLoading"
-      @close="closeModal"
+      :anchor="anchorEl"
+      @close="closeDropdown"
       @select="selectRegion"
     />
-    
-    <FilterModal
+    <FilterDropdown
+      v-if="openFilter === 'type'"
       :isOpen="openFilter === 'type'"
       title="Выберите тип"
       :items="types"
       :loading="typesLoading"
-      @close="closeModal"
+      :anchor="anchorEl"
+      @close="closeDropdown"
       @select="selectType"
     />
-    
     <Tabbar 
       activeTab="home"
       @tab-change="handleTabChange"
@@ -48,7 +49,7 @@ import {
   Navbar, 
   FiltersRow, 
   StadiumList, 
-  FilterModal, 
+  FilterDropdown, 
   Tabbar 
 } from '../components';
 
@@ -58,21 +59,22 @@ export default {
     Navbar,
     FiltersRow,
     StadiumList,
-    FilterModal,
+    FilterDropdown,
     Tabbar
   },
   setup() {
     const stadiums = ref([]);
     const loading = ref(true);
     const openFilter = ref(null);
-    
+    const anchorEl = ref(null);
     // Modal state
     const regions = ref([]);
     const regionsLoading = ref(false);
     const types = ref([]);
     const typesLoading = ref(false);
 
-    function openRegionModal() {
+    function openRegionDropdown(e) {
+      anchorEl.value = e.target.closest('.filter-btn');
       openFilter.value = openFilter.value === 'region' ? null : 'region';
       if (openFilter.value === 'region' && regions.value.length === 0) {
         regionsLoading.value = true;
@@ -84,7 +86,8 @@ export default {
       }
     }
 
-    function openTypeModal() {
+    function openTypeDropdown(e) {
+      anchorEl.value = e.target.closest('.filter-btn');
       openFilter.value = openFilter.value === 'type' ? null : 'type';
       if (openFilter.value === 'type' && types.value.length === 0) {
         typesLoading.value = true;
@@ -96,20 +99,20 @@ export default {
       }
     }
 
-    function closeModal() {
+    function closeDropdown() {
       openFilter.value = null;
     }
 
     function selectRegion(region) {
       // TODO: handle region selection
       console.log('Selected region:', region);
-      closeModal();
+      closeDropdown();
     }
 
     function selectType(type) {
       // TODO: handle type selection
       console.log('Selected type:', type);
-      closeModal();
+      closeDropdown();
     }
 
     function handleStadiumClick(stadium) {
@@ -144,13 +147,14 @@ export default {
       stadiums, 
       loading, 
       openFilter, 
+      anchorEl,
       regions, 
       regionsLoading, 
       types, 
       typesLoading,
-      openRegionModal, 
-      openTypeModal, 
-      closeModal, 
+      openRegionDropdown, 
+      openTypeDropdown, 
+      closeDropdown, 
       selectRegion, 
       selectType,
       handleStadiumClick,

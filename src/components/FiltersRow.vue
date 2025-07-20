@@ -1,6 +1,6 @@
 <template>
   <div class="filters-row">
-    <div class="filter-btn" @click="$emit('openRegionModal')">
+    <div class="filter-btn" @click="$emit('openRegionDropdown', $event)">
       Region
       <span :class="['filter-arrow', { open: openFilter === 'region' }]">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -8,7 +8,7 @@
         </svg>
       </span>
     </div>
-    <div class="filter-btn" @click="$emit('openTypeModal')">
+    <div class="filter-btn" @click="$emit('openTypeDropdown', $event)">
       Type
       <span :class="['filter-arrow', { open: openFilter === 'type' }]">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -28,7 +28,7 @@ export default {
       default: null
     }
   },
-  emits: ['openRegionModal', 'openTypeModal']
+  emits: ['openRegionDropdown', 'openTypeDropdown']
 }
 </script>
 
