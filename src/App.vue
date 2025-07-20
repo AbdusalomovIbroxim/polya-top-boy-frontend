@@ -3,18 +3,12 @@ import HomePage from './pages/HomePage.vue'
 import './assets/css/main.css'
 import { ref, onMounted } from 'vue';
 import { telegramAuth, refreshToken, verifyToken } from './api/auth';
-
-function getTelegramInitData() {
-  // Всегда используем window.location.hash (tgWebAppData)
-  const hash = window.location.hash;
-  if (hash) {
-    const match = hash.match(/tgWebAppData=([^&]+)/);
-    if (match && match[1]) {
-      return decodeURIComponent(match[1]);
-    }
-  }
-  return '';
-}
+import { 
+  initTelegramWebApp, 
+  getTelegramInitData, 
+  isTelegramWebApp,
+  getTelegramUser 
+} from './utils/telegram';
 
 export default {
   name: 'App',
@@ -61,15 +55,28 @@ export default {
     onMounted(async () => {
       authLoading.value = true;
       authError.value = '';
+      
       try {
+        // Инициализируем Telegram Web App
+        const tg = initTelegramWebApp();
+        
+        // Проверяем, запущено ли приложение в Telegram Web App
+        if (!isTelegramWebApp()) {
+          authError.value = 'Приложение должно быть запущено через Telegram бота';
+          authLoading.value = false;
+          return;
+        }
+
         let authed = false;
         if (localStorage.getItem('access') && localStorage.getItem('refresh')) {
           authed = await checkAndRefreshToken();
         }
+        
         if (!authed) {
           const initData = getTelegramInitData();
           console.log('initData:', initData);
           debugInfo.value = `initData: ${initData}`;
+          
           if (initData) {
             const data = await telegramAuth(initData);
             localStorage.setItem('access', data.access);
