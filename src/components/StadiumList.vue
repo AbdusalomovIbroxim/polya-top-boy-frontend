@@ -1,6 +1,6 @@
 <template>
   <div v-if="loading" class="stadium-list">
-    <div class="loading">Загрузка...</div>
+    <StadiumCardSkeleton v-for="n in 4" :key="n" />
   </div>
   <div v-else class="stadium-list">
     <StadiumCard 
@@ -15,11 +15,13 @@
 
 <script>
 import StadiumCard from './StadiumCard.vue'
+import StadiumCardSkeleton from './StadiumCardSkeleton.vue'
 
 export default {
   name: 'StadiumList',
   components: {
-    StadiumCard
+    StadiumCard,
+    StadiumCardSkeleton
   },
   props: {
     stadiums: {
