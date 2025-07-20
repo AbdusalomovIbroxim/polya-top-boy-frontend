@@ -1,34 +1,4 @@
 /* FiltersRow Component Styles */
-.filters-row {
-    background: #fff;
-  display: flex;
-  gap: 1.5rem;
-  padding: 0.5rem 1.5rem;
-  overflow-x: auto;
-}
-
-.filter-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  height: 2rem;
-  background: #f1f4f1;
-  color: #131712;
-  font-size: 0.95rem;
-  font-weight: 500;
-  border-radius: 0.5rem;
-  padding: 0 1rem;
-  white-space: nowrap;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.filter-btn:hover {
-  background: #e9ecef;
-}
-
 .filter-arrow {
   display: inline-flex;
   margin-left: 6px;
@@ -112,4 +82,85 @@
 }
 .filter-dropdown-list-item:hover {
   background: #f1f4f1;
+} 
+
+/* --- Новый FilterDropdown --- */
+.filters-bar {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.5rem 0.5rem 1.5rem;
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+}
+.filter-dropdown-inline {
+  flex: 1 1 0;
+  min-width: 120px;
+  max-width: 220px;
+}
+
+.filter-dropdown-root {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  display: inline-block;
+}
+.filter-dropdown-btn {
+  width: 100%;
+  padding: 0.75rem 1.2rem;
+  background: #f1f4f1;
+  color: #131712;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(109,133,102,0.04);
+}
+.filter-dropdown-btn:focus {
+  outline: 2px solid #4ddf20;
+}
+.dropdown-arrow {
+  margin-left: 0.5rem;
+  transition: transform 0.2s;
+}
+[aria-expanded='true'] .dropdown-arrow {
+  transform: rotate(180deg);
+}
+.filter-dropdown-listbox {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  z-index: 100;
+  padding: 0.5rem 0;
+  margin: 0;
+  list-style: none;
+  max-height: 260px;
+  overflow-y: auto;
+  animation: dropdownIn 0.18s cubic-bezier(.4,0,.2,1);
+}
+@keyframes dropdownIn {
+  from { transform: translateY(20px) scale(0.98); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.filter-dropdown-option {
+  padding: 0.7em 1.2em;
+  font-size: 1rem;
+  color: #131712;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border-radius: 0.5rem;
+}
+.filter-dropdown-option.selected,
+.filter-dropdown-option:hover {
+  background: #f1f4f1;
+  color: #53d22c;
 } 

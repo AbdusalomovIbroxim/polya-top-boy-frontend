@@ -1,39 +1,24 @@
 <template>
   <div class="home-root">
-    <div>
-      <Navbar title="Fields" />
-      <FiltersRow 
-        :openFilter="openFilter"
-        @openRegionDropdown="openRegionDropdown"
-        @openTypeDropdown="openTypeDropdown"
+    <div class="filters-bar">
+      <FilterDropdown
+        :items="regionOptions"
+        v-model="selectedRegion"
+        placeholder="Все регионы"
+        class="filter-dropdown-inline"
       />
-      <StadiumList 
-        :stadiums="stadiums"
-        :loading="loading"
-        @stadium-click="handleStadiumClick"
-        @stadium-open="handleStadiumOpen"
+      <FilterDropdown
+        :items="typeOptions"
+        v-model="selectedType"
+        placeholder="Все типы"
+        class="filter-dropdown-inline"
       />
     </div>
-    <!-- Filter Dropdowns -->
-    <FilterDropdown
-      v-if="openFilter === 'region'"
-      :isOpen="openFilter === 'region'"
-      title="Выберите регион"
-      :items="regions"
-      :loading="regionsLoading"
-      :anchor="anchorEl"
-      @close="closeDropdown"
-      @select="selectRegion"
-    />
-    <FilterDropdown
-      v-if="openFilter === 'type'"
-      :isOpen="openFilter === 'type'"
-      title="Выберите тип"
-      :items="types"
-      :loading="typesLoading"
-      :anchor="anchorEl"
-      @close="closeDropdown"
-      @select="selectType"
+    <StadiumList 
+      :stadiums="stadiums"
+      :loading="loading"
+      @stadium-click="handleStadiumClick"
+      @stadium-open="handleStadiumOpen"
     />
     <Tabbar 
       activeTab="home"
@@ -43,11 +28,10 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { getSportVenues, getRegions, getTypes } from '../api/fields';
 import { 
   Navbar, 
-  FiltersRow, 
   StadiumList, 
   FilterDropdown, 
   Tabbar 
@@ -57,7 +41,6 @@ export default {
   name: 'HomePage',
   components: {
     Navbar,
-    FiltersRow,
     StadiumList,
     FilterDropdown,
     Tabbar
@@ -65,56 +48,38 @@ export default {
   setup() {
     const stadiums = ref([]);
     const loading = ref(true);
-    const openFilter = ref(null);
-    const anchorEl = ref(null);
-    // Modal state
     const regions = ref([]);
-    const regionsLoading = ref(false);
     const types = ref([]);
-    const typesLoading = ref(false);
+    const selectedRegion = ref('');
+    const selectedType = ref('');
 
-    function openRegionDropdown(e) {
-      anchorEl.value = e.target.closest('.filter-btn');
-      openFilter.value = openFilter.value === 'region' ? null : 'region';
-      if (openFilter.value === 'region' && regions.value.length === 0) {
-        regionsLoading.value = true;
-        getRegions().then(data => {
-          regions.value = data.results || data;
-        }).finally(() => {
-          regionsLoading.value = false;
-        });
+    const regionOptions = computed(() => [
+      { id: '', name: 'Все регионы' },
+      ...regions.value.map(r => ({ id: r.id, name: r.name_ru || r.name }))
+    ]);
+    const typeOptions = computed(() => [
+      { id: '', name: 'Все типы' },
+      ...types.value.map(t => ({ id: t.id, name: t.name_ru || t.name }))
+    ]);
+
+    onMounted(async () => {
+      loading.value = true;
+      try {
+        const [venues, reg, typ] = await Promise.all([
+          getSportVenues(),
+          getRegions(),
+          getTypes()
+        ]);
+        stadiums.value = venues.results;
+        regions.value = reg.results || reg;
+        types.value = typ.results || typ;
+      } catch (e) {
+        console.error('Error loading data:', e);
+        stadiums.value = [];
+      } finally {
+        loading.value = false;
       }
-    }
-
-    function openTypeDropdown(e) {
-      anchorEl.value = e.target.closest('.filter-btn');
-      openFilter.value = openFilter.value === 'type' ? null : 'type';
-      if (openFilter.value === 'type' && types.value.length === 0) {
-        typesLoading.value = true;
-        getTypes().then(data => {
-          types.value = data.results || data;
-        }).finally(() => {
-          typesLoading.value = false;
-        });
-      }
-    }
-
-    function closeDropdown() {
-      openFilter.value = null;
-      anchorEl.value = null;
-    }
-
-    function selectRegion(region) {
-      // TODO: handle region selection
-      console.log('Selected region:', region);
-      closeDropdown();
-    }
-
-    function selectType(type) {
-      // TODO: handle type selection
-      console.log('Selected type:', type);
-      closeDropdown();
-    }
+    });
 
     function handleStadiumClick(stadium) {
       // TODO: handle stadium click - maybe navigate to detail page
@@ -131,33 +96,15 @@ export default {
       console.log('Tab changed to:', tabId);
     }
 
-    onMounted(async () => {
-      loading.value = true;
-      try {
-        const data = await getSportVenues();
-        stadiums.value = data.results;
-      } catch (e) {
-        console.error('Error loading stadiums:', e);
-        stadiums.value = [];
-      } finally {
-        loading.value = false;
-      }
-    });
-
     return {
       stadiums, 
       loading, 
-      openFilter, 
-      anchorEl,
-      regions, 
-      regionsLoading, 
-      types, 
-      typesLoading,
-      openRegionDropdown, 
-      openTypeDropdown, 
-      closeDropdown, 
-      selectRegion, 
-      selectType,
+      regions,
+      types,
+      selectedRegion,
+      selectedType,
+      regionOptions,
+      typeOptions,
       handleStadiumClick,
       handleStadiumOpen,
       handleTabChange

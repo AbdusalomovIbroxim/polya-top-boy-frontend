@@ -1,83 +1,91 @@
 <template>
-  <teleport to="body">
+  <div class="filter-dropdown-root" ref="dropdownRoot">
+    <button
+      class="filter-dropdown-btn"
+      @click="toggleDropdown"
+      :aria-expanded="isOpen"
+      type="button"
+    >
+      <span>{{ selectedLabel }}</span>
+      <svg class="dropdown-arrow" width="18" height="18" viewBox="0 0 20 20">
+        <path d="M6 8l4 4 4-4" stroke="#131712" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+    </button>
     <transition name="dropdown-fade">
-      <div v-if="isOpen" class="filter-dropdown-overlay" @mousedown.self="close">
-        <div class="filter-dropdown-popup" :style="popupStyle" ref="popup">
-          <div class="filter-dropdown-header">
-            <span>{{ title }}</span>
-            <button class="filter-dropdown-close" @click="close">×</button>
-          </div>
-          <div v-if="loading" class="filter-dropdown-loading">Загрузка...</div>
-          <ul v-else class="filter-dropdown-list">
-            <li 
-              v-for="item in items" 
-              :key="item.id" 
-              class="filter-dropdown-list-item" 
-              @click="select(item)"
-            >
-              {{ item.name_ru || item.name }}
-            </li>
-          </ul>
-        </div>
-      </div>
+      <ul
+        v-if="isOpen"
+        class="filter-dropdown-listbox"
+        ref="dropdownList"
+      >
+        <li
+          v-for="item in items"
+          :key="item.id || item.value || item"
+          :class="['filter-dropdown-option', { selected: isSelected(item) }]"
+          @click="select(item)"
+        >
+          {{ item.name_ru || item.name || item }}
+        </li>
+      </ul>
     </transition>
-  </teleport>
+  </div>
 </template>
 
-<script>
-import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
-export default {
-  name: 'FilterDropdown',
-  props: {
-    isOpen: Boolean,
-    title: String,
-    items: Array,
-    loading: Boolean,
-    anchor: HTMLElement // DOM-элемент кнопки, под которой открывать
-  },
-  emits: ['close', 'select'],
-  setup(props, { emit }) {
-    const popup = ref(null);
-    const popupStyle = ref({});
+<script setup>
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 
-    function close() {
-      emit('close');
-    }
-    function select(item) {
-      emit('select', item);
-      close();
-    }
+const props = defineProps({
+  items: { type: Array, required: true },
+  modelValue: { type: [String, Number, Object], default: '' },
+  placeholder: { type: String, default: 'Выбрать...' }
+});
+const emit = defineEmits(['update:modelValue']);
 
-    function updatePosition() {
-      if (props.anchor && popup.value) {
-        const rect = props.anchor.getBoundingClientRect();
-        popupStyle.value = {
-          position: 'fixed',
-          top: rect.bottom + 8 + 'px',
-          left: rect.left + 'px',
-          minWidth: rect.width + 'px',
-          zIndex: 3000
-        };
-      }
-    }
+const isOpen = ref(false);
+const dropdownRoot = ref(null);
 
-    onMounted(() => {
-      nextTick(updatePosition);
-      window.addEventListener('resize', updatePosition);
-      window.addEventListener('scroll', updatePosition, true);
-    });
-    onBeforeUnmount(() => {
-      window.removeEventListener('resize', updatePosition);
-      window.removeEventListener('scroll', updatePosition, true);
-    });
+const selectedLabel = computed(() => {
+  if (!props.modelValue || props.modelValue === '' || props.modelValue == null) return props.placeholder;
+  const found = props.items.find(
+    item => (item.id && item.id === props.modelValue) || (item.value && item.value === props.modelValue) || item === props.modelValue
+  );
+  return found ? (found.name_ru || found.name || found) : props.placeholder;
+});
 
-    watch(() => props.isOpen, (val) => {
-      if (val) nextTick(updatePosition);
-    });
+function toggleDropdown() {
+  isOpen.value = !isOpen.value;
+}
 
-    return { close, select, popup, popupStyle };
+function select(item) {
+  let value = item.id ?? item.value ?? item;
+  emit('update:modelValue', value);
+  isOpen.value = false;
+}
+
+function isSelected(item) {
+  return (
+    (item.id && item.id === props.modelValue) ||
+    (item.value && item.value === props.modelValue) ||
+    item === props.modelValue
+  );
+}
+
+function handleClickOutside(e) {
+  if (dropdownRoot.value && !dropdownRoot.value.contains(e.target)) {
+    isOpen.value = false;
   }
 }
+
+onMounted(() => {
+  document.addEventListener('mousedown', handleClickOutside);
+});
+onBeforeUnmount(() => {
+  document.removeEventListener('mousedown', handleClickOutside);
+});
+
+watch(() => props.modelValue, () => {
+  // Закрывать дропдаун при смене значения извне
+  isOpen.value = false;
+});
 </script>
 
-<!-- Стили перенесены в filters-row.css --> 
+<!-- Стили смотри в filters-row.css --> 
