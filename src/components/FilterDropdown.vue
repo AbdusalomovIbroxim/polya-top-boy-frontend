@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
 export default {
   name: 'FilterDropdown',
   props: {
@@ -69,6 +69,10 @@ export default {
     onBeforeUnmount(() => {
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition, true);
+    });
+
+    watch(() => props.isOpen, (val) => {
+      if (val) nextTick(updatePosition);
     });
 
     return { close, select, popup, popupStyle };

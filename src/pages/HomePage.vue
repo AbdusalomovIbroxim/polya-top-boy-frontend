@@ -101,6 +101,7 @@ export default {
 
     function closeDropdown() {
       openFilter.value = null;
+      anchorEl.value = null;
     }
 
     function selectRegion(region) {
