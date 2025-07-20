@@ -1,6 +1,7 @@
 <template>
   <div class="home-root">
     <div>
+      <Navbar title="Fields" />
       <FiltersRow 
         :openFilter="openFilter"
         @openRegionModal="openRegionModal"
