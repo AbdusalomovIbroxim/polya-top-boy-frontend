@@ -89,31 +89,15 @@
   position: relative;
   display: flex;
   gap: 1rem;
-  padding: 1rem 1.5rem 0.5rem 1.5rem;
+  padding: 1rem 2.5rem 0.5rem 2.5rem; /* увеличил padding */
   background: #fff;
   border-bottom: 1px solid #e9ecef;
   overflow-x: auto;
   overflow-y: visible;
   scrollbar-width: none; /* Firefox */
 }
-.filters-bar::after {
-  content: '';
-  position: absolute;
-  top: 0; right: 0; bottom: 0;
-  width: 32px;
-  pointer-events: none;
-  background: linear-gradient(to right, transparent, #fff 80%);
-  z-index: 2;
-}
-.filters-bar::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; bottom: 0;
-  width: 24px;
-  pointer-events: none;
-  background: linear-gradient(to left, transparent, #fff 80%);
-  z-index: 2;
-}
+/* Удаляю fade-эффект */
+/* .filters-bar::after, .filters-bar::before удалены */
 .filters-bar::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
 }
@@ -125,7 +109,24 @@
 }
 
 .filter-dropdown-btn {
-  font-size: 0.97rem;
+  width: 100%;
+  padding: 0.75rem 1.2rem;
+  background: #f1f4f1;
+  color: #131712;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(109,133,102,0.04);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .filter-dropdown-btn span {
   white-space: nowrap;
