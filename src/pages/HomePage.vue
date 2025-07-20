@@ -38,7 +38,6 @@ import {
   Tabbar 
 } from '../components';
 
-
 export default {
   name: 'HomePage',
   components: {
@@ -84,17 +83,14 @@ export default {
     });
 
     function handleStadiumClick(stadium) {
-      // TODO: handle stadium click - maybe navigate to detail page
       console.log('Stadium clicked:', stadium);
     }
 
     function handleStadiumOpen(stadium) {
-      // TODO: handle stadium open - maybe open booking modal
       console.log('Stadium open:', stadium);
     }
 
     function handleTabChange(tabId) {
-      // TODO: handle tab navigation
       console.log('Tab changed to:', tabId);
     }
 
