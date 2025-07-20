@@ -114,7 +114,7 @@
 
 .filter-dropdown-root {
   position: relative;
-  width: 100%;
+  /* width: 100%; */
   max-width: 340px;
   display: inline-block;
 }
