@@ -107,10 +107,10 @@
 }
 .stadium-content {
   text-align: start;
-  padding: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  background: transparent;
 }
 .stadium-title {
   color: #131712;

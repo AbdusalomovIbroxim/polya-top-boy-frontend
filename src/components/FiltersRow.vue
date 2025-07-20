@@ -45,64 +45,25 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border: 2px solid #e9ecef;
-  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.9rem;
   color: #131712;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow: hidden;
-}
-
-.filter-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.5s ease;
+  transition: all 0.2s ease;
 }
 
 .filter-btn:hover {
-  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-  border-color: #6d8566;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(109, 133, 102, 0.15);
-}
-
-.filter-btn:hover::before {
-  left: 100%;
-}
-
-.filter-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #e9ecef;
 }
 
 .filter-arrow {
-  transition: transform 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgba(109, 133, 102, 0.1);
+  transition: transform 0.2s ease;
 }
 
 .filter-arrow.open {
   transform: rotate(180deg);
-  background: rgba(109, 133, 102, 0.2);
-}
-
-.filter-btn:hover .filter-arrow {
-  background: rgba(109, 133, 102, 0.2);
 }
 </style> 

@@ -42,17 +42,15 @@ export default {
 
 <style scoped>
 .stadium-card {
-  background: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease;
+  border: 1px solid #e9ecef;
 }
 
 .stadium-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .stadium-img {
@@ -62,10 +60,6 @@ export default {
   background-position: center;
   background-repeat: no-repeat;
   background-color: #f8f9fa;
-}
-
-.stadium-content {
-  padding: 1rem;
 }
 
 .stadium-title {
