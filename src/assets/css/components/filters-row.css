@@ -86,6 +86,7 @@
 
 /* --- Новый FilterDropdown --- */
 .filters-bar {
+  position: relative;
   display: flex;
   gap: 1rem;
   padding: 1rem 1.5rem 0.5rem 1.5rem;
@@ -95,14 +96,34 @@
   overflow-y: visible;
   scrollbar-width: none; /* Firefox */
 }
+.filters-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 32px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, #fff 80%);
+  z-index: 10;
+}
+.filters-bar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 24px;
+  pointer-events: none;
+  background: linear-gradient(to left, transparent, #fff 80%);
+  z-index: 10;
+}
 .filters-bar::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
 }
+
 .filter-dropdown-inline {
   flex: 0 0 auto;
   min-width: 120px;
   max-width: 180px;
 }
+
 .filter-dropdown-btn {
   font-size: 0.97rem;
 }
@@ -155,14 +176,16 @@
   background: #fff;
   border-radius: 1rem;
   box-shadow: 0 8px 32px rgba(0,0,0,0.10);
-  z-index: 9999;
+  z-index: 9999 !important;
   padding: 0.5rem 0;
   margin: 0;
-  list-style: none;
+  list-style: none !important;
   max-height: 260px;
-  overflow-y: auto;
-  animation: dropdownIn 0.18s cubic-bezier(.4,0,.2,1);
+  overflow-y: auto !important;
+  animation: dropdownIn 0.18s cubic-bezier(.4,0,.2,1) !important;
 }
+
+
 @keyframes dropdownIn {
   from { transform: translateY(20px) scale(0.98); opacity: 0; }
   to { transform: none; opacity: 1; }
