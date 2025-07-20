@@ -17,25 +17,4 @@ async function telegramAuth(initData) {
   }
 }
 
-async function refreshToken(refresh) {
-  const response = await api.post('token/refresh/', { refresh });
-  return response.data;
-}
-
-async function verifyToken(token) {
-  const response = await api.post('token/verify/', { token });
-  return response.data;
-}
-
-
-async function getCurrentUser(access) {
-  const response = await api.get('users/me/', {
-    headers: {
-      'Authorization': 'Bearer ' + access
-    }
-  });
-  if (!response.ok) throw new Error('Failed to fetch user');
-  return response.json();
-}
-
-export { telegramAuth, refreshToken, verifyToken, getCurrentUser }; 
+export { telegramAuth };
