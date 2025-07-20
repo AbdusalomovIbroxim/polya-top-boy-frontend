@@ -139,8 +139,7 @@ export default {
       :debugInfo="debugInfo"
       @retry="retryAuth"
     />
-    <HomePage v-else />
-    <Tabbar />
+    <router-view v-else />
   </div>
 </template>
 

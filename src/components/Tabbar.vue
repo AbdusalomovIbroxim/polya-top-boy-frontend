@@ -73,4 +73,4 @@ export default {
 }
 </script>
 
-<style src="../assets/css/components/tabbar.css"></style> 
+<style src="../assets/css/components/tabbar.css"></style>
