@@ -54,7 +54,6 @@ export default {
   setup() {
     const user = ref(null);
     const isAuth = ref(false);
-    const authLoading = ref(true);
     const authError = ref('');
     const debugInfo = ref('');
 
@@ -64,7 +63,6 @@ export default {
     }
 
     async function retryAuth() {
-      authLoading.value = true;
       authError.value = '';
       try {
         const initData = getTelegramInitData();
@@ -76,7 +74,6 @@ export default {
             const userProfile = await telegramAuth(initData);
             user.value = userProfile.user;
             isAuth.value = true;
-            console.log("User set: " + user);
           } else {
             isAuth.value = false;
             authError.value = 'Некорректный формат initData. Отсутствуют обязательные поля.';
@@ -89,19 +86,15 @@ export default {
         isAuth.value = false;
         authError.value = e?.response?.data?.error || e.message || 'Ошибка авторизации';
         await logout();
-      } finally {
-        authLoading.value = false;
       }
     }
 
     onMounted(async () => {
-      authLoading.value = true;
       authError.value = '';
       try {
         const isTelegramWebApp = window.Telegram && window.Telegram.WebApp;
         if (!isTelegramWebApp) {
           authError.value = 'Приложение должно быть запущено через Telegram бота';
-          authLoading.value = false;
           return;
         }
         const initData = getTelegramInitData();
@@ -126,29 +119,28 @@ export default {
         isAuth.value = false;
         authError.value = e?.response?.data?.error || e.message || 'Ошибка авторизации';
         await logout();
-      } finally {
-        authLoading.value = false;
       }
     });
 
     provide('user', user);
     provide('logout', logout);
 
-    return { user, isAuth, authLoading, authError, logout, debugInfo, retryAuth };
+    return { user, isAuth, authError, logout, debugInfo, retryAuth };
   }
 }
 </script>
 
 <template>
   <div>
-    <LoadingScreen v-if="isAuth" />
+    <LoadingScreen v-if="!isAuth && !authError" />
     <ErrorScreen 
-      v-else-if="!isAuth" 
+      v-else-if="!isAuth && authError" 
       :error="authError"
       :debugInfo="debugInfo"
       @retry="retryAuth"
     />
     <HomePage v-else />
+    <Tabbar />
   </div>
 </template>
 
