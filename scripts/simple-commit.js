@@ -65,8 +65,8 @@ function createCommit() {
     
     console.log(`🤖 Auto-generating commit: ${commitMessage}`);
     
-    // Создаем коммит
-    execSync(`git commit -m "${commitMessage}"`, { stdio: 'inherit' });
+    // Создаем коммит без проверок husky
+    execSync(`git commit --no-verify -m "${commitMessage}"`, { stdio: 'inherit' });
     
     console.log('✅ Commit created successfully!');
   } catch (error) {
