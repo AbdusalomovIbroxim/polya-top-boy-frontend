@@ -1,6 +1,6 @@
 /* Global styles - базовые стили для всего приложения */
 :root {
-  font-family: 'Manrope', 'Noto Sans', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Montserrat', 'Manrope', 'Noto Sans', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: #131712;

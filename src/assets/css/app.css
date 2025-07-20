@@ -1,5 +1,6 @@
 /* App Component Styles */
 .logo {
+  font-family: 'Montserrat', 'Manrope', 'Noto Sans', system-ui, Avenir, Helvetica, Arial, sans-serif;
   height: 6em;
   padding: 1.5em;
   will-change: filter;
