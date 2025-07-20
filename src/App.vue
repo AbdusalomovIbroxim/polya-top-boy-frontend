@@ -1,4 +1,3 @@
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
 import HomePage from './pages/HomePage.vue'
 import './assets/css/main.css'
@@ -6,7 +5,22 @@ import { ref, onMounted } from 'vue';
 import { telegramAuth, refreshToken, verifyToken } from './api/auth';
 
 function getTelegramInitData() {
-  const hash = window.Telegram.WebApp;
+  // Проверяем, есть ли Telegram Web App SDK
+  if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
+    
+    // Инициализируем Telegram Web App
+    tg.ready(); // Сообщаем Telegram что приложение готово
+    tg.expand(); // Разворачиваем на весь экран
+    
+    // Получаем initData из Telegram Web App
+    if (tg.initData) {
+      return tg.initData;
+    }
+  }
+  
+  // Fallback для web.telegram.org - используем window.location.hash
+  const hash = window.location.hash;
   if (hash) {
     const match = hash.match(/tgWebAppData=([^&]+)/);
     if (match && match[1]) {
@@ -61,15 +75,26 @@ export default {
     onMounted(async () => {
       authLoading.value = true;
       authError.value = '';
+      
       try {
+        // Проверяем, запущено ли приложение в Telegram Web App
+        const isTelegramWebApp = window.Telegram && window.Telegram.WebApp;
+        if (!isTelegramWebApp) {
+          authError.value = 'Приложение должно быть запущено через Telegram бота';
+          authLoading.value = false;
+          return;
+        }
+
         let authed = false;
         if (localStorage.getItem('access') && localStorage.getItem('refresh')) {
           authed = await checkAndRefreshToken();
         }
+        
         if (!authed) {
           const initData = getTelegramInitData();
           console.log('initData:', initData);
           debugInfo.value = `initData: ${initData}`;
+          
           if (initData) {
             const data = await telegramAuth(initData);
             localStorage.setItem('access', data.access);
