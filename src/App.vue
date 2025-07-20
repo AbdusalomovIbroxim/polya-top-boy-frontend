@@ -2,7 +2,7 @@
 import HomePage from './pages/HomePage.vue'
 import { LoadingScreen, ErrorScreen } from './components'
 import './assets/css/main.css'
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, provide } from 'vue';
 import { telegramAuth, refreshToken, verifyToken } from './api/auth';
 
 function getTelegramInitData() {
@@ -261,6 +261,9 @@ export default {
         }
       }
     }, 10 * 60 * 1000);
+
+    provide('user', user);
+    provide('logout', logout);
 
     return { user, isAuth, authLoading, authError, logout, debugInfo, retryAuth };
   }
