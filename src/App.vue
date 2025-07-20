@@ -276,7 +276,7 @@ export default {
       :debugInfo="debugInfo"
       @retry="retryAuth"
     />
-    <HomePage v-else />
+    <router-view />
   </div>
 </template>
 
