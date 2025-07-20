@@ -7,24 +7,16 @@ import { telegramAuth } from './api/auth';
 
 function getTelegramInitData() {
   let initData = '';
-  
-  // Метод 1: Из window.Telegram.WebApp.initData (основной способ)
   if (window.Telegram && window.Telegram.WebApp) {
     const tg = window.Telegram.WebApp;
-    
-    // Инициализируем Telegram Web App
-    tg.ready(); // Сообщаем Telegram что приложение готово
-    tg.expand(); // Разворачиваем на весь экран
-    
+    tg.ready();
+    tg.expand();
     if (tg.initData) {
       initData = tg.initData;
     }
   }
-  
-  // Метод 2: Из URL hash (для web.telegram.org)
   if (!initData) {
     const hash = window.location.hash;
-    
     if (hash) {
       const match = hash.match(/tgWebAppData=([^&]+)/);
       if (match && match[1]) {
@@ -33,8 +25,6 @@ function getTelegramInitData() {
       }
     }
   }
-  
-  // Метод 3: Из URL search params
   if (!initData) {
     const urlParams = new URLSearchParams(window.location.search);
     const tgWebAppData = urlParams.get('tgWebAppData');
@@ -42,19 +32,14 @@ function getTelegramInitData() {
       initData = decodeURIComponent(tgWebAppData);
     }
   }
-  
-  // Метод 4: Из URL path (если данные передаются в пути)
   if (!initData) {
     const path = window.location.pathname;
-    
-    // Проверяем, есть ли данные в пути
     const pathMatch = path.match(/\/tgWebAppData\/([^\/]+)/);
     if (pathMatch && pathMatch[1]) {
       const decoded = decodeURIComponent(pathMatch[1]);
       initData = decoded;
     }
   }
-  
   return initData;
 }
 
@@ -156,7 +141,7 @@ export default {
 
 <template>
   <div>
-    <LoadingScreen v-if="authLoading" />
+    <LoadingScreen v-if="isAuth" />
     <ErrorScreen 
       v-else-if="!isAuth" 
       :error="authError"
@@ -164,7 +149,6 @@ export default {
       @retry="retryAuth"
     />
     <HomePage v-else />
-    <Tabbar />
   </div>
 </template>
 
