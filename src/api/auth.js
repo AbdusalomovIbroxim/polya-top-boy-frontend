@@ -29,7 +29,7 @@ async function verifyToken(token) {
 
 
 async function getCurrentUser(access) {
-  const response = await api.post('users/me/', {
+  const response = await api.get('users/me/', {
     headers: {
       'Authorization': 'Bearer ' + access
     }
