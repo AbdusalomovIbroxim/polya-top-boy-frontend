@@ -3,7 +3,7 @@ import HomePage from './pages/HomePage.vue'
 import { LoadingScreen, ErrorScreen } from './components'
 import './assets/css/main.css'
 import { ref, onMounted, provide } from 'vue';
-import { telegramAuth, refreshToken, verifyToken } from './api/auth';
+import { telegramAuth, refreshToken, verifyToken, getCurrentUser } from './api/auth';
 
 function getTelegramInitData() {
   console.log('=== DEBUG: Getting Telegram InitData ===');
