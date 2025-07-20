@@ -7,7 +7,6 @@ const api = axios.create({
   }
 });
 
-// Add Authorization header if access token exists
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('access');
   if (token) {

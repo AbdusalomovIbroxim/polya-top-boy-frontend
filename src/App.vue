@@ -109,18 +109,16 @@ export default {
       const access = localStorage.getItem('access');
       if (!access) return false;
       try {
-        const userData = await verifyToken(access);
-        // verifyToken должен возвращать данные пользователя
-        if (userData && userData.user) {
-          user.value = userData.user;
-        } else if (userData && userData.username) {
-          // Если API возвращает пользователя напрямую
+        const verify = await verifyToken(access);
+        // verify.user_id есть, токен валиден
+        const userData = await getCurrentUser(access); // новый запрос!
+        if (userData && userData.id) {
           user.value = userData;
+          return true;
         } else {
           console.error('Unexpected user data format:', userData);
           return false;
         }
-        return true;
       } catch (e) {
         console.error('Token verification failed:', e);
         // access token is invalid/expired, try refresh
