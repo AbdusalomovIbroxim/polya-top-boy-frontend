@@ -92,8 +92,11 @@
   background: #fff;
   border-bottom: 1px solid #e9ecef;
   overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
+  overflow-y: visible;
+  scrollbar-width: none; /* Firefox */
+}
+.filters-bar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }
 .filter-dropdown-inline {
   flex: 0 0 auto;
@@ -114,7 +117,6 @@
 
 .filter-dropdown-root {
   position: relative;
-  /* width: 100%; */
   max-width: 340px;
   display: inline-block;
 }
@@ -153,7 +155,7 @@
   background: #fff;
   border-radius: 1rem;
   box-shadow: 0 8px 32px rgba(0,0,0,0.10);
-  z-index: 100;
+  z-index: 9999;
   padding: 0.5rem 0;
   margin: 0;
   list-style: none;
