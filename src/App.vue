@@ -168,6 +168,7 @@ export default {
             localStorage.setItem('refresh', data.refresh);
             user.value = data.user;
             isAuth.value = true;
+            console.log('USER SET:', user.value);
           } else {
             isAuth.value = false;
             authError.value = 'Некорректный формат initData. Отсутствуют обязательные поля.';
