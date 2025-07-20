@@ -236,15 +236,6 @@ export default {
       <div style="color:#888;font-size:0.95em;margin-top:1em;">{{ debugInfo }}</div>
     </div>
     <div v-else>
-      <div v-if="user" style="padding:0.5rem 1rem 0 1rem;font-size:0.98rem;color:#6d8566;">
-        <span style="font-weight:600;color:#131712;">@{{ user.username }}</span>
-        <span v-if="user.first_name || user.last_name"> — {{ user.first_name }} {{ user.last_name }}</span>
-        <button @click="logout" style="float:right;font-size:0.95em;color:#d33;background:none;border:none;cursor:pointer;">Выйти</button>
-      </div>
-      <div v-else style="padding:0.5rem 1rem 0 1rem;font-size:0.98rem;color:#6d8566;">
-        <span>Загрузка профиля...</span>
-        <button @click="logout" style="float:right;font-size:0.95em;color:#d33;background:none;border:none;cursor:pointer;">Выйти</button>
-      </div>
       <HomePage />
     </div>
   </div>
