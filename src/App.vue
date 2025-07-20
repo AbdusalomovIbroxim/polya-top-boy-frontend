@@ -3,7 +3,8 @@ import HomePage from './pages/HomePage.vue'
 import { LoadingScreen, ErrorScreen } from './components'
 import './assets/css/main.css'
 import { ref, onMounted, provide } from 'vue';
-import { telegramAuth, refreshToken, verifyToken, getCurrentUser } from './api/auth';
+import { telegramAuth, refreshToken, verifyToken } from './api/auth';
+import { getCurrentUser } from './api/users';
 
 function getTelegramInitData() {
   console.log('=== DEBUG: Getting Telegram InitData ===');
@@ -111,7 +112,7 @@ export default {
       try {
         const verify = await verifyToken(access);
         // verify.user_id есть, токен валиден
-        const userData = await getCurrentUser(access); // новый запрос!
+        const userData = await getCurrentUser(access);
         if (userData && userData.id) {
           user.value = userData;
           return true;
@@ -124,19 +125,17 @@ export default {
         // access token is invalid/expired, try refresh
         const refreshed = await tryRefreshToken();
         if (refreshed) {
-          // После успешного обновления токена нужно получить данные пользователя
           try {
             const newAccess = localStorage.getItem('access');
-            const userData = await verifyToken(newAccess);
-            if (userData && userData.user) {
-              user.value = userData.user;
-            } else if (userData && userData.username) {
+            const verify = await verifyToken(newAccess);
+            const userData = await getCurrentUser(newAccess);
+            if (userData && userData.id) {
               user.value = userData;
+              return true;
             } else {
               console.error('Unexpected user data format after refresh:', userData);
               return false;
             }
-            return true;
           } catch (refreshError) {
             console.error('Error getting user data after token refresh:', refreshError);
             return false;

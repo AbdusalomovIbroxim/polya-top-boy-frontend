@@ -29,13 +29,13 @@ async function verifyToken(token) {
 
 
 async function getCurrentUser(access) {
-  const res = await fetch('users/me/', {
+  const response = await api.post('users/me/', {
     headers: {
       'Authorization': 'Bearer ' + access
     }
   });
-  if (!res.ok) throw new Error('Failed to fetch user');
-  return await res.json();
+  if (!response.ok) throw new Error('Failed to fetch user');
+  return response.json();
 }
 
 export { telegramAuth, refreshToken, verifyToken, getCurrentUser }; 
