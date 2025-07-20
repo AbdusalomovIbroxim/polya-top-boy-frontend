@@ -89,17 +89,9 @@
   position: relative;
   display: flex;
   gap: 1rem;
-  padding: 1rem 2.5rem 0.5rem 2.5rem; /* увеличил padding */
+  padding: 1rem 1.5rem 0.5rem 1.5rem;
   background: #fff;
   border-bottom: 1px solid #e9ecef;
-  overflow-x: auto;
-  overflow-y: visible;
-  scrollbar-width: none; /* Firefox */
-}
-/* Удаляю fade-эффект */
-/* .filters-bar::after, .filters-bar::before удалены */
-.filters-bar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
 }
 
 .filter-dropdown-inline {
