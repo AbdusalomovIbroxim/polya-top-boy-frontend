@@ -72,8 +72,10 @@ export default {
                                   (initData.includes('signature=') || initData.includes('hash='));
           if (hasRequiredFields) {
             const userProfile = await telegramAuth(initData);
-            user.value = userProfile.user;
+            console.log('userProfile from API:', userProfile);
+            user.value = userProfile;
             isAuth.value = true;
+            console.log('isAuth:', isAuth.value, 'user:', user.value);
           } else {
             isAuth.value = false;
             authError.value = 'Некорректный формат initData. Отсутствуют обязательные поля.';
@@ -105,8 +107,10 @@ export default {
                                   (initData.includes('signature=') || initData.includes('hash='));
           if (hasRequiredFields) {
             const userProfile = await telegramAuth(initData);
-            user.value = userProfile.user;
+            console.log('userProfile from API:', userProfile);
+            user.value = userProfile;
             isAuth.value = true;
+            console.log('isAuth:', isAuth.value, 'user:', user.value);
           } else {
             isAuth.value = false;
             authError.value = 'Некорректный формат initData. Отсутствуют обязательные поля.';
