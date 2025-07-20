@@ -43,7 +43,8 @@ export default {
 }
 </script>
 
-<style src="@/assets/css/home.css">
+<style scoped>
+@import url("@/assets/css/home.css");
 
 .loading {
   grid-column: 1 / -1;
