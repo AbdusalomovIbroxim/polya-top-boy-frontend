@@ -143,7 +143,7 @@ export default {
       :debugInfo="debugInfo"
       @retry="retryAuth"
     />
-    <router-view v-else />
+    <router-view v-if="isAuth" />
   </div>
 </template>
 
