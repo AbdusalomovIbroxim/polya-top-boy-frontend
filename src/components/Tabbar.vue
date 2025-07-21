@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <!-- <div> -->
     <div class="tabbar">
       <a 
         v-for="tab in tabs" 
@@ -13,7 +13,7 @@
       </a>
     </div>
     <!-- <div class="tabbar-spacer"></div> -->
-  </div>
+  <!-- </div> -->
 </template>
 
 <script>
