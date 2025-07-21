@@ -1,7 +1,14 @@
 <template>
   <div class="stadium-card" @click="$emit('click', stadium)">
-    <div class="stadium-slider" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd">
-      <button v-if="images.length > 1" class="slider-arrow left" @click.stop="prevImage">&#8592;</button>
+    <div class="stadium-slider"
+      @touchstart="onTouchStart"
+      @touchmove="onTouchMove"
+      @touchend="onTouchEnd"
+      @mousedown="onMouseDown"
+      @mousemove="onMouseMove"
+      @mouseup="onMouseUp"
+      @mouseleave="onMouseUp"
+    >
       <div class="slider-img-wrap">
         <img
           v-if="images.length > 0"
@@ -11,7 +18,6 @@
         />
         <div v-else class="slider-img slider-img-placeholder">Нет фото</div>
       </div>
-      <button v-if="images.length > 1" class="slider-arrow right" @click.stop="nextImage">&#8594;</button>
     </div>
     <div class="stadium-content">
       <p class="stadium-title">{{ stadium.name }}</p>
@@ -46,7 +52,10 @@ export default {
     return {
       currentImage: 0,
       touchStartX: 0,
-      touchEndX: 0
+      touchEndX: 0,
+      mouseDown: false,
+      mouseStartX: 0,
+      mouseEndX: 0
     }
   },
   computed: {
@@ -60,22 +69,21 @@ export default {
       const num = Math.round(Number(price) * 3000);
       return num.toLocaleString('ru-RU');
     },
-    prevImage(e) {
-      e && e.stopPropagation();
-      if (this.currentImage > 0) {
-        this.currentImage--;
-      } else {
-        this.currentImage = this.images.length - 1;
-      }
-    },
-    nextImage(e) {
-      e && e.stopPropagation();
+    nextImage() {
       if (this.currentImage < this.images.length - 1) {
         this.currentImage++;
       } else {
         this.currentImage = 0;
       }
     },
+    prevImage() {
+      if (this.currentImage > 0) {
+        this.currentImage--;
+      } else {
+        this.currentImage = this.images.length - 1;
+      }
+    },
+    // Touch events
     onTouchStart(e) {
       this.touchStartX = e.touches[0].clientX;
     },
@@ -93,6 +101,29 @@ export default {
       }
       this.touchStartX = 0;
       this.touchEndX = 0;
+    },
+    // Mouse events
+    onMouseDown(e) {
+      this.mouseDown = true;
+      this.mouseStartX = e.clientX;
+    },
+    onMouseMove(e) {
+      if (!this.mouseDown) return;
+      this.mouseEndX = e.clientX;
+    },
+    onMouseUp() {
+      if (!this.mouseDown) return;
+      const dx = this.mouseEndX - this.mouseStartX;
+      if (Math.abs(dx) > 40) {
+        if (dx < 0) {
+          this.nextImage();
+        } else {
+          this.prevImage();
+        }
+      }
+      this.mouseDown = false;
+      this.mouseStartX = 0;
+      this.mouseEndX = 0;
     }
   }
 }
