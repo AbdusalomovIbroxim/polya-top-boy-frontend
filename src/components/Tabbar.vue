@@ -1,19 +1,16 @@
 <template>
   <div>
     <div class="tabbar">
-      <router-link 
+      <a 
         v-for="tab in tabs" 
         :key="tab.id"
-        :to="tab.id === 'home' ? '/' : (tab.id === 'profile' ? '/profile' : '#')"
         :class="['tabbar-item', { active: activeTab === tab.id }]"
-        custom
-        v-slot="{ navigate, href }"
+        href="#"
+        @click.prevent="$emit('tab-change', tab.id)"
       >
-        <a :href="href" @click.prevent="navigate">
-          <span class="tabbar-icon" v-html="tab.icon"></span>
-          <span class="tabbar-label">{{ tab.label }}</span>
-        </a>
-      </router-link>
+        <span class="tabbar-icon" v-html="tab.icon"></span>
+        <span class="tabbar-label">{{ tab.label }}</span>
+      </a>
     </div>
     <div class="tabbar-spacer"></div>
   </div>

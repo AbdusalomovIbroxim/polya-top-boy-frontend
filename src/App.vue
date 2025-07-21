@@ -1,5 +1,6 @@
 <script>
 import HomePage from './pages/HomePage.vue'
+import ProfilePage from './pages/ProfilePage.vue'
 import { LoadingScreen, ErrorScreen, Tabbar } from './components'
 import './assets/css/main.css'
 import { ref, onMounted, provide } from 'vue';
@@ -47,6 +48,7 @@ export default {
   name: 'App',
   components: { 
     HomePage,
+    ProfilePage,
     LoadingScreen,
     ErrorScreen,
     Tabbar
@@ -56,10 +58,15 @@ export default {
     const isAuth = ref(false);
     const authError = ref('');
     const debugInfo = ref('');
+    const currentPage = ref('home');
 
     async function logout() {
       user.value = null;
       isAuth.value = false;
+    }
+
+    function changePage(page) {
+      currentPage.value = page;
     }
 
     async function retryAuth() {
@@ -128,8 +135,9 @@ export default {
 
     provide('user', user);
     provide('logout', logout);
+    provide('changePage', changePage);
 
-    return { user, isAuth, authError, logout, debugInfo, retryAuth };
+    return { user, isAuth, authError, logout, debugInfo, retryAuth, currentPage, changePage };
   }
 }
 </script>
@@ -143,7 +151,11 @@ export default {
       :debugInfo="debugInfo"
       @retry="retryAuth"
     />
-    <router-view v-if="isAuth" />
+    <template v-else>
+      <HomePage v-if="currentPage === 'home'" />
+      <ProfilePage v-else-if="currentPage === 'profile'" />
+    </template>
+    <Tabbar v-if="isAuth" :activeTab="currentPage" @tab-change="changePage" />
   </div>
 </template>
 
