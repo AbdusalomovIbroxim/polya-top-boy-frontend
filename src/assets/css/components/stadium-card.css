@@ -81,7 +81,7 @@
 .stadium-info-row {
   display: flex;
   justify-content: space-between;
-  flex-direction: column;
+  flex-direction: flex-end;
   align-items: center;
   gap: 0.7em;
   width: 100%;
@@ -92,9 +92,9 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  flex-direction: column;
   gap: 0.7em;
   min-width: 0;
-  flex: 1 1 0;
   overflow: hidden;
 }
 
