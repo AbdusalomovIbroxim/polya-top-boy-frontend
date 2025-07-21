@@ -57,7 +57,11 @@ export default {
       dragCurrentX: 0,
       isDragging: false,
       dragOffset: 0,
-      mouseDown: false
+      mouseDown: false,
+      // Для защиты от вертикального скролла
+      touchStartX: 0,
+      touchStartY: 0,
+      isHorizontalSwipe: null
     }
   },
   computed: {
@@ -100,17 +104,40 @@ export default {
     // Touch
     onTouchStart(e) {
       this.dragStartX = e.touches[0].clientX;
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStartY = e.touches[0].clientY;
       this.isDragging = true;
+      this.isHorizontalSwipe = null;
       this.dragOffset = 0;
     },
     onTouchMove(e) {
       if (!this.isDragging) return;
-      this.dragCurrentX = e.touches[0].clientX;
-      const dx = this.dragCurrentX - this.dragStartX;
-      if ((this.currentImage === 0 && dx > 0) || (this.currentImage === this.images.length - 1 && dx < 0)) {
+      const x = e.touches[0].clientX;
+      const y = e.touches[0].clientY;
+      const dx = x - this.touchStartX;
+      const dy = y - this.touchStartY;
+
+      // Определяем направление свайпа только при первом движении
+      if (this.isHorizontalSwipe === null) {
+        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+          this.isHorizontalSwipe = Math.abs(dx) > Math.abs(dy);
+        }
+      }
+
+      // Если вертикальный свайп — не мешаем скроллу страницы
+      if (this.isHorizontalSwipe === false) {
+        this.isDragging = false;
+        this.dragOffset = 0;
+        return;
+      }
+
+      // Горизонтальный свайп — работаем как раньше
+      this.dragCurrentX = x;
+      const dragDx = this.dragCurrentX - this.dragStartX;
+      if ((this.currentImage === 0 && dragDx > 0) || (this.currentImage === this.images.length - 1 && dragDx < 0)) {
         this.dragOffset = 0;
       } else {
-        this.dragOffset = dx;
+        this.dragOffset = dragDx;
       }
     },
     onTouchEnd() {
