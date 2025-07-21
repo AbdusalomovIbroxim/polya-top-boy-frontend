@@ -80,6 +80,7 @@ let mouseDown = false
 let touchStartX = 0
 let touchStartY = 0
 let isHorizontalSwipe = null
+let hasSwiped = false
 
 function onTouchStart(e) {
   dragStartX = e.touches[0].clientX;
@@ -88,6 +89,7 @@ function onTouchStart(e) {
   isDragging = true;
   isHorizontalSwipe = null;
   dragOffset = 0;
+  hasSwiped = false;
 }
 function onTouchMove(e) {
   if (!isDragging) return;
@@ -109,11 +111,12 @@ function onTouchMove(e) {
   dragOffset = dragCurrentX - dragStartX;
 }
 function onTouchEnd() {
-  if (!isDragging) return;
+  if (!isDragging || hasSwiped) return;
   const dx = dragCurrentX - dragStartX;
   if (Math.abs(dx) > 40) {
     if (dx < 0 && currentImage.value < images.value.length - 1) currentImage.value++;
     else if (dx > 0 && currentImage.value > 0) currentImage.value--;
+    hasSwiped = true;
   }
   isDragging = false;
   dragOffset = 0;
@@ -125,6 +128,7 @@ function onMouseDown(e) {
   isDragging = true;
   dragStartX = e.clientX;
   dragOffset = 0;
+  hasSwiped = false;
 }
 function onMouseMove(e) {
   if (!mouseDown || !isDragging) return;
@@ -132,11 +136,12 @@ function onMouseMove(e) {
   dragOffset = dragCurrentX - dragStartX;
 }
 function onMouseUp() {
-  if (!mouseDown || !isDragging) return;
+  if (!mouseDown || !isDragging || hasSwiped) return;
   const dx = dragCurrentX - dragStartX;
   if (Math.abs(dx) > 40) {
     if (dx < 0 && currentImage.value < images.value.length - 1) currentImage.value++;
     else if (dx > 0 && currentImage.value > 0) currentImage.value--;
+    hasSwiped = true;
   }
   mouseDown = false;
   isDragging = false;
