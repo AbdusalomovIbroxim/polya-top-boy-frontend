@@ -50,6 +50,14 @@ const router = useRouter()
 const props = defineProps({ stadium: Object })
 
 const images = computed(() => Array.isArray(props.stadium?.images) ? props.stadium.images : [])
+
+function shortPrice(price) {
+  if (!price) return '-';
+  const num = Number(price);
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace('.0', '') + ' млн';
+  if (num >= 1_000) return (num / 1_000).toFixed(0) + ' тыс';
+  return num.toLocaleString('ru-RU');
+}
 </script>
 
 <style src="../assets/css/components/stadium-card.css"></style> 
