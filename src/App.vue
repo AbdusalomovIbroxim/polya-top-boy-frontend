@@ -143,20 +143,17 @@ export default {
 </script>
 
 <template>
-  <div>
-    <LoadingScreen v-if="!isAuth && !authError" />
-    <ErrorScreen 
-      v-else-if="!isAuth && authError" 
-      :error="authError"
-      :debugInfo="debugInfo"
-      @retry="retryAuth"
-    />
-    <template v-else>
-      <HomePage v-if="currentPage === 'home'" />
-      <ProfilePage v-else-if="currentPage === 'profile'" />
-    </template>
-    <Tabbar v-if="isAuth" :activeTab="currentPage" @tab-change="changePage" />
-  </div>
+  <LoadingScreen v-if="!isAuth && !authError" />
+  <ErrorScreen 
+    v-else-if="!isAuth && authError" 
+    :error="authError"
+    :debugInfo="debugInfo"
+    @retry="retryAuth"
+  />
+  <template v-else>
+    <HomePage v-if="currentPage === 'home'" />
+    <ProfilePage v-else-if="currentPage === 'profile'" />
+  </template>
 </template>
 
 <style src="./assets/css/app.css"></style>

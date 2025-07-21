@@ -12,7 +12,7 @@
         <span class="tabbar-label">{{ tab.label }}</span>
       </a>
     </div>
-    <div class="tabbar-spacer"></div>
+    <!-- <div class="tabbar-spacer"></div> -->
   </div>
 </template>
 
