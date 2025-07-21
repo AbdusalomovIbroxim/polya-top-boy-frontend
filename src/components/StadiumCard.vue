@@ -105,7 +105,13 @@ export default {
     onTouchMove(e) {
       if (!this.isDragging) return;
       this.touchEndX = e.touches[0].clientX;
-      this.dragOffset = this.touchEndX - this.touchStartX;
+      const dx = this.touchEndX - this.touchStartX;
+
+      if ((this.currentImage === 0 && dx > 0) || (this.currentImage === this.images.length - 1 && dx < 0)) {
+        this.dragOffset = 0; // Prevent dragging
+      } else {
+        this.dragOffset = dx;
+      }
     },
     onTouchEnd() {
       if (!this.isDragging) return;
@@ -134,7 +140,13 @@ export default {
     onMouseMove(e) {
       if (!this.mouseDown || !this.isDragging) return;
       this.mouseEndX = e.clientX;
-      this.dragOffset = this.mouseEndX - this.mouseStartX;
+      const dx = this.mouseEndX - this.mouseStartX;
+
+      if ((this.currentImage === 0 && dx > 0) || (this.currentImage === this.images.length - 1 && dx < 0)) {
+        this.dragOffset = 0; // Prevent dragging
+      } else {
+        this.dragOffset = dx;
+      }
     },
     onMouseUp() {
       if (!this.mouseDown || !this.isDragging) return;
