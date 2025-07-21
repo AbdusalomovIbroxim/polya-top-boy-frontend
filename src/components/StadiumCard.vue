@@ -10,7 +10,13 @@
       @mouseup="onMouseUp"
       @mouseleave="onMouseUp"
     >
-      <div class="slider-track" :style="trackStyle">
+      <div
+        class="slider-track"
+        :style="{
+          ...trackStyle,
+          width: images.length ? images.length * 100 + '%' : '100%'
+        }"
+      >
         <img
           v-for="(img, idx) in images"
           :key="idx"
