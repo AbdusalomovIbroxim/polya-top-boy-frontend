@@ -29,9 +29,11 @@
       <div class="stadium-desc" v-if="stadium.description">{{ stadium.description }}</div>
       <div class="stadium-info-row">
         <div class="stadium-info">
-          <div class="stadium-price" v-if="stadium.price_per_hour">
+          <div class="stadium-price">
             <span class="label">Цена:</span>
-            <span class="value">{{ formatPrice(stadium.price_per_hour) }} сум/час</span>
+            <span class="value" :title="formatPrice(stadium.price_per_hour) + ' сум/час'">
+              {{ formatPrice(stadium.price_per_hour) }} сум/час
+            </span>
           </div>
           <div class="stadium-rating">
             <span class="star">⭐</span>
