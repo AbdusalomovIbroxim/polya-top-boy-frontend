@@ -1,4 +1,17 @@
 /* App Component Styles */
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+#app {
+  width: 100%;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
 .logo {
   font-family: 'Montserrat', 'Manrope', 'Noto Sans', system-ui, Avenir, Helvetica, Arial, sans-serif;
   height: 6em;
