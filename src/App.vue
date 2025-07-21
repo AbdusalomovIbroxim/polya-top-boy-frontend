@@ -108,17 +108,17 @@ export default {
           authError.value = 'Приложение должно быть запущено через Telegram бота';
           return;
         }
-        const initData = getTelegramInitData();
-        debugInfo.value = `initData: ${initData}`;
-        if (initData && initData.length > 0) {
-          const hasRequiredFields = initData.includes('user=') && 
-                                  initData.includes('auth_date=') && 
-                                  (initData.includes('signature=') || initData.includes('hash='));
-          if (hasRequiredFields) {
+          const initData = getTelegramInitData();
+          debugInfo.value = `initData: ${initData}`;
+          if (initData && initData.length > 0) {
+            const hasRequiredFields = initData.includes('user=') && 
+                                    initData.includes('auth_date=') && 
+                                    (initData.includes('signature=') || initData.includes('hash='));
+            if (hasRequiredFields) {
             const userProfile = await telegramAuth(initData);
             console.log('userProfile from API:', userProfile);
             user.value = userProfile.user;
-            isAuth.value = true;
+              isAuth.value = true;
             console.log('isAuth:', isAuth.value, 'user:', user.value);
           } else {
             isAuth.value = false;
