@@ -9,14 +9,15 @@
       @mouseup="onMouseUp"
       @mouseleave="onMouseUp"
     >
-      <div class="slider-img-wrap">
+      <div class="slider-img-track" :style="trackStyle">
         <img
-          v-if="images.length > 0"
-          :src="images[currentImage]?.image || ''"
+          v-for="(img, idx) in images"
+          :key="idx"
+          :src="img.image || ''"
           class="slider-img"
-          :alt="`${stadium.name} photo ${currentImage + 1}`"
+          :alt="`${stadium.name} photo ${idx + 1}`"
         />
-        <div v-else class="slider-img slider-img-placeholder">Нет фото</div>
+        <div v-if="images.length === 0" class="slider-img slider-img-placeholder">Нет фото</div>
       </div>
     </div>
     <div class="stadium-content">
@@ -55,12 +56,28 @@ export default {
       touchEndX: 0,
       mouseDown: false,
       mouseStartX: 0,
-      mouseEndX: 0
+      mouseEndX: 0,
+      isDragging: false,
+      dragOffset: 0
     }
   },
   computed: {
     images() {
       return Array.isArray(this.stadium.images) ? this.stadium.images : [];
+    },
+    trackStyle() {
+      const count = this.images.length || 1;
+      const percent = -this.currentImage * 100;
+      let drag = 0;
+      if (this.isDragging && this.dragOffset) {
+        drag = (this.dragOffset / this.$el.offsetWidth) * 100;
+      }
+      return {
+        width: count * 100 + '%',
+        display: 'flex',
+        transform: `translateX(calc(${percent}% + ${drag}%) )`,
+        transition: this.isDragging ? 'none' : 'transform 0.35s cubic-bezier(.4,0,.2,1)'
+      };
     }
   },
   methods: {
@@ -86,11 +103,16 @@ export default {
     // Touch events
     onTouchStart(e) {
       this.touchStartX = e.touches[0].clientX;
+      this.isDragging = true;
+      this.dragOffset = 0;
     },
     onTouchMove(e) {
+      if (!this.isDragging) return;
       this.touchEndX = e.touches[0].clientX;
+      this.dragOffset = this.touchEndX - this.touchStartX;
     },
     onTouchEnd() {
+      if (!this.isDragging) return;
       const dx = this.touchEndX - this.touchStartX;
       if (Math.abs(dx) > 40) {
         if (dx < 0) {
@@ -99,20 +121,25 @@ export default {
           this.prevImage();
         }
       }
+      this.isDragging = false;
+      this.dragOffset = 0;
       this.touchStartX = 0;
       this.touchEndX = 0;
     },
     // Mouse events
     onMouseDown(e) {
       this.mouseDown = true;
+      this.isDragging = true;
       this.mouseStartX = e.clientX;
+      this.dragOffset = 0;
     },
     onMouseMove(e) {
-      if (!this.mouseDown) return;
+      if (!this.mouseDown || !this.isDragging) return;
       this.mouseEndX = e.clientX;
+      this.dragOffset = this.mouseEndX - this.mouseStartX;
     },
     onMouseUp() {
-      if (!this.mouseDown) return;
+      if (!this.mouseDown || !this.isDragging) return;
       const dx = this.mouseEndX - this.mouseStartX;
       if (Math.abs(dx) > 40) {
         if (dx < 0) {
@@ -122,6 +149,8 @@ export default {
         }
       }
       this.mouseDown = false;
+      this.isDragging = false;
+      this.dragOffset = 0;
       this.mouseStartX = 0;
       this.mouseEndX = 0;
     }
