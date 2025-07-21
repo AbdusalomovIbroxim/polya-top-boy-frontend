@@ -68,14 +68,14 @@ export default {
       return Array.isArray(this.stadium.images) ? this.stadium.images : [];
     },
     trackStyle() {
-      const count = this.images.length || 1;
+      // const count = this.images.length || 1;
       const percent = -this.currentImage * 100;
       let drag = 0;
       if (this.isDragging && this.dragOffset) {
         drag = (this.dragOffset / this.$el.offsetWidth) * 100;
       }
       return {
-        width: count * 100 + '%',
+        // width: count * 100 + '%',
         display: 'flex',
         transform: `translateX(calc(${percent}% + ${drag}%) )`,
         transition: this.isDragging ? 'none' : 'transform 0.35s cubic-bezier(.4,0,.2,1)'
