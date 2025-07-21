@@ -89,15 +89,11 @@ export default {
     nextImage() {
       if (this.currentImage < this.images.length - 1) {
         this.currentImage++;
-      } else {
-        this.currentImage = 0;
       }
     },
     prevImage() {
       if (this.currentImage > 0) {
         this.currentImage--;
-      } else {
-        this.currentImage = this.images.length - 1;
       }
     },
     // Touch events
@@ -114,13 +110,15 @@ export default {
     onTouchEnd() {
       if (!this.isDragging) return;
       const dx = this.touchEndX - this.touchStartX;
+
       if (Math.abs(dx) > 40) {
-        if (dx < 0) {
+        if (dx < 0 && this.currentImage < this.images.length - 1) {
           this.nextImage();
-        } else {
+        } else if (dx > 0 && this.currentImage > 0) {
           this.prevImage();
         }
       }
+
       this.isDragging = false;
       this.dragOffset = 0;
       this.touchStartX = 0;
@@ -141,13 +139,15 @@ export default {
     onMouseUp() {
       if (!this.mouseDown || !this.isDragging) return;
       const dx = this.mouseEndX - this.mouseStartX;
+
       if (Math.abs(dx) > 40) {
-        if (dx < 0) {
+        if (dx < 0 && this.currentImage < this.images.length - 1) {
           this.nextImage();
-        } else {
+        } else if (dx > 0 && this.currentImage > 0) {
           this.prevImage();
         }
       }
+
       this.mouseDown = false;
       this.isDragging = false;
       this.dragOffset = 0;
