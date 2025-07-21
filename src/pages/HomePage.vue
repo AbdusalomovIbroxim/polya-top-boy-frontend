@@ -21,10 +21,6 @@
       @stadium-click="handleStadiumClick"
       @stadium-open="handleStadiumOpen"
     />
-    <Tabbar 
-      activeTab="home"
-      @tab-change="handleTabChange"
-    />
   </div>
 </template>
 
@@ -34,8 +30,7 @@ import { getSportVenues, getRegions, getTypes } from '../api/fields';
 import { 
   Navbar, 
   StadiumList, 
-  FilterDropdown, 
-  Tabbar 
+  FilterDropdown
 } from '../components';
 
 export default {
@@ -43,8 +38,7 @@ export default {
   components: {
     Navbar,
     StadiumList,
-    FilterDropdown,
-    Tabbar
+    FilterDropdown
   },
   setup() {
     const stadiums = ref([]);
@@ -90,10 +84,6 @@ export default {
       console.log('Stadium open:', stadium);
     }
 
-    function handleTabChange(tabId) {
-      console.log('Tab changed to:', tabId);
-    }
-
     return {
       stadiums, 
       loading, 
@@ -104,8 +94,7 @@ export default {
       regionOptions,
       typeOptions,
       handleStadiumClick,
-      handleStadiumOpen,
-      handleTabChange
+      handleStadiumOpen
     };
   }
 };

@@ -151,8 +151,8 @@ export default {
     @retry="retryAuth"
   />
   <template v-else>
-    <router-view />
-    тест
+    <router-view/>
+    <Tabbar />
   </template>
 </template>
 
