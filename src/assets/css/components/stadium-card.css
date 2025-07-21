@@ -81,34 +81,31 @@
 .stadium-info-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  gap: 1rem;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7em;
+  width: 100%;
 }
 
-.stadium-info {
-  min-width: 0;
-  flex: 1 1 0;
+.stadium-price-block {
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+  align-items: baseline;
+  gap: 0.3em;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
-.stadium-price .label {
-  color: #6d8566;
-  font-size: 0.95rem;
-  font-weight: 500;
-}
-.stadium-price .value {
+.price {
+  font-size: 1.1rem;
+  font-weight: 700;
   color: #131712;
-  font-weight: 600;
-  margin-left: 0.3em;
-  display: inline-block;
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  vertical-align: bottom;
+}
+
+.per-hour {
+  color: #6d8566;
+  font-size: 0.9em;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .stadium-rating {
@@ -117,6 +114,10 @@
   display: flex;
   align-items: center;
   gap: 0.3em;
+  margin-left: auto;
+  padding-left: 0.5rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .star {
@@ -125,7 +126,7 @@
 
 .stadium-open-btn {
   flex-shrink: 0;
-  max-width: 120px;
+  width: auto;
   min-width: 84px;
   height: 2rem;
   background: #53d22c;
@@ -140,6 +141,7 @@
   cursor: pointer;
   padding: 0 1rem;
   transition: background 0.2s;
+  margin-left: 0.5em;
 }
 
 .stadium-open-btn:hover {

@@ -28,17 +28,13 @@
       <div class="stadium-title">{{ stadium.name }}</div>
       <div class="stadium-desc" v-if="stadium.description">{{ stadium.description }}</div>
       <div class="stadium-info-row">
-        <div class="stadium-info">
-          <div class="stadium-price">
-            <span class="label">Цена:</span>
-            <span class="value" :title="formatPrice(stadium.price_per_hour) + ' сум/час'">
-              {{ formatPrice(stadium.price_per_hour) }} сум/час
-            </span>
-          </div>
-          <div class="stadium-rating">
-            <span class="star">⭐</span>
-            <span>4.8 (120)</span>
-          </div>
+        <div class="stadium-price-block">
+          <span class="price">{{ shortPrice(stadium.price_per_hour) }}</span>
+          <span class="per-hour">/час</span>
+        </div>
+        <div class="stadium-rating">
+          <span class="star">⭐</span>
+          <span>4.8</span>
         </div>
         <button class="stadium-open-btn" @click.stop="$emit('open', stadium)">
           Открыть
@@ -85,9 +81,11 @@ export default {
     }
   },
   methods: {
-    formatPrice(price) {
+    shortPrice(price) {
       if (!price) return '-';
       const num = Math.round(Number(price) * 3000);
+      if (num >= 1000000) return (num / 1000000).toFixed(1).replace('.0', '') + ' млн';
+      if (num >= 1000) return (num / 1000).toFixed(0) + ' тыс';
       return num.toLocaleString('ru-RU');
     },
     nextImage() {
