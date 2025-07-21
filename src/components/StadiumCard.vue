@@ -44,9 +44,12 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const props = defineProps({ stadium: Object })
+
+const images = computed(() => Array.isArray(props.stadium?.images) ? props.stadium.images : [])
 </script>
 
 <style src="../assets/css/components/stadium-card.css"></style> 
