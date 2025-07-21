@@ -1,48 +1,46 @@
 <template>
-  <div v-if="loading" class="stadium-list">
-    <StadiumCardSkeleton v-for="n in 4" :key="n" />
-  </div>
-  <div v-else class="stadium-list">
-    <StadiumCard 
-      v-for="stadium in stadiums" 
-      :key="stadium.id" 
-      :stadium="stadium"
-      @click="handleStadiumClick"
-      @open="handleStadiumOpen"
-    />
+  <div class="stadium-list">
+    <div v-if="loading" class="stadium-list__loading">Загрузка...</div>
+    <div v-else-if="stadiums.length === 0" class="stadium-list__empty">Нет площадок</div>
+    <div v-else class="stadium-list__cards">
+      <StadiumCard
+        v-for="stadium in stadiums"
+        :key="stadium.id"
+        :stadium="stadium"
+        @click="$emit('stadium-click', stadium)"
+        @open="$emit('stadium-open', stadium)"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import StadiumCard from './StadiumCard.vue'
-import StadiumCardSkeleton from './StadiumCardSkeleton.vue'
+import StadiumCard from './StadiumCard.vue';
 
 export default {
   name: 'StadiumList',
-  components: {
-    StadiumCard,
-    StadiumCardSkeleton
-  },
+  components: { StadiumCard },
   props: {
-    stadiums: {
-      type: Array,
-      default: () => []
-    },
-    loading: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['stadium-click', 'stadium-open'],
-  methods: {
-    handleStadiumClick(stadium) {
-      this.$emit('stadium-click', stadium)
-    },
-    handleStadiumOpen(stadium) {
-      this.$emit('stadium-open', stadium)
-    }
+    stadiums: { type: Array, required: true },
+    loading: { type: Boolean, default: false }
   }
-}
+};
 </script>
 
-<style src="../assets/css/components/stadium-list.css"></style> 
+<style>
+.stadium-list {
+  padding: 24px 0;
+}
+.stadium-list__loading,
+.stadium-list__empty {
+  text-align: center;
+  color: #888;
+  font-size: 1.2rem;
+  margin: 40px 0;
+}
+.stadium-list__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+</style> 

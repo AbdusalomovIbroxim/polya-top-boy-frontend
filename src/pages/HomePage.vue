@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { getSportVenues, getRegions, getTypes } from '../api/fields';
 import { 
   Navbar, 
@@ -70,6 +70,22 @@ export default {
         types.value = typ.results || typ;
       } catch (e) {
         console.error('Error loading data:', e);
+        stadiums.value = [];
+      } finally {
+        loading.value = false;
+      }
+    });
+
+    // Добавляю реакцию на фильтры
+    watch([selectedRegion, selectedType], async () => {
+      loading.value = true;
+      try {
+        const params = {};
+        if (selectedRegion.value) params.region = selectedRegion.value;
+        if (selectedType.value) params.sport_venue_type = selectedType.value;
+        const venues = await getSportVenues(params);
+        stadiums.value = venues.results;
+      } catch (e) {
         stadiums.value = [];
       } finally {
         loading.value = false;
