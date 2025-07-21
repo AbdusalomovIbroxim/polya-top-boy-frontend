@@ -152,6 +152,7 @@ export default {
   />
   <template v-else>
     <router-view />
+    тест
   </template>
 </template>
 
