@@ -1,6 +1,6 @@
 .stadium-card {
   width: 100%;
-  border-radius: 1rem;
+  /* border-radius: 1rem; */
   background: #fff;
   box-shadow: 0 2px 8px rgba(109,133,102,0.04);
   overflow: hidden;
@@ -57,12 +57,12 @@
   gap: 0.5rem;
 }
 
-.stadium-title {
+/* .stadium-title {
   font-size: 1.2rem;
   font-weight: 700;
   color: #131712;
   margin-bottom: 0.25rem;
-}
+} */
 
 .stadium-desc {
   color: #6d8566;
