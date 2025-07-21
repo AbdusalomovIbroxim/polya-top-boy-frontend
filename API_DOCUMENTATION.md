@@ -248,7 +248,7 @@ Authorization: Bearer <access_token>
             "id": 1,
             "name": "Футбольное поле Центральное",
             "description": "Профессиональное футбольное поле",
-            "price_per_hour": "50.00",
+            "price_per_hour": "5000000",
             "city": "Ташкент",
             "address": "ул. Спортивная, 1",
             "latitude": "41.2995",
