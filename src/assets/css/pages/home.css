@@ -1,31 +1,17 @@
 /* HomePage Styles */
-.page-root {
+.home-root {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: 1rem;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-}
-
-.filters-bar,
-.stadium-list,
-.tabbar {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0;
-}
-
-.stadium-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  position: relative;
 }
 
 @media (min-width: 481px) {
-  .page-root {
+  .home-root {
     max-width: 480px;
     min-width: 320px;
     margin: 0 auto;
@@ -35,7 +21,7 @@
 }
 
 @media (max-width: 480px) {
-  .page-root {
+  .home-root {
     min-width: 360px;
   }
 } 
