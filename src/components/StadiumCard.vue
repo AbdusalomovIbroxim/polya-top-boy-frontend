@@ -1,6 +1,7 @@
 <template>
   <div class="stadium-card" @click="$emit('click', stadium)">
-    <div class="stadium-slider"
+    <div
+      class="stadium-slider"
       @touchstart="onTouchStart"
       @touchmove="onTouchMove"
       @touchend="onTouchEnd"
@@ -9,30 +10,36 @@
       @mouseup="onMouseUp"
       @mouseleave="onMouseUp"
     >
-      <div class="slider-img-track" :style="trackStyle">
-        <img
-          v-for="(img, idx) in images"
-          :key="idx"
-          :src="img.image || ''"
-          class="slider-img"
-          :alt="`${stadium.name} photo ${idx + 1}`"
-        />
-        <div v-if="images.length === 0" class="slider-img slider-img-placeholder">Нет фото</div>
+      <div class="slider-track" :style="trackStyle">
+        <template v-if="images.length">
+          <img
+            v-for="(img, idx) in images"
+            :key="idx"
+            :src="img.image || ''"
+            class="slider-img"
+            :alt="`${stadium.name} photo ${idx + 1}`"
+            draggable="false"
+          />
+        </template>
+        <div v-else class="slider-img slider-img-placeholder">Нет фото</div>
       </div>
     </div>
     <div class="stadium-content">
-      <p class="stadium-title">{{ stadium.name }}</p>
-      <p class="stadium-desc">{{ stadium.description }}</p>
+      <div class="stadium-title">{{ stadium.name }}</div>
+      <div class="stadium-desc" v-if="stadium.description">{{ stadium.description }}</div>
       <div class="stadium-info-row">
         <div class="stadium-info">
-          <p>Narxi: {{ formatPrice(stadium.price_per_hour) }} so'm/soat</p>
-          <p class="rating">
+          <div class="stadium-price" v-if="stadium.price_per_hour">
+            <span class="label">Цена:</span>
+            <span class="value">{{ formatPrice(stadium.price_per_hour) }} сум/час</span>
+          </div>
+          <div class="stadium-rating">
             <span class="star">⭐</span>
-            4.8 (120 reviews)
-          </p>
+            <span>4.8 (120)</span>
+          </div>
         </div>
         <button class="stadium-open-btn" @click.stop="$emit('open', stadium)">
-          <span>Open</span>
+          Открыть
         </button>
       </div>
     </div>
@@ -43,22 +50,17 @@
 export default {
   name: 'StadiumCard',
   props: {
-    stadium: {
-      type: Object,
-      required: true
-    }
+    stadium: { type: Object, required: true }
   },
   emits: ['click', 'open'],
   data() {
     return {
       currentImage: 0,
-      touchStartX: 0,
-      touchEndX: 0,
-      mouseDown: false,
-      mouseStartX: 0,
-      mouseEndX: 0,
+      dragStartX: 0,
+      dragCurrentX: 0,
       isDragging: false,
-      dragOffset: 0
+      dragOffset: 0,
+      mouseDown: false
     }
   },
   computed: {
@@ -96,75 +98,63 @@ export default {
         this.currentImage--;
       }
     },
-    // Touch events
+    // Touch
     onTouchStart(e) {
-      this.touchStartX = e.touches[0].clientX;
+      this.dragStartX = e.touches[0].clientX;
       this.isDragging = true;
       this.dragOffset = 0;
     },
     onTouchMove(e) {
       if (!this.isDragging) return;
-      this.touchEndX = e.touches[0].clientX;
-      const dx = this.touchEndX - this.touchStartX;
-
+      this.dragCurrentX = e.touches[0].clientX;
+      const dx = this.dragCurrentX - this.dragStartX;
       if ((this.currentImage === 0 && dx > 0) || (this.currentImage === this.images.length - 1 && dx < 0)) {
-        this.dragOffset = 0; // Prevent dragging
+        this.dragOffset = 0;
       } else {
         this.dragOffset = dx;
       }
     },
     onTouchEnd() {
       if (!this.isDragging) return;
-      const dx = this.touchEndX - this.touchStartX;
-
+      const dx = this.dragCurrentX - this.dragStartX;
       if (Math.abs(dx) > 40) {
-        if (dx < 0 && this.currentImage < this.images.length - 1) {
-          this.nextImage();
-        } else if (dx > 0 && this.currentImage > 0) {
-          this.prevImage();
-        }
+        if (dx < 0 && this.currentImage < this.images.length - 1) this.nextImage();
+        else if (dx > 0 && this.currentImage > 0) this.prevImage();
       }
-
       this.isDragging = false;
       this.dragOffset = 0;
-      this.touchStartX = 0;
-      this.touchEndX = 0;
+      this.dragStartX = 0;
+      this.dragCurrentX = 0;
     },
-    // Mouse events
+    // Mouse
     onMouseDown(e) {
       this.mouseDown = true;
       this.isDragging = true;
-      this.mouseStartX = e.clientX;
+      this.dragStartX = e.clientX;
       this.dragOffset = 0;
     },
     onMouseMove(e) {
       if (!this.mouseDown || !this.isDragging) return;
-      this.mouseEndX = e.clientX;
-      const dx = this.mouseEndX - this.mouseStartX;
-
+      this.dragCurrentX = e.clientX;
+      const dx = this.dragCurrentX - this.dragStartX;
       if ((this.currentImage === 0 && dx > 0) || (this.currentImage === this.images.length - 1 && dx < 0)) {
-        this.dragOffset = 0; // Prevent dragging
+        this.dragOffset = 0;
       } else {
         this.dragOffset = dx;
       }
     },
     onMouseUp() {
       if (!this.mouseDown || !this.isDragging) return;
-      const dx = this.mouseEndX - this.mouseStartX;
-
+      const dx = this.dragCurrentX - this.dragStartX;
       if (Math.abs(dx) > 40) {
-        if (dx < 0 && this.currentImage < this.images.length - 1) {
-          this.nextImage();
-        } else if (dx > 0 && this.currentImage > 0) {
-          this.prevImage();
-        }
+        if (dx < 0 && this.currentImage < this.images.length - 1) this.nextImage();
+        else if (dx > 0 && this.currentImage > 0) this.prevImage();
       }
-
       this.mouseDown = false;
       this.isDragging = false;
       this.dragOffset = 0;
-      this.mouseStartX = 0;
-      this.mouseEndX = 0;
+      this.dragStartX = 0;
+      this.dragCurrentX = 0;
     }
   }
 }
