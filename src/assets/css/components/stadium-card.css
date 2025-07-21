@@ -1,4 +1,4 @@
-.stadium-card {
+.stadium-card-new {
   width: 100%;
   border-radius: 1.1rem;
   background: #fff;
@@ -6,56 +6,43 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.7rem;
-  transition: box-shadow 0.25s, transform 0.18s;
+  margin-bottom: 1.5rem;
 }
-.stadium-card:hover {
-  box-shadow: 0 8px 32px 0 rgba(83, 210, 44, 0.16), 0 2px 8px 0 rgba(109,133,102,0.12);
-  transform: translateY(-2px) scale(1.01);
-}
-.stadium-slider {
-  position: relative;
+.stadium-card-img-wrap {
   width: 100%;
-  height: 180px;
-  background: linear-gradient(120deg, #e9fbe2 0%, #f6f7f8 100%);
-  user-select: none;
-  overflow: hidden;
-}
-.slider-track {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
-  will-change: transform;
-}
-.slider-img, .slider-img-placeholder {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 1.1rem 1.1rem 0 0;
-  user-drag: none;
-  user-select: none;
-  pointer-events: none;
+  aspect-ratio: 16/9;
   background: #f6f7f8;
-  box-shadow: 0 2px 8px 0 rgba(83, 210, 44, 0.04);
-}
-.slider-img-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.stadium-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1.1rem 1.1rem 0 0;
+  display: block;
+}
+.stadium-card-img-placeholder {
+  width: 100%;
+  height: 100%;
   color: #b0b0b0;
   font-size: 1.1rem;
   font-weight: 500;
   letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #f6f7f8;
+  border-radius: 1.1rem 1.1rem 0 0;
 }
-.stadium-content {
+.stadium-card-content {
   padding: 1.1rem 1.2rem 1.1rem 1.2rem;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
-.stadium-title {
+.stadium-card-title {
   font-size: 1.18rem;
   font-weight: 800;
   color: #131712;
@@ -63,7 +50,7 @@
   letter-spacing: -0.01em;
   text-shadow: 0 1px 0 #f6f7f8;
 }
-.stadium-desc {
+.stadium-card-desc {
   color: #6d8566;
   font-size: 0.99rem;
   font-weight: 400;
@@ -76,36 +63,26 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.stadium-info-row {
+.stadium-card-info-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   gap: .7em;
   width: 100%;
 }
-.stadium-info-left {
-  width: 100%;
+.stadium-card-info-left {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
   flex-direction: column;
-  min-width: 0;
-  overflow: hidden;
+  gap: 0.3em;
 }
-.price {
+.stadium-card-price {
   font-size: 1.13rem;
   font-weight: 800;
   color: #131712;
   white-space: nowrap;
   text-shadow: 0 1px 0 #e9fbe2;
 }
-.per-hour {
-  color: #6d8566;
-  font-size: 0.93em;
-  font-weight: 500;
-  white-space: nowrap;
-}
-.stadium-rating {
+.stadium-card-rating {
   color: #53d22c;
   font-size: 1.01rem;
   display: flex;
@@ -115,12 +92,7 @@
   font-weight: 700;
   text-shadow: 0 1px 0 #e9fbe2;
 }
-.star {
-  font-size: 1.1rem;
-  margin-right: 0.1em;
-}
-.stadium-open-btn {
-  flex-shrink: 0;
+.stadium-card-open-btn {
   min-width: 90px;
   height: 2.2rem;
   background: linear-gradient(90deg, #53d22c 60%, #7be65a 100%);
@@ -138,41 +110,7 @@
   margin-left: 0.5em;
   box-shadow: 0 1px 4px 0 rgba(83, 210, 44, 0.08);
 }
-.stadium-open-btn:hover {
+.stadium-card-open-btn:hover {
   background: linear-gradient(90deg, #4bc025 60%, #53d22c 100%);
   box-shadow: 0 2px 8px 0 rgba(83, 210, 44, 0.13);
-}
-/* Индикаторы для слайдера */
-.stadium-slider::after {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 50%;
-  bottom: 12px;
-  transform: translateX(-50%);
-  height: 16px;
-  width: 100%;
-  pointer-events: none;
-}
-.slider-indicators {
-  position: absolute;
-  left: 50%;
-  bottom: 16px;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 7px;
-  z-index: 2;
-}
-.slider-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #fff;
-  opacity: 0.5;
-  box-shadow: 0 1px 4px 0 rgba(83, 210, 44, 0.10);
-  transition: opacity 0.18s, background 0.18s;
-}
-.slider-indicator.active {
-  opacity: 1;
-  background: #53d22c;
 }
