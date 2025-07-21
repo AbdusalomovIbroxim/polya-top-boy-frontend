@@ -151,8 +151,7 @@ export default {
     @retry="retryAuth"
   />
   <template v-else>
-    <HomePage v-if="currentPage === 'home'" />
-    <ProfilePage v-else-if="currentPage === 'profile'" />
+    <router-view />
   </template>
 </template>
 

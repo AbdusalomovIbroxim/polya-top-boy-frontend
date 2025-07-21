@@ -1,19 +1,15 @@
 <template>
-  <!-- <div> -->
-    <div class="tabbar">
-      <a 
-        v-for="tab in tabs" 
-        :key="tab.id"
-        :class="['tabbar-item', { active: activeTab === tab.id }]"
-        href="#"
-        @click.prevent="$emit('tab-change', tab.id)"
-      >
-        <span class="tabbar-icon" v-html="tab.icon"></span>
-        <span class="tabbar-label">{{ tab.label }}</span>
-      </a>
-    </div>
-    <!-- <div class="tabbar-spacer"></div> -->
-  <!-- </div> -->
+  <div class="tabbar">
+    <router-link
+      v-for="tab in tabs"
+      :key="tab.id"
+      :to="tab.id === 'home' ? '/' : (tab.id === 'profile' ? '/profile' : '#')"
+      :class="['tabbar-item', { active: $route.name === tab.id }]"
+    >
+      <span class="tabbar-icon" v-html="tab.icon"></span>
+      <span class="tabbar-label">{{ tab.label }}</span>
+    </router-link>
+  </div>
 </template>
 
 <script>
@@ -25,7 +21,6 @@ export default {
       default: 'home'
     }
   },
-  emits: ['tab-change'],
   data() {
     return {
       tabs: [
