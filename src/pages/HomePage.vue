@@ -1,5 +1,5 @@
 <template>
-  <div class="home-root">
+  <div class="page-root">
     <Navbar title="Fields" />
     <div class="filters-bar">
       <FilterDropdown
@@ -75,24 +75,15 @@ export default {
         regions.value = reg.results || reg;
         types.value = typ.results || typ;
       } catch (e) {
-        console.error('Error loading data:', e);
         stadiums.value = [];
       } finally {
         loading.value = false;
       }
     });
 
-    function handleStadiumClick(stadium) {
-      console.log('Stadium clicked:', stadium);
-    }
-
-    function handleStadiumOpen(stadium) {
-      console.log('Stadium open:', stadium);
-    }
-
-    function handleTabChange(tabId) {
-      console.log('Tab changed to:', tabId);
-    }
+    function handleStadiumClick(stadium) {}
+    function handleStadiumOpen(stadium) {}
+    function handleTabChange(tabId) {}
 
     return {
       stadiums, 
