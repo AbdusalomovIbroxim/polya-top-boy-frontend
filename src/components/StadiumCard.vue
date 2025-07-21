@@ -29,8 +29,7 @@
       <div class="stadium-desc" v-if="stadium.description">{{ stadium.description }}</div>
       <div class="stadium-info-row">
         <div class="stadium-info-left">
-          <span class="price">{{ shortPrice(stadium.price_per_hour) }}</span>
-          <span class="per-hour">/час</span>
+          <span class="price">{{ shortPrice(stadium.price_per_hour) }}/час</span>
           <span class="stadium-rating">
             <span class="star">⭐</span>
             4.8
