@@ -3,7 +3,8 @@ import HomePage from './pages/HomePage.vue'
 import ProfilePage from './pages/ProfilePage.vue'
 import { LoadingScreen, ErrorScreen, Tabbar } from './components'
 import './assets/css/main.css'
-import { ref, onMounted, provide } from 'vue';
+import { ref, onMounted, provide, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { telegramAuth } from './api/auth';
 
 function getTelegramInitData() {
@@ -59,6 +60,7 @@ export default {
     const authError = ref('');
     const debugInfo = ref('');
     const currentPage = ref('home');
+    const router = useRouter();
 
     async function logout() {
       user.value = null;
@@ -130,6 +132,13 @@ export default {
         isAuth.value = false;
         authError.value = e?.response?.data?.error || e.message || 'Ошибка авторизации';
         await logout();
+      }
+    });
+
+    // Переход на главную страницу после авторизации
+    watch(isAuth, (val) => {
+      if (val) {
+        router.replace('/');
       }
     });
 
