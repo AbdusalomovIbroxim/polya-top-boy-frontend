@@ -86,12 +86,13 @@
   width: 100%;
 }
 
-.stadium-price-block {
+.stadium-info-left {
   display: flex;
-  align-items: baseline;
-  gap: 0.3em;
+  align-items: center;
+  gap: 0.7em;
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  overflow: hidden;
 }
 
 .price {
@@ -114,9 +115,6 @@
   display: flex;
   align-items: center;
   gap: 0.3em;
-  margin-left: auto;
-  padding-left: 0.5rem;
-  flex-shrink: 0;
   white-space: nowrap;
 }
 

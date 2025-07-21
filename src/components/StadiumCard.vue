@@ -28,13 +28,13 @@
       <div class="stadium-title">{{ stadium.name }}</div>
       <div class="stadium-desc" v-if="stadium.description">{{ stadium.description }}</div>
       <div class="stadium-info-row">
-        <div class="stadium-price-block">
+        <div class="stadium-info-left">
           <span class="price">{{ shortPrice(stadium.price_per_hour) }}</span>
           <span class="per-hour">/час</span>
-        </div>
-        <div class="stadium-rating">
-          <span class="star">⭐</span>
-          <span>4.8</span>
+          <span class="stadium-rating">
+            <span class="star">⭐</span>
+            4.8
+          </span>
         </div>
         <button class="stadium-open-btn" @click.stop="$emit('open', stadium)">
           Открыть
