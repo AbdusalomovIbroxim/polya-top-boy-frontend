@@ -61,7 +61,6 @@ export default {
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
 }
 .stadium-card__image {
-  /* max-width: 100%; */
   width: 100%;
   height: 200px;
   background-size: cover;
@@ -126,7 +125,6 @@ export default {
   }
   .stadium-card__image {
     width: 100vw;
-    max-width: 100vw;
     height: 180px;
   }
 }
