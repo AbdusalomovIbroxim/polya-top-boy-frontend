@@ -18,7 +18,10 @@
       <span class="price">{{ formatPrice(stadium.price_per_hour) }} сум/час</span>
       <span class="address"><span class="icon">📍</span>{{ stadium.address }}</span>
     </div>
-    <div class="map-block" v-if="stadium.yandex_map_url">
+    <div class="mapbox-block" v-if="stadium.latitude && stadium.longitude">
+      <div ref="mapContainer" class="mapbox-map"></div>
+    </div>
+    <div class="map-block" v-else-if="stadium.yandex_map_url">
       <iframe
         :src="stadium.yandex_map_url"
         width="100%"
@@ -34,13 +37,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { getSportVenue } from '../api/fields';
+let mapboxgl;
 
 const route = useRoute();
 const stadium = ref(null);
 const activeImage = ref('');
+const mapContainer = ref(null);
+let mapInstance = null;
 
 function formatPrice(value) {
   if (!value) return '-';
@@ -48,6 +54,31 @@ function formatPrice(value) {
   if (num >= 1000000) return (num / 1000000).toFixed(num % 1000000 === 0 ? 0 : 1) + ' млн';
   if (num >= 1000) return (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1) + ' тыс';
   return num.toLocaleString('ru-RU');
+}
+
+async function loadMapbox() {
+  if (!mapboxgl) {
+    mapboxgl = (await import('mapbox-gl')).default;
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYWJyYWhhbTEyMzEyMzEyIiwiYSI6ImNtZDdlNHc5MDBldGcya3M0Y3hobW40MzQifQ.76GHpdTXl6QHMnN_F6GAng';
+  }
+}
+
+async function initMap() {
+  if (!stadium.value || !stadium.value.latitude || !stadium.value.longitude) return;
+  await loadMapbox();
+  if (mapInstance) {
+    mapInstance.remove();
+    mapInstance = null;
+  }
+  mapInstance = new mapboxgl.Map({
+    container: mapContainer.value,
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [parseFloat(stadium.value.longitude), parseFloat(stadium.value.latitude)],
+    zoom: 15
+  });
+  new mapboxgl.Marker()
+    .setLngLat([parseFloat(stadium.value.longitude), parseFloat(stadium.value.latitude)])
+    .addTo(mapInstance);
 }
 
 onMounted(async () => {
@@ -58,9 +89,18 @@ onMounted(async () => {
       if (stadium.value.images && stadium.value.images.length) {
         activeImage.value = stadium.value.images[0].image;
       }
+      if (stadium.value.latitude && stadium.value.longitude) {
+        await initMap();
+      }
     } catch (e) {
       stadium.value = null;
     }
+  }
+});
+
+watch(() => stadium.value, async (val) => {
+  if (val && val.latitude && val.longitude) {
+    await initMap();
   }
 });
 </script>
@@ -131,6 +171,17 @@ onMounted(async () => {
 }
 .address .icon {
   margin-right: 6px;
+}
+.mapbox-block {
+  margin: 18px 0 10px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.mapbox-map {
+  width: 100%;
+  height: 220px;
+  border-radius: 12px;
 }
 .map-block {
   margin: 18px 0 10px 0;
