@@ -146,6 +146,7 @@ onMounted(async () => {
 }
 .main-image {
   width: 100%;
+  height: 200px;
   max-height: 260px;
   object-fit: cover;
   border-radius: 14px;
