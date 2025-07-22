@@ -1,5 +1,5 @@
 <template>
-  <div class="stadium-list">
+  <!-- <div class="stadium-list"> -->
     <div v-if="loading" class="stadium-list__loading">Загрузка...</div>
     <div v-else-if="stadiums.length === 0" class="stadium-list__empty">Нет площадок</div>
     <div v-else class="stadium-list__cards">
@@ -11,7 +11,7 @@
         @open="$emit('stadium-open', stadium)"
       />
     </div>
-  </div>
+  <!-- </div> -->
 </template>
 
 <script>
