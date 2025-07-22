@@ -51,23 +51,24 @@ export default {
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   background: #fff;
   max-width: 700px;
+  width: 100%;
   margin: 0 auto;
   cursor: pointer;
   transition: box-shadow 0.2s;
+  box-sizing: border-box;
 }
 .stadium-card:hover {
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
 }
 .stadium-card__image {
-  min-width: 220px;
+  /* max-width: 100%; */
   width: 100%;
   height: 200px;
-  /* min-height: 200px;
-  max-height: 200px; */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-color: #f1f1f1;
+  box-sizing: border-box;
 }
 .stadium-card__content {
   flex: 1;
@@ -116,15 +117,17 @@ export default {
 .stadium-card__btn:hover {
   background: #3bb01a;
 }
-/* @media (max-width: 600px) {
+@media (max-width: 600px) {
   .stadium-card {
-    
-    max-width: 100%;
+    max-width: 100vw;
+    width: 100vw;
+    border-radius: 0;
+    margin-left: calc(-1 * (100vw - 100%) / 2);
   }
   .stadium-card__image {
-    
-    min-width: 100%;
+    width: 100vw;
+    max-width: 100vw;
     height: 180px;
   }
-} */
+}
 </style> 

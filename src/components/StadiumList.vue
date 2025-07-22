@@ -42,5 +42,11 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 </style> 
