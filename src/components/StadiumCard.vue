@@ -52,7 +52,6 @@ export default {
 .stadium-card {
   display: flex;
   flex-direction: column;
-  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   background: #fff;
@@ -68,6 +67,7 @@ export default {
 .stadium-card__image {
   width: 100%;
   height: 200px;
+  border-radius: 1rem;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -127,16 +127,5 @@ export default {
 .stadium-card__btn:hover {
   background: #3bb01a;
 }
-/* @media (max-width: 600px) {
-  .stadium-card {
-    max-width: 100vw;
-    width: 100vw;
-    border-radius: 0;
-    margin-left: calc(-1 * (100vw - 100%) / 2);
-  }
-  .stadium-card__image {
-    width: 100vw;
-    height: 180px;
-  }
-} */
+
 </style> 
