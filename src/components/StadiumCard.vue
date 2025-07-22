@@ -10,10 +10,9 @@
       <div class="stadium-card__info">
         <div>
           <div class="stadium-card__price">
-            Цена: {{ price }}₸/час
+            Цена: {{ price }}сум/час
             <span v-if="stadium.city">· {{ stadium.city }}</span>
           </div>
-          <div class="stadium-card__address">{{ stadium.address }}</div>
         </div>
         <button class="stadium-card__btn" @click.stop="$emit('open')">Открыть</button>
       </div>
@@ -34,9 +33,16 @@ export default {
         : '';
     },
     price() {
-      return this.stadium.price_per_hour
-        ? parseInt(this.stadium.price_per_hour, 10)
-        : '-';
+      return this.formatPrice(this.stadium.price_per_hour);
+    }
+  },
+  methods: {
+    formatPrice(value) {
+      if (!value) return '-';
+      const num = parseInt(value, 10);
+      if (num >= 1000000) return (num / 1000000).toFixed(num % 1000000 === 0 ? 0 : 1) + ' млн';
+      if (num >= 1000) return (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1) + ' тыс';
+      return num.toLocaleString('ru-RU');
     }
   }
 };
@@ -85,6 +91,12 @@ export default {
   color: #6d8566;
   font-size: 1rem;
   margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 2.6em;
 }
 .stadium-card__info {
   display: flex;
