@@ -70,7 +70,7 @@ export default {
 }
 .stadium-card__content {
   flex: 1;
-  padding: 16px 20px;
+  /* padding: 16px 20px; */
   display: flex;
   flex-direction: column;
   justify-content: center;
