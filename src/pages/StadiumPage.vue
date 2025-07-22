@@ -70,15 +70,20 @@ async function initMap() {
     mapInstance.remove();
     mapInstance = null;
   }
+  const lng = Number(stadium.value.longitude);
+  const lat = Number(stadium.value.latitude);
   mapInstance = new mapboxgl.Map({
     container: mapContainer.value,
     style: 'mapbox://styles/mapbox/streets-v11',
-    center: [parseFloat(stadium.value.longitude), parseFloat(stadium.value.latitude)],
+    center: [lng, lat],
     zoom: 15
   });
-  new mapboxgl.Marker()
-    .setLngLat([parseFloat(stadium.value.longitude), parseFloat(stadium.value.latitude)])
+  const marker = new mapboxgl.Marker({ color: '#36d900' })
+    .setLngLat([lng, lat])
+    .setPopup(new mapboxgl.Popup({ offset: 18 }).setText(stadium.value.name || 'Стадион'))
     .addTo(mapInstance);
+  // Открыть popup сразу (по желанию)
+  marker.togglePopup();
 }
 
 onMounted(async () => {
