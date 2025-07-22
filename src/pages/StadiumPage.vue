@@ -76,14 +76,12 @@ async function initMap() {
     container: mapContainer.value,
     style: 'mapbox://styles/mapbox/streets-v11',
     center: [lng, lat],
-    zoom: 15
+    zoom: 15,
+    attributionControl: false // отключаем copyright
   });
-  const marker = new mapboxgl.Marker({ color: '#36d900' })
+  new mapboxgl.Marker({ color: '#36d900' })
     .setLngLat([lng, lat])
-    .setPopup(new mapboxgl.Popup({ offset: 18 }).setText(stadium.value.name || 'Стадион'))
     .addTo(mapInstance);
-  // Открыть popup сразу (по желанию)
-  marker.togglePopup();
 }
 
 onMounted(async () => {
@@ -187,6 +185,14 @@ watch(() => stadium.value, async (val) => {
   width: 100%;
   height: 220px;
   border-radius: 12px;
+  position: relative;
+}
+/* Скрыть логотип и copyright Mapbox */
+.mapbox-map .mapboxgl-ctrl-logo,
+.mapbox-map .mapboxgl-ctrl-attrib,
+.mapbox-map .mapboxgl-ctrl-bottom-right,
+.mapbox-map .mapboxgl-ctrl-bottom-left {
+  display: none !important;
 }
 .map-block {
   margin: 18px 0 10px 0;
