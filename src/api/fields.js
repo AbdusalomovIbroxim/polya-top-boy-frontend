@@ -5,6 +5,11 @@ async function getSportVenues(params = {}) {
   return response.data;
 }
 
+async function getSportVenue(id) {
+  const response = await api.get(`/sport-venues/${id}/`);
+  return response.data;
+}
+
 async function getRegions() {
   const response = await api.get('/regions/');
   return response.data;
@@ -15,5 +20,5 @@ async function getTypes() {
   return response.data;
 }
 
-export { getSportVenues, getRegions, getTypes };
+export { getSportVenues, getSportVenue, getRegions, getTypes };
 
