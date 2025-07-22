@@ -41,14 +41,12 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { getSportVenue } from '../api/fields';
 let mapboxgl;
-import 'mapbox-gl/dist/mapbox-gl.css';
 
 const route = useRoute();
 const stadium = ref(null);
 const activeImage = ref('');
 const mapContainer = ref(null);
 let mapInstance = null;
-let markerInstance = null;
 
 function formatPrice(value) {
   if (!value) return '-';
@@ -65,71 +63,49 @@ async function loadMapbox() {
   }
 }
 
-const initMap = async () => {
+async function initMap() {
   if (!stadium.value || !stadium.value.latitude || !stadium.value.longitude) return;
-
-  await loadMapbox(); // загрузка библиотеки
-
-  const lng = Number(stadium.value.longitude);
-  const lat = Number(stadium.value.latitude);
-
-  // Очистка предыдущих инстансов карты и маркера
+  await loadMapbox();
   if (mapInstance) {
     mapInstance.remove();
     mapInstance = null;
   }
-
-  if (markerInstance) {
-    markerInstance.remove();
-    markerInstance = null;
-  }
-
-  // Инициализация карты
+  const lng = Number(stadium.value.longitude);
+  const lat = Number(stadium.value.latitude);
   mapInstance = new mapboxgl.Map({
     container: mapContainer.value,
     style: 'mapbox://styles/mapbox/streets-v11',
     center: [lng, lat],
     zoom: 15,
-    attributionControl: false,
+    attributionControl: false // отключаем copyright
   });
-
-  // Установка маркера
-  markerInstance = new mapboxgl.Marker({ color: '#36d900' })
+  new mapboxgl.Marker({ color: '#36d900' })
     .setLngLat([lng, lat])
     .addTo(mapInstance);
-
-  // Обновить центр на всякий случай
-  mapInstance.on('load', () => {
-    mapInstance.setCenter([lng, lat]);
-  });
-};
-
-
+}
 
 onMounted(async () => {
   const id = route.params.id;
   if (id) {
     try {
       stadium.value = await getSportVenue(id);
-      if (stadium.value.images?.length) {
+      if (stadium.value.images && stadium.value.images.length) {
         activeImage.value = stadium.value.images[0].image;
       }
       if (stadium.value.latitude && stadium.value.longitude) {
-        await initMap(); // один вызов
+        await initMap();
       }
     } catch (e) {
-      console.error('Ошибка загрузки стадиона:', e);
       stadium.value = null;
     }
   }
 });
 
-
-// watch(() => stadium.value, async (val) => {
-//   if (val && val.latitude && val.longitude) {
-//     await initMap();
-//   }
-// });
+watch(() => stadium.value, async (val) => {
+  if (val && val.latitude && val.longitude) {
+    await initMap();
+  }
+});
 </script>
 
 <style scoped>
@@ -146,7 +122,6 @@ onMounted(async () => {
 }
 .main-image {
   width: 100%;
-  height: 200px;
   max-height: 260px;
   object-fit: cover;
   border-radius: 14px;
@@ -256,4 +231,4 @@ onMounted(async () => {
   padding: 40px;
   font-size: 1.2em;
 }
-</style>
+</style> 

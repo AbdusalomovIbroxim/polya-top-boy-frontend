@@ -2,6 +2,8 @@
 import { inject } from 'vue';
 const user = inject('user');
 const logout = inject('logout');
+console.log("test: " + user);
+
 </script>
 
 <template>
