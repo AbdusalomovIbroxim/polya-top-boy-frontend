@@ -99,23 +99,25 @@ onMounted(async () => {
   if (id) {
     try {
       stadium.value = await getSportVenue(id);
-      if (stadium.value.images && stadium.value.images.length) {
+      if (stadium.value.images?.length) {
         activeImage.value = stadium.value.images[0].image;
       }
       if (stadium.value.latitude && stadium.value.longitude) {
-        await initMap();
+        await initMap(); // один вызов
       }
     } catch (e) {
+      console.error('Ошибка загрузки стадиона:', e);
       stadium.value = null;
     }
   }
 });
 
-watch(() => stadium.value, async (val) => {
-  if (val && val.latitude && val.longitude) {
-    await initMap();
-  }
-});
+
+// watch(() => stadium.value, async (val) => {
+//   if (val && val.latitude && val.longitude) {
+//     await initMap();
+//   }
+// });
 </script>
 
 <style scoped>
