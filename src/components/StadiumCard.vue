@@ -113,7 +113,7 @@ export default {
 .stadium-card__btn:hover {
   background: #3bb01a;
 }
-@media (max-width: 600px) {
+/* @media (max-width: 600px) {
   .stadium-card {
     flex-direction: column;
     max-width: 100%;
@@ -123,5 +123,5 @@ export default {
     min-width: 100%;
     height: 180px;
   }
-}
+} */
 </style> 
