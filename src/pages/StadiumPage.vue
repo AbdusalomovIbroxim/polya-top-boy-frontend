@@ -47,6 +47,7 @@ const stadium = ref(null);
 const activeImage = ref('');
 const mapContainer = ref(null);
 let mapInstance = null;
+let markerInstance = null;
 
 function formatPrice(value) {
   if (!value) return '-';
@@ -66,20 +67,29 @@ async function loadMapbox() {
 async function initMap() {
   if (!stadium.value || !stadium.value.latitude || !stadium.value.longitude) return;
   await loadMapbox();
+
+  // Удаление предыдущей карты и маркера
   if (mapInstance) {
     mapInstance.remove();
     mapInstance = null;
   }
+  if (markerInstance) {
+    markerInstance.remove();
+    markerInstance = null;
+  }
+
   const lng = Number(stadium.value.longitude);
   const lat = Number(stadium.value.latitude);
+
   mapInstance = new mapboxgl.Map({
     container: mapContainer.value,
     style: 'mapbox://styles/mapbox/streets-v11',
     center: [lng, lat],
     zoom: 15,
-    attributionControl: false // отключаем copyright
+    attributionControl: false
   });
-  new mapboxgl.Marker({ color: '#36d900' })
+
+  markerInstance = new mapboxgl.Marker({ color: '#36d900' })
     .setLngLat([lng, lat])
     .addTo(mapInstance);
 }
@@ -231,4 +241,4 @@ watch(() => stadium.value, async (val) => {
   padding: 40px;
   font-size: 1.2em;
 }
-</style> 
+</style>
