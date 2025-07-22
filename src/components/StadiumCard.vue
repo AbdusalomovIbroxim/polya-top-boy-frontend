@@ -11,7 +11,7 @@
         <div>
           <div class="stadium-card__price">
             Цена: {{ price }} сум/час
-            <span v-if="stadium.city">· {{ stadium.city }}</span>
+            <span v-if="stadium.city"> {{ stadium.city }}</span>
           </div>
         </div>
         <button class="stadium-card__btn" @click.stop="$emit('open')">Открыть</button>
