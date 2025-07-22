@@ -45,6 +45,7 @@ export default {
 <style>
 .stadium-card {
   display: flex;
+  flex-direction: column;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
@@ -58,9 +59,9 @@ export default {
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
 }
 .stadium-card__image {
-  min-width: 220px;
-  width: 220px;
-  height: 140px;
+  /* min-width: 220px; */
+  width: 100%;
+  height: 200px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -115,11 +116,11 @@ export default {
 }
 /* @media (max-width: 600px) {
   .stadium-card {
-    flex-direction: column;
+    
     max-width: 100%;
   }
   .stadium-card__image {
-    width: 100%;
+    
     min-width: 100%;
     height: 180px;
   }
