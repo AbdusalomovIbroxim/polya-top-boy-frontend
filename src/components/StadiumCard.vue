@@ -59,11 +59,11 @@ export default {
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
 }
 .stadium-card__image {
-  /* min-width: 220px; */
+  min-width: 220px;
   width: 100%;
-  /* height: 200px; */
-  min-height: 200px;
-  max-height: 200px;
+  height: 200px;
+  /* min-height: 200px;
+  max-height: 200px; */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
