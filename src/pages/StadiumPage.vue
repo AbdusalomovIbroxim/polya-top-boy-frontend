@@ -69,7 +69,7 @@ const initMap = async () => {
 
   const markerPosition = new google.maps.LatLng(stadium.value.latitude, stadium.value.longitude);
 
-  map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
+  map = new google.maps.Map(document.getElementById("map"), {
     center: markerPosition,
     zoom: 15,
   });
