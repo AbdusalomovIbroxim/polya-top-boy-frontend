@@ -41,6 +41,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { getSportVenue } from '../api/fields';
 let mapboxgl;
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 const route = useRoute();
 const stadium = ref(null);
