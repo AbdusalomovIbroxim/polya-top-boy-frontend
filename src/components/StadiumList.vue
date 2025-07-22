@@ -41,6 +41,7 @@ export default {
 .stadium-list__cards {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 24px;
   box-sizing: border-box;
   padding: 0;

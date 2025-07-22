@@ -51,15 +51,14 @@ export default {
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   background: #fff;
   max-width: 700px;
-  width: 100%;
-  margin: 0 auto;
+  width: 90%;
   cursor: pointer;
   transition: box-shadow 0.2s;
   box-sizing: border-box;
 }
-.stadium-card:hover {
+/* .stadium-card:hover {
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
-}
+} */
 .stadium-card__image {
   width: 100%;
   height: 200px;
