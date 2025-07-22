@@ -64,35 +64,26 @@ async function loadMapbox() {
   }
 }
 
-async function initMap() {
+const initMap = async () => {
   if (!stadium.value || !stadium.value.latitude || !stadium.value.longitude) return;
-  await loadMapbox();
 
-  // Удаление предыдущей карты и маркера
-  if (mapInstance) {
-    mapInstance.remove();
-    mapInstance = null;
-  }
-  if (markerInstance) {
-    markerInstance.remove();
-    markerInstance = null;
-  }
+  const markerPosition = new google.maps.LatLng(stadium.value.latitude, stadium.value.longitude);
 
-  const lng = Number(stadium.value.longitude);
-  const lat = Number(stadium.value.latitude);
-
-  mapInstance = new mapboxgl.Map({
-    container: mapContainer.value,
-    style: 'mapbox://styles/mapbox/streets-v11',
-    center: [lng, lat],
+  map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
+    center: markerPosition,
     zoom: 15,
-    attributionControl: false
   });
 
-  markerInstance = new mapboxgl.Marker({ color: '#36d900' })
-    .setLngLat([lng, lat])
-    .addTo(mapInstance);
-}
+  marker = new google.maps.Marker({
+    position: markerPosition,
+    map,
+  });
+
+  // Иногда помогает при баге размеров:
+  google.maps.event.trigger(map, 'resize');
+  map.setCenter(markerPosition);
+};
+
 
 onMounted(async () => {
   const id = route.params.id;
