@@ -10,7 +10,7 @@
       <div class="stadium-card__info">
         <div>
           <div class="stadium-card__price">
-            Цена: {{ price }}сум/час
+            Цена: {{ price }} сум/час
             <span v-if="stadium.city">· {{ stadium.city }}</span>
           </div>
         </div>
