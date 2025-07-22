@@ -26,6 +26,7 @@
 
 <script>
 import { ref, onMounted, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { getSportVenues, getRegions, getTypes } from '../api/fields';
 import { 
   Navbar, 
@@ -47,6 +48,7 @@ export default {
     const types = ref([]);
     const selectedRegion = ref('');
     const selectedType = ref('');
+    const router = useRouter();
 
     const regionOptions = computed(() => [
       { id: '', name: 'Все регионы' },
@@ -97,7 +99,9 @@ export default {
     }
 
     function handleStadiumOpen(stadium) {
-      console.log('Stadium open:', stadium);
+      if (stadium && stadium.id) {
+        router.push(`/stadium/${stadium.id}`);
+      }
     }
 
     return {
