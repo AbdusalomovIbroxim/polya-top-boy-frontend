@@ -63,25 +63,10 @@ export function useAuth() {
       debugInfo.value = `initData: ${initData}`;
 
       if (initData && initData.length > 0) {
-        const hasRequiredFields = initData.includes('user=') &&
-                                  initData.includes('auth_date=') &&
-                                  (initData.includes('signature=') || initData.includes('hash='));
-        if (hasRequiredFields) {
-          const userProfile = await telegramAuth(initData);
-          // Сохраняем токены, если они есть
-          if (userProfile.access) localStorage.setItem('access', userProfile.access);
-          if (userProfile.refresh) localStorage.setItem('refresh', userProfile.refresh);
-          // Получаем актуальные данные пользователя через initData
-          try {
-            const freshUser = await getCurrentUser(initData);
-            user.value = freshUser;
-          } catch (e) {
-            user.value = userProfile.user; // fallback
-          }
-          isAuth.value = true;
-        } else {
-          authError.value = 'Некорректный формат initData. Отсутствуют обязательные поля.';
-        }
+        // Только один запрос!
+        const userProfile = await telegramAuth(initData);
+        user.value = userProfile.user;
+        isAuth.value = true;
       } else {
         authError.value = 'Нет данных Telegram WebApp (initData пустой).';
       }
@@ -98,7 +83,6 @@ export function useAuth() {
     isAuth.value = false;
   }
 
-  // Вызываем аутентификацию только один раз при первом импорте
   if (isLoading.value) {
       authenticate();
   }
