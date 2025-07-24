@@ -1,7 +1,11 @@
 <script setup>
+import { onMounted } from 'vue'
 import { useAuth } from '../composables/useAuth';
-const { user, logout } = useAuth();
+const { user, logout, retryAuth } = useAuth();
 
+onMounted(() => {
+  retryAuth();
+});
 </script>
 
 <template>

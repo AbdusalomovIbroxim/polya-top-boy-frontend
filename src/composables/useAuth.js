@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { telegramAuth } from '../api/auth';
+import { telegramAuth, getCurrentUser } from '../api/auth';
 
 // Вспомогательная функция для получения initData
 function getTelegramInitData() {
@@ -68,7 +68,16 @@ export function useAuth() {
                                   (initData.includes('signature=') || initData.includes('hash='));
         if (hasRequiredFields) {
           const userProfile = await telegramAuth(initData);
-          user.value = userProfile.user;
+          // Сохраняем токены, если они есть
+          if (userProfile.access) localStorage.setItem('access', userProfile.access);
+          if (userProfile.refresh) localStorage.setItem('refresh', userProfile.refresh);
+          // Получаем актуальные данные пользователя через initData
+          try {
+            const freshUser = await getCurrentUser(initData);
+            user.value = freshUser;
+          } catch (e) {
+            user.value = userProfile.user; // fallback
+          }
           isAuth.value = true;
         } else {
           authError.value = 'Некорректный формат initData. Отсутствуют обязательные поля.';
