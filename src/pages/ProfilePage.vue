@@ -1,11 +1,7 @@
 <script setup>
-import { onMounted } from 'vue'
 import { useAuth } from '../composables/useAuth';
-const { user, logout, retryAuth } = useAuth();
+const { user, logout } = useAuth();
 
-onMounted(() => {
-  retryAuth();
-});
 </script>
 
 <template>
@@ -30,6 +26,10 @@ onMounted(() => {
           <span class="label">Имя пользователя:</span>
           <span class="value">@{{ user.username }}</span>
         </div>
+        <div v-if="user.phone" class="info-item">
+          <span class="label">Телефон:</span>
+          <span class="value">{{ user.phone }}</span>
+        </div>
         <div v-if="user.first_name" class="info-item">
           <span class="label">Имя:</span>
           <span class="value">{{ user.first_name }}</span>
@@ -38,9 +38,13 @@ onMounted(() => {
           <span class="label">Фамилия:</span>
           <span class="value">{{ user.last_name }}</span>
         </div>
-        <div v-if="user.language_code" class="info-item">
-          <span class="label">Язык:</span>
-          <span class="value">{{ user.language_code }}</span>
+        <div v-if="user.role" class="info-item">
+          <span class="label">Роль:</span>
+          <span class="value">{{ user.role }}</span>
+        </div>
+        <div v-if="user.date_joined" class="info-item">
+          <span class="label">Дата регистрации:</span>
+          <span class="value">{{ new Date(user.date_joined).toLocaleDateString() }}</span>
         </div>
       </div>
     </div>
