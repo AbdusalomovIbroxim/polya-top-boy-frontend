@@ -1,206 +1,155 @@
 import { ref } from 'vue';
-// import { telegramAuth } from '../api/auth';
 import api from '../api/api';
 
-// ЗАКОММЕНТИРОВАННАЯ СТАРАЯ АВТОРИЗАЦИЯ
-/*
-import { telegramAuth } from '../api/auth';
-import { getCurrentUser } from '../api/auth';
-
 const user = ref(null);
 const isAuth = ref(false);
 const authError = ref('');
 const isLoading = ref(false);
 
-function getTelegramInitData() {
-  return window.Telegram?.WebApp?.initData || '';
+// --- AUTH API ---
+async function login(loginData) {
+  isLoading.value = true;
+  authError.value = '';
+  try {
+    const response = await api.post('/auth/login/', loginData);
+    if (response.data.access) localStorage.setItem('access', response.data.access);
+    if (response.data.refresh) localStorage.setItem('refresh', response.data.refresh);
+    user.value = response.data.user;
+    isAuth.value = true;
+    return response.data;
+  } catch (error) {
+    authError.value = parseAuthError(error);
+    throw error;
+  } finally {
+    isLoading.value = false;
+  }
 }
 
-export function useAuth() {
-  // Авторизация через Telegram Web App
-  async function authenticate() {
-    console.log('DEBUG: authenticate called');
-    isLoading.value = true;
-    authError.value = '';
-    
-    try {
-      const initData = getTelegramInitData();
-      console.log('DEBUG: initData', initData);
-      
-      if (!initData) {
-        throw new Error('Telegram Web App не доступен');
-      }
-      
-      const response = await telegramAuth(initData);
-      console.log('DEBUG: telegramAuth response', response);
-      
-      user.value = response.data.user;
-      isAuth.value = true;
-      
-      return response.data;
-    } catch (error) {
-      console.error('DEBUG: authenticate error', error);
-      authError.value = error.response?.data?.message || 'Ошибка авторизации';
-      throw error;
-    } finally {
-      isLoading.value = false;
-    }
+async function register(userData) {
+  isLoading.value = true;
+  authError.value = '';
+  try {
+    const response = await api.post('/auth/register/', userData);
+    if (response.data.access) localStorage.setItem('access', response.data.access);
+    if (response.data.refresh) localStorage.setItem('refresh', response.data.refresh);
+    user.value = response.data.user;
+    isAuth.value = true;
+    return response.data;
+  } catch (error) {
+    authError.value = parseAuthError(error);
+    throw error;
+  } finally {
+    isLoading.value = false;
   }
-
-  // Инициализация при загрузке
-  authenticate();
-
-  return {
-    user,
-    isAuth,
-    authError,
-    isLoading,
-    authenticate,
-  };
-}
-*/
-
-// НОВАЯ СИСТЕМА АВТОРИЗАЦИИ
-const user = ref(null);
-const isAuth = ref(false);
-const authError = ref('');
-const isLoading = ref(false);
-
-function getTelegramInitData() { // This function is now unused due to commenting out old auth
-  return window.Telegram?.WebApp?.initData || '';
 }
 
-export function useAuth() {
-  // Авторизация пользователя
-  async function login(loginData) {
-    console.log('DEBUG: login called', loginData);
-    isLoading.value = true;
-    authError.value = '';
-    try {
-      const response = await api.post('auth/login/', loginData);
-      console.log('DEBUG: login response', response);
-      user.value = response.data.user;
-      isAuth.value = true;
-      // Сохраняем токены в localStorage
-      if (response.data.access) {
-        localStorage.setItem('access', response.data.access);
-      }
-      if (response.data.refresh) {
-        localStorage.setItem('refresh', response.data.refresh);
-      }
-      return response.data;
-    } catch (error) {
-      console.error('DEBUG: login error', error);
-      authError.value = error.response?.data?.message || 'Ошибка авторизации';
-      throw error;
-    } finally {
-      isLoading.value = false;
-    }
-  }
+async function logout() {
+  isLoading.value = true;
+  try {
+    await api.post('/auth/logout/');
+  } catch (e) {}
+  user.value = null;
+  isAuth.value = false;
+  localStorage.removeItem('access');
+  localStorage.removeItem('refresh');
+  isLoading.value = false;
+}
 
-  // Регистрация пользователя
-  async function register(userData) {
-    console.log('DEBUG: register called', userData);
-    isLoading.value = true;
-    authError.value = '';
-    try {
-      const response = await api.post('auth/register/', userData);
-      console.log('DEBUG: register response', response);
-      user.value = response.data.user;
-      isAuth.value = true;
-      // Сохраняем токены в localStorage
-      if (response.data.access) {
-        localStorage.setItem('access', response.data.access);
-      }
-      if (response.data.refresh) {
-        localStorage.setItem('refresh', response.data.refresh);
-      }
-      return response.data;
-    } catch (error) {
-      console.error('DEBUG: register error', error);
-      authError.value = error.response?.data?.message || 'Ошибка регистрации';
-      throw error;
-    } finally {
-      isLoading.value = false;
-    }
+async function getCurrentUser() {
+  isLoading.value = true;
+  try {
+    const response = await api.get('/users/me/');
+    user.value = response.data;
+    isAuth.value = true;
+    return response.data;
+  } catch (error) {
+    user.value = null;
+    isAuth.value = false;
+    throw error;
+  } finally {
+    isLoading.value = false;
   }
+}
 
-  // Выход пользователя
-  async function logout() {
-    console.log('DEBUG: logout called');
-    isLoading.value = true;
+async function refreshToken() {
+  const refresh = localStorage.getItem('refresh');
+  if (!refresh) return null;
+  try {
+    const response = await api.post('/token/refresh/', { refresh });
+    if (response.data.access) localStorage.setItem('access', response.data.access);
+    return response.data.access;
+  } catch (e) {
+    await logout();
+    return null;
+  }
+}
+
+async function verifyToken(token) {
+  try {
+    await api.post('/token/verify/', { token });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// --- SESSION RESTORE ---
+async function checkAuth() {
+  const access = localStorage.getItem('access');
+  if (!access) {
+    user.value = null;
+    isAuth.value = false;
+    return;
+  }
+  const valid = await verifyToken(access);
+  if (valid) {
     try {
-      await api.post('auth/logout/');
-      console.log('DEBUG: logout success');
-    } catch (error) {
-      console.error('DEBUG: logout error', error);
-    } finally {
+      await getCurrentUser();
+    } catch {
       user.value = null;
       isAuth.value = false;
-      // Удаляем токены из localStorage
-      localStorage.removeItem('access');
-      localStorage.removeItem('refresh');
-      isLoading.value = false;
     }
-  }
-
-  // Получение текущего пользователя
-  async function getCurrentUser() {
-    console.log('DEBUG: getCurrentUser called');
-    isLoading.value = true;
-    try {
-      const response = await api.get('users/me/');
-      console.log('DEBUG: getCurrentUser response', response);
-      user.value = response.data;
-      isAuth.value = true;
-      return response.data;
-    } catch (error) {
-      console.error('DEBUG: getCurrentUser error', error);
-      user.value = null;
-      isAuth.value = false;
-      // Если токен недействителен, удаляем его
-      localStorage.removeItem('access');
-      localStorage.removeItem('refresh');
-      throw error;
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  // Проверка авторизации при загрузке
-  async function checkAuth() {
-    console.log('DEBUG: checkAuth called');
-    const accessToken = localStorage.getItem('access');
-    if (accessToken) {
+  } else {
+    // Попробуем обновить токен
+    const newAccess = await refreshToken();
+    if (newAccess) {
       try {
         await getCurrentUser();
-      } catch (error) {
-        console.error('DEBUG: checkAuth error', error);
-        // Если токен недействителен, очищаем состояние
+      } catch {
         user.value = null;
         isAuth.value = false;
-        localStorage.removeItem('access');
-        localStorage.removeItem('refresh');
       }
+    } else {
+      user.value = null;
+      isAuth.value = false;
     }
   }
+}
 
-  // Функция для проверки авторизации в компонентах
-  function requireAuth() {
-    console.log('DEBUG: requireAuth called, isAuth:', isAuth.value);
-    if (!isAuth.value) {
-      // Сохраняем текущий путь для возврата после авторизации
-      localStorage.setItem('redirectAfterLogin', window.location.pathname);
-      // Используем hash для SPA навигации
-      window.location.hash = '#/login';
-      return false;
-    }
-    return true;
+function requireAuth() {
+  if (!isAuth.value) {
+    localStorage.setItem('redirectAfterLogin', window.location.pathname);
+    window.location.hash = '#/login';
+    return false;
   }
+  return true;
+}
 
-  // Инициализация при загрузке
-  checkAuth();
+function parseAuthError(error) {
+  if (error.response && error.response.data) {
+    const data = error.response.data;
+    if (typeof data === 'string') return data;
+    if (typeof data === 'object') {
+      return Object.values(data).flat().join(' ');
+    }
+  }
+  return 'Ошибка авторизации';
+}
 
+// --- INIT ---
+checkAuth();
+
+export function useAuth() {
   return {
     user,
     isAuth,
@@ -212,5 +161,7 @@ export function useAuth() {
     getCurrentUser,
     checkAuth,
     requireAuth,
+    refreshToken,
+    verifyToken,
   };
 }
