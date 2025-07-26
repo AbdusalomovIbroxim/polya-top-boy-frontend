@@ -31,7 +31,7 @@
       ></iframe>
     </div>
     <p class="description">{{ stadium.description }}</p>
-    <button class="book-btn">Забронировать</button>
+    <button class="book-btn" @click="handleBookStadium">Забронировать</button>
   </div>
   <div v-else class="stadium-loading">Загрузка...</div>
 </template>
@@ -40,13 +40,15 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { getSportVenue } from '../api/fields';
-let mapboxgl;
+import { useAuth } from '../composables/useAuth';
 
 const route = useRoute();
+const { requireAuth } = useAuth();
 const stadium = ref(null);
 const activeImage = ref('');
 const mapContainer = ref(null);
 let mapInstance = null;
+let mapboxgl;
 
 function formatPrice(value) {
   if (!value) return '-';
@@ -54,6 +56,13 @@ function formatPrice(value) {
   if (num >= 1000000) return (num / 1000000).toFixed(num % 1000000 === 0 ? 0 : 1) + ' млн';
   if (num >= 1000) return (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1) + ' тыс';
   return num.toLocaleString('ru-RU');
+}
+
+function handleBookStadium() {
+  if (requireAuth()) {
+    // Здесь будет логика бронирования
+    console.log('Бронирование стадиона:', stadium.value.id);
+  }
 }
 
 async function loadMapbox() {

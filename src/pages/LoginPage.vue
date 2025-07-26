@@ -145,7 +145,14 @@ const registerForm = reactive({
 async function handleLogin() {
   try {
     await login(loginForm);
-    router.push('/');
+    // Проверяем, есть ли сохраненный путь для возврата
+    const redirectPath = localStorage.getItem('redirectAfterLogin');
+    if (redirectPath && redirectPath !== '/login') {
+      localStorage.removeItem('redirectAfterLogin');
+      router.push(redirectPath);
+    } else {
+      router.push('/');
+    }
   } catch (error) {
     console.error('Ошибка входа:', error);
   }
@@ -155,7 +162,14 @@ async function handleLogin() {
 async function handleRegister() {
   try {
     await register(registerForm);
-    router.push('/');
+    // Проверяем, есть ли сохраненный путь для возврата
+    const redirectPath = localStorage.getItem('redirectAfterLogin');
+    if (redirectPath && redirectPath !== '/login') {
+      localStorage.removeItem('redirectAfterLogin');
+      router.push(redirectPath);
+    } else {
+      router.push('/');
+    }
   } catch (error) {
     console.error('Ошибка регистрации:', error);
   }

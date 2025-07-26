@@ -172,6 +172,17 @@ export function useAuth() {
     }
   }
 
+  // Функция для проверки авторизации в компонентах
+  function requireAuth() {
+    if (!isAuth.value) {
+      // Сохраняем текущий путь для возврата после авторизации
+      localStorage.setItem('redirectAfterLogin', window.location.pathname);
+      window.location.href = '/login';
+      return false;
+    }
+    return true;
+  }
+
   // Инициализация при загрузке
   checkAuth();
 
@@ -185,5 +196,6 @@ export function useAuth() {
     logout,
     getCurrentUser,
     checkAuth,
+    requireAuth,
   };
 }

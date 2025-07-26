@@ -6,10 +6,10 @@ import LoginPage from './pages/LoginPage.vue';
 import { useAuth } from './composables/useAuth';
 
 const routes = [
-  { path: '/', name: 'home', component: HomePage, meta: { requiresAuth: true } },
+  { path: '/', name: 'home', component: HomePage },
   { path: '/profile', name: 'profile', component: ProfilePage, meta: { requiresAuth: true } },
-  { path: '/stadium/:id', name: 'stadium', component: StadiumPage, meta: { requiresAuth: true } },
-  { path: '/login', name: 'login', component: LoginPage, meta: { requiresAuth: false } },
+  { path: '/stadium/:id', name: 'stadium', component: StadiumPage },
+  { path: '/login', name: 'login', component: LoginPage },
 ];
 
 const router = createRouter({

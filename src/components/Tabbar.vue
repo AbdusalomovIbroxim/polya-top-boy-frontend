@@ -3,8 +3,9 @@
     <router-link
       v-for="tab in tabs"
       :key="tab.id"
-      :to="tab.id === 'home' ? '/' : (tab.id === 'profile' ? '/profile' : '#')"
+      :to="getTabLink(tab)"
       :class="['tabbar-item', { active: $route.name === tab.id }]"
+      @click="handleTabClick(tab, $event)"
     >
       <span class="tabbar-icon" v-html="tab.icon"></span>
       <span class="tabbar-label">{{ tab.label }}</span>
@@ -13,6 +14,8 @@
 </template>
 
 <script>
+import { useAuth } from '../composables/useAuth';
+
 export default {
   name: 'Tabbar',
   props: {
@@ -20,6 +23,30 @@ export default {
       type: String,
       default: 'home'
     }
+  },
+  setup() {
+    const { requireAuth } = useAuth();
+
+    function getTabLink(tab) {
+      if (tab.id === 'profile') {
+        return '#'; // Временно ставим #, обработка будет в handleTabClick
+      }
+      return tab.id === 'home' ? '/' : (tab.id === 'profile' ? '/profile' : '#');
+    }
+
+    function handleTabClick(tab, event) {
+      if (tab.id === 'profile') {
+        event.preventDefault();
+        if (requireAuth()) {
+          window.location.href = '/profile';
+        }
+      }
+    }
+
+    return {
+      getTabLink,
+      handleTabClick
+    };
   },
   data() {
     return {
