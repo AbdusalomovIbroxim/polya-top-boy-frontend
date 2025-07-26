@@ -100,9 +100,17 @@ async function initMap() {
     mapInstance.setCenter([lng, lat]);
   });
 
-  // При изменении зума — центрируем снова
-  mapInstance.on('zoom', () => {
-    mapInstance.setCenter([lng, lat]);
+  // При завершении перемещения карты — возвращаем центр на метку
+  mapInstance.on('moveend', () => {
+    const currentCenter = mapInstance.getCenter();
+    const distance = Math.sqrt(
+      Math.pow(currentCenter.lng - lng, 2) + 
+      Math.pow(currentCenter.lat - lat, 2)
+    );
+    // Если центр сместился больше чем на 0.001 градуса, возвращаем на метку
+    if (distance > 0.001) {
+      mapInstance.setCenter([lng, lat]);
+    }
   });
 }
 
