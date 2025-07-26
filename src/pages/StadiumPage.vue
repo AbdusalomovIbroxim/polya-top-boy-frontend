@@ -75,8 +75,8 @@ function formatPrice(value) {
 
 function handleBookStadium() {
   if (requireAuth()) {
-    // Здесь будет логика бронирования
-    console.log('Бронирование стадиона:', stadium.value.id);
+    // Переходим на страницу бронирования
+    router.push(`/booking/${stadium.value.id}`);
   }
 }
 

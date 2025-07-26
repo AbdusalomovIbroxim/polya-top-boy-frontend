@@ -3,6 +3,7 @@ import HomePage from './pages/HomePage.vue';
 import ProfilePage from './pages/ProfilePage.vue';
 import StadiumPage from './pages/StadiumPage.vue';
 import LoginPage from './pages/LoginPage.vue';
+import BookingPage from './pages/BookingPage.vue';
 import { useAuth } from './composables/useAuth';
 
 const routes = [
@@ -10,6 +11,7 @@ const routes = [
   { path: '/profile', name: 'profile', component: ProfilePage, meta: { requiresAuth: true } },
   { path: '/stadium/:id', name: 'stadium', component: StadiumPage },
   { path: '/login', name: 'login', component: LoginPage },
+  { path: '/booking/:stadiumId', name: 'booking', component: BookingPage, meta: { requiresAuth: true } },
 ];
 
 const router = createRouter({
