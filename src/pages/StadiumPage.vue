@@ -99,6 +99,11 @@ async function initMap() {
   mapInstance.on('resize', () => {
     mapInstance.setCenter([lng, lat]);
   });
+
+  // При изменении зума — центрируем снова
+  mapInstance.on('zoom', () => {
+    mapInstance.setCenter([lng, lat]);
+  });
 }
 
 onMounted(async () => {
