@@ -86,7 +86,14 @@ async function initMap() {
     style: 'mapbox://styles/mapbox/streets-v11',
     center: [lng, lat],
     zoom: 15,
-    attributionControl: false // отключаем copyright
+    attributionControl: false, // отключаем copyright
+    interactive: false, // отключаем все взаимодействия
+    dragPan: false, // отключаем перетаскивание
+    scrollZoom: false, // отключаем зум колесиком
+    boxZoom: false, // отключаем зум выделением
+    doubleClickZoom: false, // отключаем зум двойным кликом
+    keyboard: false, // отключаем управление с клавиатуры
+    touchZoomRotate: false // отключаем зум на мобильных
   });
   new mapboxgl.Marker({ color: '#36d900' })
     .setLngLat([lng, lat])
@@ -94,24 +101,6 @@ async function initMap() {
 
   // Центрируем карту на метке после инициализации
   mapInstance.setCenter([lng, lat]);
-
-  // При изменении размера контейнера — центрируем снова
-  mapInstance.on('resize', () => {
-    mapInstance.setCenter([lng, lat]);
-  });
-
-  // При завершении перемещения карты — возвращаем центр на метку
-  mapInstance.on('moveend', () => {
-    const currentCenter = mapInstance.getCenter();
-    const distance = Math.sqrt(
-      Math.pow(currentCenter.lng - lng, 2) + 
-      Math.pow(currentCenter.lat - lat, 2)
-    );
-    // Если центр сместился больше чем на 0.001 градуса, возвращаем на метку
-    if (distance > 0.001) {
-      mapInstance.setCenter([lng, lat]);
-    }
-  });
 }
 
 onMounted(async () => {
