@@ -4,57 +4,58 @@ import api from '../api/api';
 
 // ЗАКОММЕНТИРОВАННАЯ СТАРАЯ АВТОРИЗАЦИЯ
 /*
+import { telegramAuth } from '../api/auth';
+import { getCurrentUser } from '../api/auth';
+
 const user = ref(null);
 const isAuth = ref(false);
 const authError = ref('');
-const debugInfo = ref('');
-const isLoading = ref(true);
+const isLoading = ref(false);
 
 function getTelegramInitData() {
   return window.Telegram?.WebApp?.initData || '';
 }
 
 export function useAuth() {
+  // Авторизация через Telegram Web App
   async function authenticate() {
+    console.log('DEBUG: authenticate called');
     isLoading.value = true;
     authError.value = '';
+    
     try {
-      if (!window.Telegram?.WebApp) {
-        authError.value = 'Приложение должно быть запущено через Telegram бота';
-        return;
-      }
       const initData = getTelegramInitData();
-      debugInfo.value = `initData: ${initData}`;
-      if (initData) {
-        const userProfile = await telegramAuth(initData);
-        user.value = userProfile.user;
-        isAuth.value = true;
-      } else {
-        authError.value = 'Нет данных Telegram WebApp (initData пустой).';
+      console.log('DEBUG: initData', initData);
+      
+      if (!initData) {
+        throw new Error('Telegram Web App не доступен');
       }
-    } catch (e) {
-      authError.value = e?.response?.data?.error || e.message || 'Ошибка авторизации';
-      await logout();
+      
+      const response = await telegramAuth(initData);
+      console.log('DEBUG: telegramAuth response', response);
+      
+      user.value = response.data.user;
+      isAuth.value = true;
+      
+      return response.data;
+    } catch (error) {
+      console.error('DEBUG: authenticate error', error);
+      authError.value = error.response?.data?.message || 'Ошибка авторизации';
+      throw error;
     } finally {
       isLoading.value = false;
     }
   }
 
-  async function logout() {
-    user.value = null;
-    isAuth.value = false;
-  }
-
-  if (isLoading.value) authenticate();
+  // Инициализация при загрузке
+  authenticate();
 
   return {
     user,
     isAuth,
     authError,
-    debugInfo,
     isLoading,
-    retryAuth: authenticate,
-    logout,
+    authenticate,
   };
 }
 */
@@ -64,6 +65,10 @@ const user = ref(null);
 const isAuth = ref(false);
 const authError = ref('');
 const isLoading = ref(false);
+
+function getTelegramInitData() { // This function is now unused due to commenting out old auth
+  return window.Telegram?.WebApp?.initData || '';
+}
 
 export function useAuth() {
   // Авторизация пользователя
@@ -76,7 +81,6 @@ export function useAuth() {
       console.log('DEBUG: login response', response);
       user.value = response.data.user;
       isAuth.value = true;
-      
       // Сохраняем токены в localStorage
       if (response.data.access) {
         localStorage.setItem('access', response.data.access);
@@ -84,7 +88,6 @@ export function useAuth() {
       if (response.data.refresh) {
         localStorage.setItem('refresh', response.data.refresh);
       }
-      
       return response.data;
     } catch (error) {
       console.error('DEBUG: login error', error);
@@ -105,7 +108,6 @@ export function useAuth() {
       console.log('DEBUG: register response', response);
       user.value = response.data.user;
       isAuth.value = true;
-      
       // Сохраняем токены в localStorage
       if (response.data.access) {
         localStorage.setItem('access', response.data.access);
@@ -113,7 +115,6 @@ export function useAuth() {
       if (response.data.refresh) {
         localStorage.setItem('refresh', response.data.refresh);
       }
-      
       return response.data;
     } catch (error) {
       console.error('DEBUG: register error', error);
@@ -190,7 +191,8 @@ export function useAuth() {
     if (!isAuth.value) {
       // Сохраняем текущий путь для возврата после авторизации
       localStorage.setItem('redirectAfterLogin', window.location.pathname);
-      window.location.href = '/login';
+      // Используем hash для SPA навигации
+      window.location.hash = '#/login';
       return false;
     }
     return true;
