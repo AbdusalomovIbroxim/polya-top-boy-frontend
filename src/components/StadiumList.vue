@@ -49,6 +49,6 @@ export default {
   width: 100%;
   max-width: 100vw;
   overflow-x: hidden;
-  padding-bottom: 4rem;
+  padding-bottom: 5rem;
 }
 </style> 
