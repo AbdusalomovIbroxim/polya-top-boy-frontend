@@ -8,9 +8,9 @@ const isLoading = ref(false);
 
 // --- AUTH API ---
 async function login(loginData) {
-  isLoading.value = true;
-  authError.value = '';
-  try {
+    isLoading.value = true;
+    authError.value = '';
+    try {
     const response = await api.post('/auth/login/', loginData);
     if (response.data.access) localStorage.setItem('access', response.data.access);
     if (response.data.refresh) localStorage.setItem('refresh', response.data.refresh);
@@ -33,17 +33,17 @@ async function register(userData) {
     if (response.data.access) localStorage.setItem('access', response.data.access);
     if (response.data.refresh) localStorage.setItem('refresh', response.data.refresh);
     user.value = response.data.user;
-    isAuth.value = true;
+          isAuth.value = true;
     return response.data;
   } catch (error) {
     authError.value = parseAuthError(error);
     throw error;
-  } finally {
-    isLoading.value = false;
+    } finally {
+      isLoading.value = false;
+    }
   }
-}
 
-async function logout() {
+  async function logout() {
   isLoading.value = true;
   try {
     await api.post('/auth/logout/');
@@ -107,22 +107,19 @@ async function checkAuthOnDemand() {
     return false;
   }
   
-  // 2. Проверяем access токен
+  // 2. Сразу пробуем получить пользователя с текущим access токеном
   if (access) {
-    const isValid = await verifyToken(access);
-    if (isValid) {
-      try {
-        await getCurrentUser();
-        console.log('DEBUG: Access token valid, user loaded');
-        return true;
-      } catch (error) {
-        console.log('DEBUG: Failed to get user with valid access token');
-        // Если не удалось получить пользователя, попробуем refresh
-      }
+    try {
+      await getCurrentUser();
+      console.log('DEBUG: User loaded successfully with current access token');
+      return true;
+    } catch (error) {
+      console.log('DEBUG: Failed to get user with current access token, trying refresh');
+      // Если не удалось получить пользователя, попробуем refresh
     }
   }
   
-  // 3. Если access токен невалиден, пробуем refresh
+  // 3. Если access токен не работает, пробуем refresh
   if (refresh) {
     console.log('DEBUG: Trying to refresh token');
     const newAccess = await refreshToken();

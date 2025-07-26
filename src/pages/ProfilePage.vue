@@ -69,7 +69,7 @@ function formatDate(dateString) {
               {{ getUserInitials() }}
             </div>
           </div>
-          <div class="user-info">
+      <div class="user-info">
             <h1 class="user-name">{{ getUserFullName() }}</h1>
             <p class="user-username">@{{ user.username }}</p>
             <span class="user-role">{{ user.role }}</span>
@@ -96,19 +96,19 @@ function formatDate(dateString) {
             Личная информация
           </h3>
           <div class="info-grid">
-            <div class="info-item">
+        <div class="info-item">
               <span class="info-label">ID</span>
               <span class="info-value">{{ user.id }}</span>
-            </div>
-            <div class="info-item">
+        </div>
+        <div class="info-item">
               <span class="info-label">Имя пользователя</span>
               <span class="info-value">@{{ user.username }}</span>
             </div>
             <div v-if="user.phone" class="info-item">
               <span class="info-label">Телефон</span>
               <span class="info-value">{{ user.phone }}</span>
-            </div>
-            <div v-if="user.first_name" class="info-item">
+        </div>
+        <div v-if="user.first_name" class="info-item">
               <span class="info-label">Имя</span>
               <span class="info-value">{{ user.first_name }}</span>
             </div>
