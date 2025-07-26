@@ -1,22 +1,39 @@
 import api from "./api";
 
+function withoutAuthHeaders(config) {
+  if (!localStorage.getItem('access')) {
+    if (config && config.headers) {
+      delete config.headers.Authorization;
+    }
+  }
+  return config;
+}
+
 async function getSportVenues(params = {}) {
-  const response = await api.get('/sport-venues/', { params });
+  const config = { params };
+  withoutAuthHeaders(config);
+  const response = await api.get('/sport-venues/', config);
   return response.data;
 }
 
 async function getSportVenue(id) {
-  const response = await api.get(`/sport-venues/${id}/`);
+  const config = {};
+  withoutAuthHeaders(config);
+  const response = await api.get(`/sport-venues/${id}/`, config);
   return response.data;
 }
 
 async function getRegions() {
-  const response = await api.get('/regions/');
+  const config = {};
+  withoutAuthHeaders(config);
+  const response = await api.get('/regions/', config);
   return response.data;
 }
 
 async function getTypes() {
-  const response = await api.get('/types/');
+  const config = {};
+  withoutAuthHeaders(config);
+  const response = await api.get('/types/', config);
   return response.data;
 }
 
