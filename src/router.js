@@ -20,6 +20,12 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   console.log('DEBUG: Router beforeEach', { to: to.path, from: from.path, fullPath: to.fullPath });
   
+  // Проверяем, содержит ли URL данные Telegram Web App
+  if (to.path.includes('tgWebAppData') || to.fullPath.includes('tgWebAppData')) {
+    console.log('DEBUG: Detected Telegram Web App URL, redirecting to home');
+    return next('/');
+  }
+  
   const { isAuth } = useAuth();
 
   // Если роут требует авторизации и пользователь не авторизован
