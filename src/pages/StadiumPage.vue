@@ -74,33 +74,41 @@ async function loadMapbox() {
 
 async function initMap() {
   if (!stadium.value || !stadium.value.latitude || !stadium.value.longitude) return;
+
   await loadMapbox();
+
   if (mapInstance) {
     mapInstance.remove();
     mapInstance = null;
   }
+
   const lng = Number(stadium.value.longitude);
   const lat = Number(stadium.value.latitude);
+
   mapInstance = new mapboxgl.Map({
     container: mapContainer.value,
     style: 'mapbox://styles/mapbox/streets-v11',
     center: [lng, lat],
     zoom: 15,
-    attributionControl: false, // отключаем copyright
-    interactive: false, // отключаем все взаимодействия
-    dragPan: false, // отключаем перетаскивание
-    scrollZoom: false, // отключаем зум колесиком
-    boxZoom: false, // отключаем зум выделением
-    doubleClickZoom: false, // отключаем зум двойным кликом
-    keyboard: false, // отключаем управление с клавиатуры
-    touchZoomRotate: false // отключаем зум на мобильных
   });
-  new mapboxgl.Marker({ color: '#36d900' })
+
+  // Создаем маркер
+  const marker = new mapboxgl.Marker({ color: '#36d900' })
     .setLngLat([lng, lat])
     .addTo(mapInstance);
 
-  // Центрируем карту на метке после инициализации
-  mapInstance.setCenter([lng, lat]);
+  // Обновлять позицию маркера на каждый зум/движение
+  mapInstance.on('zoomend', () => {
+    marker.setLngLat([lng, lat]);
+  });
+  mapInstance.on('moveend', () => {
+    marker.setLngLat([lng, lat]);
+  });
+
+  // Принудительно обновим размеры карты после отрисовки
+  setTimeout(() => {
+    mapInstance.resize();
+  }, 300); // Можно даже 100мс, но 300 надежнее
 }
 
 onMounted(async () => {
