@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import { getSportVenue } from '../api/fields';
 import { useAuth } from '../composables/useAuth';
@@ -85,6 +85,10 @@ async function initMap() {
   const lng = Number(stadium.value.longitude);
   const lat = Number(stadium.value.latitude);
 
+  // Подожди, пока DOM полностью прогрузится
+  await nextTick();
+
+  // Создай карту
   mapInstance = new mapboxgl.Map({
     container: mapContainer.value,
     style: 'mapbox://styles/mapbox/streets-v11',
@@ -92,23 +96,18 @@ async function initMap() {
     zoom: 15,
   });
 
-  // Создаем маркер
-  const marker = new mapboxgl.Marker({ color: '#36d900' })
+  // Установи маркер
+  new mapboxgl.Marker({ color: '#36d900' })
     .setLngLat([lng, lat])
     .addTo(mapInstance);
 
-  // Обновлять позицию маркера на каждый зум/движение
-  mapInstance.on('zoomend', () => {
-    marker.setLngLat([lng, lat]);
-  });
-  mapInstance.on('moveend', () => {
-    marker.setLngLat([lng, lat]);
-  });
-
-  // Принудительно обновим размеры карты после отрисовки
+  // Вызови resize после создания карты и отображения контейнера
   setTimeout(() => {
     mapInstance.resize();
-  }, 300); // Можно даже 100мс, но 300 надежнее
+    mapInstance.setCenter([lng, lat]); // Повторно центрируем
+  }, 200); // Лучше чуть позже, чтобы быть уверенным
+
+  // 🔒 Убираем moveend/zoomend — это лишнее
 }
 
 onMounted(async () => {
