@@ -14,7 +14,6 @@
       </div>
     </div>
     <h1 class="stadium-title">{{ stadium.name }}</h1>
-    <p class="description">{{ stadium.description }}</p>
     <div class="info-row">
       <span class="price">{{ formatPrice(stadium.price_per_hour) }} сум/час</span>
       <span class="address"><span class="icon">📍</span>{{ stadium.address }}</span>
@@ -31,6 +30,7 @@
         allowfullscreen
       ></iframe>
     </div>
+    <p class="description">{{ stadium.description }}</p>
     <button class="book-btn" @click="handleBookStadium">Забронировать</button>
   </div>
   <div v-else class="stadium-loading">Загрузка...</div>
@@ -91,6 +91,14 @@ async function initMap() {
   new mapboxgl.Marker({ color: '#36d900' })
     .setLngLat([lng, lat])
     .addTo(mapInstance);
+
+  // Центрируем карту на метке после инициализации
+  mapInstance.setCenter([lng, lat]);
+
+  // При изменении размера контейнера — центрируем снова
+  mapInstance.on('resize', () => {
+    mapInstance.setCenter([lng, lat]);
+  });
 }
 
 onMounted(async () => {
