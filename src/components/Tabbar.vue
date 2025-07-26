@@ -15,6 +15,7 @@
 
 <script>
 import { useAuth } from '../composables/useAuth';
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'Tabbar',
@@ -26,6 +27,7 @@ export default {
   },
   setup() {
     const { requireAuth } = useAuth();
+    const router = useRouter();
 
     function getTabLink(tab) {
       if (tab.id === 'profile') {
@@ -38,7 +40,7 @@ export default {
       if (tab.id === 'profile') {
         event.preventDefault();
         if (requireAuth()) {
-          window.location.href = '/profile';
+          router.push('/profile');
         }
       }
     }
