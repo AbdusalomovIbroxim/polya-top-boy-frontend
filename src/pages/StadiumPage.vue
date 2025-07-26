@@ -1,5 +1,15 @@
 <template>
   <div class="stadium-page" v-if="stadium">
+    <!-- Кнопка назад -->
+    <div class="back-button-container">
+      <button @click="goBack" class="back-button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Назад
+      </button>
+    </div>
+
     <div class="gallery-block" v-if="stadium.images && stadium.images.length">
       <img :src="activeImage" alt="stadium" class="main-image" />
       <div class="gallery-thumbs">
@@ -38,17 +48,22 @@
 
 <script setup>
 import { ref, onMounted, watch, nextTick } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { getSportVenue } from '../api/fields';
 import { useAuth } from '../composables/useAuth';
 
 const route = useRoute();
+const router = useRouter();
 const { requireAuth } = useAuth();
 const stadium = ref(null);
 const activeImage = ref('');
 const mapContainer = ref(null);
 let mapInstance = null;
 let mapboxgl;
+
+function goBack() {
+  router.back();
+}
 
 function formatPrice(value) {
   if (!value) return '-';
@@ -74,14 +89,11 @@ async function loadMapbox() {
 
 async function initMap() {
   if (!stadium.value || !stadium.value.latitude || !stadium.value.longitude) return;
-
   await loadMapbox();
-
   if (mapInstance) {
     mapInstance.remove();
     mapInstance = null;
   }
-
   const lng = Number(stadium.value.longitude);
   const lat = Number(stadium.value.latitude);
 
@@ -143,6 +155,35 @@ watch(() => stadium.value, async (val) => {
   border-radius: 18px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.06);
 }
+
+.back-button-container {
+  margin-bottom: 16px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #6c757d;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.back-button svg {
+  width: 16px;
+  height: 16px;
+}
+
 .gallery-block {
   margin-bottom: 18px;
 }
