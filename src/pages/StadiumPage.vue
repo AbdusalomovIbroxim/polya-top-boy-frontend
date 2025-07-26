@@ -14,6 +14,7 @@
       </div>
     </div>
     <h1 class="stadium-title">{{ stadium.name }}</h1>
+    <p class="description">{{ stadium.description }}</p>
     <div class="info-row">
       <span class="price">{{ formatPrice(stadium.price_per_hour) }} сум/час</span>
       <span class="address"><span class="icon">📍</span>{{ stadium.address }}</span>
@@ -30,7 +31,6 @@
         allowfullscreen
       ></iframe>
     </div>
-    <p class="description">{{ stadium.description }}</p>
     <button class="book-btn" @click="handleBookStadium">Забронировать</button>
   </div>
   <div v-else class="stadium-loading">Загрузка...</div>

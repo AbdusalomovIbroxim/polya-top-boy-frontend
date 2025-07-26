@@ -97,10 +97,6 @@ function formatDate(dateString) {
           </h3>
           <div class="info-grid">
         <div class="info-item">
-              <span class="info-label">ID</span>
-              <span class="info-value">{{ user.id }}</span>
-        </div>
-        <div class="info-item">
               <span class="info-label">Имя пользователя</span>
               <span class="info-value">@{{ user.username }}</span>
             </div>
