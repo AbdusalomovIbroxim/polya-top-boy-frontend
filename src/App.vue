@@ -32,6 +32,7 @@ export default {
 <template>
   <div>
     <router-view />
+    <div class="tabbar-space"></div>
     <Tabbar v-if="$route.name !== 'login'" />
   </div>
 </template>
