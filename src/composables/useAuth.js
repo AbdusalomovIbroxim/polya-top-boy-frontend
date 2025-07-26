@@ -191,8 +191,8 @@ export function useAuth() {
     if (!isAuth.value) {
       // Сохраняем текущий путь для возврата после авторизации
       localStorage.setItem('redirectAfterLogin', window.location.pathname);
-      // Используем обычную навигацию для SPA
-      window.location.pathname = '/login';
+      // Используем hash для SPA навигации
+      window.location.hash = '#/login';
       return false;
     }
     return true;
