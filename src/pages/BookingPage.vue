@@ -1,221 +1,247 @@
 <template>
   <div class="booking-page">
-    <!-- Header -->
-    <div class="booking-header">
-      <div class="back-button" @click="goBack">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-          <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
-        </svg>
-      </div>
-      <h2 class="booking-title">Book a field</h2>
+    <!-- Loading state -->
+    <div v-if="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading...</p>
     </div>
 
-    <!-- Select a time -->
-    <h2 class="section-title">Select a time</h2>
-    <div class="time-selector">
-      <div class="date-selector">
-        <div 
-          v-for="(date, index) in availableDates" 
-          :key="index"
-          @click="selectDate(index)"
-          :class="['date-card', { active: selectedDateIndex === index }]"
-        >
-          <div class="date-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-          </div>
-          <span class="date-label">{{ date.label }}</span>
-        </div>
+    <!-- Not authorized state -->
+    <div v-else-if="!isAuth" class="not-authorized-container">
+      <div class="not-authorized-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
       </div>
-      
-      <!-- Start Time Selection -->
-      <div class="time-section">
-        <h3 class="time-section-title">Start Time</h3>
-        <div class="time-selector-container">
-          <div class="time-grid">
-            <div 
-              v-for="(time, index) in availableStartTimes" 
-              :key="index"
-              @click="selectStartTime(index)"
-              :class="['time-card', { active: selectedStartTimeIndex === index }]"
-            >
-              {{ time }}
-            </div>
-          </div>
+      <h2 class="not-authorized-title">Access Denied</h2>
+      <p class="not-authorized-text">You need to be logged in to book a field.</p>
+      <button @click="router.push('/login')" class="login-button">
+        Go to Login
+      </button>
+    </div>
+
+    <!-- Main booking form -->
+    <div v-else>
+      <!-- Header -->
+      <div class="booking-header">
+        <div class="back-button" @click="goBack">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+            <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
+          </svg>
         </div>
+        <h2 class="booking-title">Book a field</h2>
       </div>
 
-      <!-- Duration Selection -->
-      <div class="time-section">
-        <h3 class="time-section-title">Duration</h3>
-        <div class="duration-selector">
+      <!-- Select a time -->
+      <h2 class="section-title">Select a time</h2>
+      <div class="time-selector">
+        <div class="date-selector">
           <div 
-            v-for="(duration, index) in availableDurations" 
+            v-for="(date, index) in availableDates" 
             :key="index"
-            @click="selectDuration(index)"
-            :class="['duration-card', { active: selectedDurationIndex === index }]"
+            @click="selectDate(index)"
+            :class="['date-card', { active: selectedDateIndex === index }]"
           >
-            <div class="duration-icon">
+            <div class="date-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12,6 12,12 16,14"></polyline>
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
               </svg>
             </div>
-            <span class="duration-label">{{ duration.label }}</span>
-            <span class="duration-price">{{ duration.price }}</span>
+            <span class="date-label">{{ date.label }}</span>
+          </div>
+        </div>
+        
+        <!-- Start Time Selection -->
+        <div class="time-section">
+          <h3 class="time-section-title">Start Time</h3>
+          <div class="time-selector-container">
+            <div class="time-grid">
+              <div 
+                v-for="(time, index) in availableStartTimes" 
+                :key="index"
+                @click="selectStartTime(index)"
+                :class="['time-card', { active: selectedStartTimeIndex === index }]"
+              >
+                {{ time }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Duration Selection -->
+        <div class="time-section">
+          <h3 class="time-section-title">Duration</h3>
+          <div class="duration-selector">
+            <div 
+              v-for="(duration, index) in availableDurations" 
+              :key="index"
+              @click="selectDuration(index)"
+              :class="['duration-card', { active: selectedDurationIndex === index }]"
+            >
+              <div class="duration-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12,6 12,12 16,14"></polyline>
+                </svg>
+              </div>
+              <span class="duration-label">{{ duration.label }}</span>
+              <span class="duration-price">{{ duration.price }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Summary -->
+        <div v-if="selectedStartTimeIndex !== null && selectedDurationIndex !== null" class="booking-summary">
+          <div class="summary-card">
+            <div class="summary-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <div class="summary-content">
+              <h4 class="summary-title">Booking Summary</h4>
+              <p class="summary-time">
+                {{ availableDates[selectedDateIndex].label }} • 
+                {{ availableStartTimes[selectedStartTimeIndex] }} - 
+                {{ getEndTime() }}
+              </p>
+              <p class="summary-duration">
+                Duration: {{ availableDurations[selectedDurationIndex].label }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Booking Summary -->
-      <div v-if="selectedStartTimeIndex !== null && selectedDurationIndex !== null" class="booking-summary">
-        <div class="summary-card">
-          <div class="summary-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
+      <!-- Number of players -->
+      <h2 class="section-title">Number of players</h2>
+      <div class="players-input-container">
+        <div class="input-wrapper">
+          <div class="input-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
           </div>
-          <div class="summary-content">
-            <h4 class="summary-title">Booking Summary</h4>
-            <p class="summary-time">
-              {{ availableDates[selectedDateIndex].label }} • 
-              {{ availableStartTimes[selectedStartTimeIndex] }} - 
-              {{ getEndTime() }}
-            </p>
-            <p class="summary-duration">
-              Duration: {{ availableDurations[selectedDurationIndex].label }}
-            </p>
+          <input
+            v-model="numberOfPlayers"
+            class="players-input"
+            placeholder="Enter number of players"
+            type="number"
+            min="1"
+          />
+        </div>
+      </div>
+
+      <!-- Payment options -->
+      <h2 class="section-title">Payment options</h2>
+      <div class="payment-options">
+        <div 
+          @click="paymentOption = 'deposit'"
+          :class="['payment-card', { active: paymentOption === 'deposit' }]"
+        >
+          <div class="payment-icon deposit-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+              <line x1="9" y1="9" x2="9.01" y2="9"></line>
+              <line x1="15" y1="9" x2="15.01" y2="9"></line>
+            </svg>
+          </div>
+          <div class="payment-content">
+            <h3 class="payment-title">Deposit</h3>
+            <p class="payment-description">Pay only $20 to secure your booking</p>
+            <div class="payment-price">$20</div>
+          </div>
+          <div class="payment-check">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polyline points="20,6 9,17 4,12"></polyline>
+            </svg>
+          </div>
+        </div>
+
+        <div 
+          @click="paymentOption = 'full'"
+          :class="['payment-card', { active: paymentOption === 'full' }]"
+        >
+          <div class="payment-icon full-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+          <div class="payment-content">
+            <h3 class="payment-title">Full payment</h3>
+            <p class="payment-description">Pay the full amount upfront</p>
+            <div class="payment-price">$100</div>
+          </div>
+          <div class="payment-check">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polyline points="20,6 9,17 4,12"></polyline>
+            </svg>
+          </div>
+        </div>
+
+        <div 
+          @click="paymentOption = 'group'"
+          :class="['payment-card', { active: paymentOption === 'group' }]"
+        >
+          <div class="payment-icon group-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <div class="payment-content">
+            <h3 class="payment-title">Group payment</h3>
+            <p class="payment-description">Split the cost among players</p>
+            <div class="payment-price">$10 per person</div>
+          </div>
+          <div class="payment-check">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polyline points="20,6 9,17 4,12"></polyline>
+            </svg>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Number of players -->
-    <h2 class="section-title">Number of players</h2>
-    <div class="players-input-container">
-      <div class="input-wrapper">
-        <div class="input-icon">
+      <!-- Continue button -->
+      <div class="continue-button-container">
+        <button
+          @click="handleContinue"
+          class="continue-button"
+          :disabled="!canContinue"
+        >
+          <span>Continue</span>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12,5 19,12 12,19"></polyline>
           </svg>
-        </div>
-        <input
-          v-model="numberOfPlayers"
-          class="players-input"
-          placeholder="Enter number of players"
-          type="number"
-          min="1"
-        />
+        </button>
       </div>
-    </div>
-
-    <!-- Payment options -->
-    <h2 class="section-title">Payment options</h2>
-    <div class="payment-options">
-      <div 
-        @click="paymentOption = 'deposit'"
-        :class="['payment-card', { active: paymentOption === 'deposit' }]"
-      >
-        <div class="payment-icon deposit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-            <line x1="9" y1="9" x2="9.01" y2="9"></line>
-            <line x1="15" y1="9" x2="15.01" y2="9"></line>
-          </svg>
-        </div>
-        <div class="payment-content">
-          <h3 class="payment-title">Deposit</h3>
-          <p class="payment-description">Pay only $20 to secure your booking</p>
-          <div class="payment-price">$20</div>
-        </div>
-        <div class="payment-check">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <polyline points="20,6 9,17 4,12"></polyline>
-          </svg>
-        </div>
-      </div>
-
-      <div 
-        @click="paymentOption = 'full'"
-        :class="['payment-card', { active: paymentOption === 'full' }]"
-      >
-        <div class="payment-icon full-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <line x1="12" y1="1" x2="12" y2="23"></line>
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-          </svg>
-        </div>
-        <div class="payment-content">
-          <h3 class="payment-title">Full payment</h3>
-          <p class="payment-description">Pay the full amount upfront</p>
-          <div class="payment-price">$100</div>
-        </div>
-        <div class="payment-check">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <polyline points="20,6 9,17 4,12"></polyline>
-          </svg>
-        </div>
-      </div>
-
-      <div 
-        @click="paymentOption = 'group'"
-        :class="['payment-card', { active: paymentOption === 'group' }]"
-      >
-        <div class="payment-icon group-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-          </svg>
-        </div>
-        <div class="payment-content">
-          <h3 class="payment-title">Group payment</h3>
-          <p class="payment-description">Split the cost among players</p>
-          <div class="payment-price">$10 per person</div>
-        </div>
-        <div class="payment-check">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <polyline points="20,6 9,17 4,12"></polyline>
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <!-- Continue button -->
-    <div class="continue-button-container">
-      <button
-        @click="handleContinue"
-        class="continue-button"
-        :disabled="!canContinue"
-      >
-        <span>Continue</span>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12,5 19,12 12,19"></polyline>
-        </svg>
-      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useAuth } from '../composables/useAuth';
 
 const route = useRoute();
 const router = useRouter();
+const { isAuth, isLoading, checkAuth } = useAuth();
 
 const numberOfPlayers = ref('');
 const paymentOption = ref('deposit');
@@ -250,6 +276,21 @@ const canContinue = computed(() => {
   return selectedStartTimeIndex.value !== null && 
          selectedDurationIndex.value !== null && 
          numberOfPlayers.value.trim() !== '';
+});
+
+// Проверка авторизации при загрузке страницы
+onMounted(async () => {
+  await checkAuth();
+  if (!isAuth.value && !isLoading.value) {
+    router.push('/login');
+  }
+});
+
+// Следим за изменениями статуса авторизации
+watch([isAuth, isLoading], ([auth, loading]) => {
+  if (!auth && !loading) {
+    router.push('/login');
+  }
 });
 
 function selectDate(index) {
@@ -302,6 +343,95 @@ function handleContinue() {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   font-family: 'Manrope', 'Noto Sans', sans-serif;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #53d22c;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: #131712;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: -0.015em;
+}
+
+.not-authorized-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 20px;
+}
+
+.not-authorized-icon {
+  color: #53d22c;
+  margin-bottom: 20px;
+}
+
+.not-authorized-title {
+  color: #131712;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  margin-bottom: 10px;
+}
+
+.not-authorized-text {
+  color: #6d8566;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 0 20px;
+}
+
+.login-button {
+  background: linear-gradient(135deg, #53d22c 0%, #4bc026 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
+}
+
+.login-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(83, 210, 44, 0.4);
+}
+
+.login-button:active {
+  transform: translateY(0);
 }
 
 .booking-header {
