@@ -1,6 +1,22 @@
 <script setup>
 import { useAuth } from '../composables/useAuth';
-const { user, logout } = useAuth();
+import { onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
+const { user, logout, isAuth, isLoading, checkAuth } = useAuth();
+const router = useRouter();
+
+onMounted(async () => {
+  await checkAuth();
+  if (!isAuth.value && !isLoading.value) {
+    router.push('/login');
+  }
+});
+
+watch([isAuth, isLoading], ([auth, loading]) => {
+  if (!auth && !loading) {
+    router.push('/login');
+  }
+});
 
 function getUserFullName() {
   if (user.value.first_name && user.value.last_name) {
@@ -41,7 +57,9 @@ function formatDate(dateString) {
 
 <template>
   <div class="profile-page">
-    <div v-if="user" class="profile-container">
+    <div v-if="isLoading" class="profile-loading">Загрузка...</div>
+    <div v-else-if="!isAuth" class="profile-not-auth">Вы не авторизованы</div>
+    <div v-else-if="user" class="profile-container">
       <!-- Header с аватаром -->
       <div class="profile-header">
         <div class="avatar-section">
