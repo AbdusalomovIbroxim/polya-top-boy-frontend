@@ -32,15 +32,66 @@
         </div>
       </div>
       
-      <div class="time-selector-container">
-        <div class="time-grid">
+      <!-- Start Time Selection -->
+      <div class="time-section">
+        <h3 class="time-section-title">Start Time</h3>
+        <div class="time-selector-container">
+          <div class="time-grid">
+            <div 
+              v-for="(time, index) in availableStartTimes" 
+              :key="index"
+              @click="selectStartTime(index)"
+              :class="['time-card', { active: selectedStartTimeIndex === index }]"
+            >
+              {{ time }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Duration Selection -->
+      <div class="time-section">
+        <h3 class="time-section-title">Duration</h3>
+        <div class="duration-selector">
           <div 
-            v-for="(time, index) in availableTimes" 
+            v-for="(duration, index) in availableDurations" 
             :key="index"
-            @click="selectTime(index)"
-            :class="['time-card', { active: selectedTimeIndex === index }]"
+            @click="selectDuration(index)"
+            :class="['duration-card', { active: selectedDurationIndex === index }]"
           >
-            {{ time }}
+            <div class="duration-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12,6 12,12 16,14"></polyline>
+              </svg>
+            </div>
+            <span class="duration-label">{{ duration.label }}</span>
+            <span class="duration-price">{{ duration.price }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Booking Summary -->
+      <div v-if="selectedStartTimeIndex !== null && selectedDurationIndex !== null" class="booking-summary">
+        <div class="summary-card">
+          <div class="summary-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <div class="summary-content">
+            <h4 class="summary-title">Booking Summary</h4>
+            <p class="summary-time">
+              {{ availableDates[selectedDateIndex].label }} • 
+              {{ availableStartTimes[selectedStartTimeIndex] }} - 
+              {{ getEndTime() }}
+            </p>
+            <p class="summary-duration">
+              Duration: {{ availableDurations[selectedDurationIndex].label }}
+            </p>
           </div>
         </div>
       </div>
@@ -147,6 +198,7 @@
       <button
         @click="handleContinue"
         class="continue-button"
+        :disabled="!canContinue"
       >
         <span>Continue</span>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -168,7 +220,8 @@ const router = useRouter();
 const numberOfPlayers = ref('');
 const paymentOption = ref('deposit');
 const selectedDateIndex = ref(1);
-const selectedTimeIndex = ref(1);
+const selectedStartTimeIndex = ref(null);
+const selectedDurationIndex = ref(null);
 
 // Доступные даты
 const availableDates = ref([
@@ -177,20 +230,52 @@ const availableDates = ref([
   { label: 'Sun, Jul 21', value: 'sun-jul-21' }
 ]);
 
-// Доступные времена
-const availableTimes = ref([
-  '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
-  '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-  '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
-  '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
+// Доступные времена начала
+const availableStartTimes = ref([
+  '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', 
+  '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', 
+  '20:00', '21:00', '22:00'
 ]);
+
+// Доступные продолжительности
+const availableDurations = ref([
+  { label: '1 hour', value: 1, price: '$25' },
+  { label: '2 hours', value: 2, price: '$45' },
+  { label: '3 hours', value: 3, price: '$65' },
+  { label: '4 hours', value: 4, price: '$80' }
+]);
+
+// Проверка возможности продолжить
+const canContinue = computed(() => {
+  return selectedStartTimeIndex.value !== null && 
+         selectedDurationIndex.value !== null && 
+         numberOfPlayers.value.trim() !== '';
+});
 
 function selectDate(index) {
   selectedDateIndex.value = index;
 }
 
-function selectTime(index) {
-  selectedTimeIndex.value = index;
+function selectStartTime(index) {
+  selectedStartTimeIndex.value = index;
+}
+
+function selectDuration(index) {
+  selectedDurationIndex.value = index;
+}
+
+function getEndTime() {
+  if (selectedStartTimeIndex.value === null || selectedDurationIndex.value === null) {
+    return '';
+  }
+  
+  const startTime = availableStartTimes.value[selectedStartTimeIndex.value];
+  const duration = availableDurations.value[selectedDurationIndex.value].value;
+  
+  const [hours, minutes] = startTime.split(':').map(Number);
+  const endHours = hours + duration;
+  
+  return `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
 function goBack() {
@@ -201,7 +286,9 @@ function handleContinue() {
   console.log('Booking data:', {
     stadiumId: route.params.stadiumId,
     selectedDate: availableDates.value[selectedDateIndex.value],
-    selectedTime: availableTimes.value[selectedTimeIndex.value],
+    startTime: availableStartTimes.value[selectedStartTimeIndex.value],
+    endTime: getEndTime(),
+    duration: availableDurations.value[selectedDurationIndex.value],
     numberOfPlayers: numberOfPlayers.value,
     paymentOption: paymentOption.value
   });
@@ -317,6 +404,18 @@ function handleContinue() {
   font-size: 14px;
 }
 
+.time-section {
+  margin-bottom: 20px;
+}
+
+.time-section-title {
+  color: #131712;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
 .time-selector-container {
   background: white;
   border-radius: 16px;
@@ -326,7 +425,7 @@ function handleContinue() {
 
 .time-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
 }
 
@@ -352,6 +451,114 @@ function handleContinue() {
   background: #53d22c;
   color: white;
   box-shadow: 0 2px 8px rgba(83, 210, 44, 0.3);
+}
+
+.duration-selector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.duration-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.duration-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.duration-card.active {
+  border-color: #53d22c;
+  background: linear-gradient(135deg, #53d22c 0%, #4bc026 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
+}
+
+.duration-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.2);
+  border-radius: 12px;
+}
+
+.duration-label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.duration-price {
+  font-weight: 700;
+  font-size: 16px;
+  color: #53d22c;
+}
+
+.duration-card.active .duration-price {
+  color: white;
+}
+
+.booking-summary {
+  margin-top: 20px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 2px solid #53d22c;
+}
+
+.summary-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #53d22c;
+  border-radius: 12px;
+  color: white;
+}
+
+.summary-content {
+  flex: 1;
+}
+
+.summary-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #131712;
+}
+
+.summary-time {
+  font-size: 14px;
+  color: #53d22c;
+  font-weight: 500;
+  margin: 0 0 2px 0;
+}
+
+.summary-duration {
+  font-size: 12px;
+  color: #6d8566;
+  margin: 0;
 }
 
 .players-input-container {
@@ -538,12 +745,19 @@ function handleContinue() {
   box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
 }
 
-.continue-button:hover {
+.continue-button:disabled {
+  background: #e9ecef;
+  color: #6d8566;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.continue-button:not(:disabled):hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(83, 210, 44, 0.4);
 }
 
-.continue-button:active {
+.continue-button:not(:disabled):active {
   transform: translateY(0);
 }
 </style> 
