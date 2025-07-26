@@ -15,4 +15,22 @@ api.interceptors.request.use(config => {
   return config;
 });
 
+// Response interceptor для обработки ошибок авторизации
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      // Удаляем токены при ошибке авторизации
+      localStorage.removeItem('access');
+      localStorage.removeItem('refresh');
+      
+      // Если не на странице логина, перенаправляем туда
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

@@ -74,6 +74,15 @@ export function useAuth() {
       const response = await api.post('auth/login/', loginData);
       user.value = response.data.user;
       isAuth.value = true;
+      
+      // Сохраняем токены в localStorage
+      if (response.data.access) {
+        localStorage.setItem('access', response.data.access);
+      }
+      if (response.data.refresh) {
+        localStorage.setItem('refresh', response.data.refresh);
+      }
+      
       return response.data;
     } catch (error) {
       authError.value = error.response?.data?.message || 'Ошибка авторизации';
@@ -91,6 +100,15 @@ export function useAuth() {
       const response = await api.post('auth/register/', userData);
       user.value = response.data.user;
       isAuth.value = true;
+      
+      // Сохраняем токены в localStorage
+      if (response.data.access) {
+        localStorage.setItem('access', response.data.access);
+      }
+      if (response.data.refresh) {
+        localStorage.setItem('refresh', response.data.refresh);
+      }
+      
       return response.data;
     } catch (error) {
       authError.value = error.response?.data?.message || 'Ошибка регистрации';
@@ -110,6 +128,9 @@ export function useAuth() {
     } finally {
       user.value = null;
       isAuth.value = false;
+      // Удаляем токены из localStorage
+      localStorage.removeItem('access');
+      localStorage.removeItem('refresh');
       isLoading.value = false;
     }
   }
@@ -125,6 +146,9 @@ export function useAuth() {
     } catch (error) {
       user.value = null;
       isAuth.value = false;
+      // Если токен недействителен, удаляем его
+      localStorage.removeItem('access');
+      localStorage.removeItem('refresh');
       throw error;
     } finally {
       isLoading.value = false;
@@ -133,11 +157,17 @@ export function useAuth() {
 
   // Проверка авторизации при загрузке
   async function checkAuth() {
-    if (localStorage.getItem('token')) {
+    const accessToken = localStorage.getItem('access');
+    if (accessToken) {
       try {
         await getCurrentUser();
       } catch (error) {
-        localStorage.removeItem('token');
+        console.error('Ошибка проверки авторизации:', error);
+        // Если токен недействителен, очищаем состояние
+        user.value = null;
+        isAuth.value = false;
+        localStorage.removeItem('access');
+        localStorage.removeItem('refresh');
       }
     }
   }
