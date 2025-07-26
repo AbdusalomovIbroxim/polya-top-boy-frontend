@@ -32,6 +32,6 @@ body {
   padding-bottom: 5rem;
 }
 
-.mapboxgl-ctrl-logo .mapboxgl-ctrl-bottom-right {
+.mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right {
   display: none;
 }
