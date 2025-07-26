@@ -149,16 +149,12 @@ async function checkAuth() {
     isAuth.value = false;
     return;
   }
-  const valid = await verifyToken(access);
-  if (valid) {
-    try {
-      await getCurrentUser();
-    } catch {
-      user.value = null;
-      isAuth.value = false;
-    }
-  } else {
-    // Попробуем обновить токен
+  
+  // Сразу пробуем получить пользователя
+  try {
+    await getCurrentUser();
+  } catch {
+    // Если не удалось, пробуем refresh
     const newAccess = await refreshToken();
     if (newAccess) {
       try {
@@ -212,6 +208,5 @@ export function useAuth() {
     checkAuthOnDemand,
     requireAuth,
     refreshToken,
-    verifyToken,
   };
 }
