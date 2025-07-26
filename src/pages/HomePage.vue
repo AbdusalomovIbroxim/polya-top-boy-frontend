@@ -1,7 +1,6 @@
 <template>
   <div class="home-root">
     <Navbar title="Fields" />
-    <div>DEBUG: HomePage rendered</div>
     <div class="filters-bar">
       <FilterDropdown
         :items="regionOptions"

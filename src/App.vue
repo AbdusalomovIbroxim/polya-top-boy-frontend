@@ -31,7 +31,6 @@ export default {
 
 <template>
   <div>
-    <div>DEBUG: App.vue template rendered</div>
     <router-view />
     <Tabbar v-if="$route.name !== 'login'" />
   </div>
