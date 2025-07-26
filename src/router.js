@@ -18,18 +18,23 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+  console.log('DEBUG: Router beforeEach', { to: to.path, from: from.path, fullPath: to.fullPath });
+  
   const { isAuth } = useAuth();
 
   // Если роут требует авторизации и пользователь не авторизован
   if (to.meta.requiresAuth && !isAuth.value) {
+    console.log('DEBUG: Redirecting to login (requires auth)');
     return next('/login');
   }
 
   // Если пользователь авторизован и пытается зайти на страницу логина
   if (to.name === 'login' && isAuth.value) {
+    console.log('DEBUG: Redirecting to home (already auth)');
     return next('/');
   }
 
+  console.log('DEBUG: Router allowing navigation to', to.path);
   next();
 });
 

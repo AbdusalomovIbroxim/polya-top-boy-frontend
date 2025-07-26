@@ -19,13 +19,22 @@ export default {
     provide('logout', logout);
 
     return {};
+  },
+  mounted() {
+    console.log('DEBUG: App.vue mounted');
+  },
+  updated() {
+    console.log('DEBUG: App.vue updated, current route:', this.$route.name);
   }
 }
 </script>
 
 <template>
-  <router-view></router-view>
-  <Tabbar v-if="$route.name !== 'login'" />
+  <div>
+    <div>DEBUG: App.vue template rendered</div>
+    <router-view />
+    <Tabbar v-if="$route.name !== 'login'" />
+  </div>
 </template>
 
 <style src="./assets/css/app.css"></style>
