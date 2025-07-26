@@ -13,24 +13,35 @@
     <!-- Select a time -->
     <h2 class="section-title">Select a time</h2>
     <div class="time-selector">
-      <div class="date-group">
+      <div class="date-selector">
         <div 
           v-for="(date, index) in availableDates" 
           :key="index"
           @click="selectDate(index)"
-          :class="['date-option', { active: selectedDateIndex === index }]"
+          :class="['date-card', { active: selectedDateIndex === index }]"
         >
-          {{ date.label }}
+          <div class="date-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <span class="date-label">{{ date.label }}</span>
         </div>
       </div>
-      <div class="time-group">
-        <div 
-          v-for="(time, index) in availableTimes" 
-          :key="index"
-          @click="selectTime(index)"
-          :class="['time-option', { active: selectedTimeIndex === index }]"
-        >
-          {{ time }}
+      
+      <div class="time-selector-container">
+        <div class="time-grid">
+          <div 
+            v-for="(time, index) in availableTimes" 
+            :key="index"
+            @click="selectTime(index)"
+            :class="['time-card', { active: selectedTimeIndex === index }]"
+          >
+            {{ time }}
+          </div>
         </div>
       </div>
     </div>
@@ -38,7 +49,15 @@
     <!-- Number of players -->
     <h2 class="section-title">Number of players</h2>
     <div class="players-input-container">
-      <label class="players-input-label">
+      <div class="input-wrapper">
+        <div class="input-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
         <input
           v-model="numberOfPlayers"
           class="players-input"
@@ -46,51 +65,81 @@
           type="number"
           min="1"
         />
-      </label>
+      </div>
     </div>
 
     <!-- Payment options -->
     <h2 class="section-title">Payment options</h2>
     <div class="payment-options">
-      <label class="payment-option">
-        <input
-          v-model="paymentOption"
-          type="radio"
-          value="deposit"
-          name="payment-option"
-          class="payment-radio"
-        />
-        <div class="payment-info">
-          <p class="payment-name">Deposit</p>
-          <p class="payment-price">$20</p>
+      <div 
+        @click="paymentOption = 'deposit'"
+        :class="['payment-card', { active: paymentOption === 'deposit' }]"
+      >
+        <div class="payment-icon deposit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+          </svg>
         </div>
-      </label>
-      <label class="payment-option">
-        <input
-          v-model="paymentOption"
-          type="radio"
-          value="full"
-          name="payment-option"
-          class="payment-radio"
-        />
-        <div class="payment-info">
-          <p class="payment-name">Full payment</p>
-          <p class="payment-price">$100</p>
+        <div class="payment-content">
+          <h3 class="payment-title">Deposit</h3>
+          <p class="payment-description">Pay only $20 to secure your booking</p>
+          <div class="payment-price">$20</div>
         </div>
-      </label>
-      <label class="payment-option">
-        <input
-          v-model="paymentOption"
-          type="radio"
-          value="group"
-          name="payment-option"
-          class="payment-radio"
-        />
-        <div class="payment-info">
-          <p class="payment-name">Group payment</p>
-          <p class="payment-price">$10 per person</p>
+        <div class="payment-check">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="20,6 9,17 4,12"></polyline>
+          </svg>
         </div>
-      </label>
+      </div>
+
+      <div 
+        @click="paymentOption = 'full'"
+        :class="['payment-card', { active: paymentOption === 'full' }]"
+      >
+        <div class="payment-icon full-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div class="payment-content">
+          <h3 class="payment-title">Full payment</h3>
+          <p class="payment-description">Pay the full amount upfront</p>
+          <div class="payment-price">$100</div>
+        </div>
+        <div class="payment-check">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="20,6 9,17 4,12"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <div 
+        @click="paymentOption = 'group'"
+        :class="['payment-card', { active: paymentOption === 'group' }]"
+      >
+        <div class="payment-icon group-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <div class="payment-content">
+          <h3 class="payment-title">Group payment</h3>
+          <p class="payment-description">Split the cost among players</p>
+          <div class="payment-price">$10 per person</div>
+        </div>
+        <div class="payment-check">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="20,6 9,17 4,12"></polyline>
+          </svg>
+        </div>
+      </div>
     </div>
 
     <!-- Continue button -->
@@ -100,6 +149,10 @@
         class="continue-button"
       >
         <span>Continue</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12,5 19,12 12,19"></polyline>
+        </svg>
       </button>
     </div>
   </div>
@@ -114,8 +167,8 @@ const router = useRouter();
 
 const numberOfPlayers = ref('');
 const paymentOption = ref('deposit');
-const selectedDateIndex = ref(1); // По умолчанию выбран "Tomorrow"
-const selectedTimeIndex = ref(1); // По умолчанию выбран "10:30"
+const selectedDateIndex = ref(1);
+const selectedTimeIndex = ref(1);
 
 // Доступные даты
 const availableDates = ref([
@@ -126,30 +179,10 @@ const availableDates = ref([
 
 // Доступные времена
 const availableTimes = ref([
-  '10:00',
-  '10:30', 
-  '11:00',
-  '11:30',
-  '12:00',
-  '12:30',
-  '13:00',
-  '13:30',
-  '14:00',
-  '14:30',
-  '15:00',
-  '15:30',
-  '16:00',
-  '16:30',
-  '17:00',
-  '17:30',
-  '18:00',
-  '18:30',
-  '19:00',
-  '19:30',
-  '20:00',
-  '20:30',
-  '21:00',
-  '21:30'
+  '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
+  '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
+  '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
+  '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
 ]);
 
 function selectDate(index) {
@@ -165,7 +198,6 @@ function goBack() {
 }
 
 function handleContinue() {
-  // Здесь будет логика отправки данных бронирования
   console.log('Booking data:', {
     stadiumId: route.params.stadiumId,
     selectedDate: availableDates.value[selectedDateIndex.value],
@@ -174,7 +206,6 @@ function handleContinue() {
     paymentOption: paymentOption.value
   });
   
-  // Пока просто показываем алерт
   alert('Booking submitted!');
 }
 </script>
@@ -182,7 +213,7 @@ function handleContinue() {
 <style scoped>
 .booking-page {
   min-height: 100vh;
-  background: white;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   font-family: 'Manrope', 'Noto Sans', sans-serif;
 }
 
@@ -193,6 +224,7 @@ function handleContinue() {
   padding: 16px;
   padding-bottom: 8px;
   justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .back-button {
@@ -203,11 +235,13 @@ function handleContinue() {
   flex-shrink: 0;
   align-items: center;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
+  border-radius: 12px;
 }
 
 .back-button:hover {
-  transform: scale(1.1);
+  background: #f8f9fa;
+  transform: scale(1.05);
 }
 
 .booking-title {
@@ -232,119 +266,128 @@ function handleContinue() {
 }
 
 .time-selector {
+  padding: 0 16px;
+}
+
+.date-selector {
   display: flex;
-  padding: 0 16px 4px 16px;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.date-card {
+  flex: 1;
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 8px;
 }
 
-.date-group, .time-group {
-  display: flex;
-  flex: 1;
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 4px;
-  gap: 2px;
+.date-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
-.date-option, .time-option {
-  font-size: 14px;
-  font-weight: bold;
-  line-height: normal;
-  letter-spacing: 0.015em;
+.date-card.active {
+  border-color: #53d22c;
+  background: linear-gradient(135deg, #53d22c 0%, #4bc026 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
+}
+
+.date-icon {
+  width: 40px;
+  height: 40px;
   display: flex;
-  height: 44px;
   align-items: center;
   justify-content: center;
+  background: rgba(255,255,255,0.2);
+  border-radius: 12px;
+}
+
+.date-label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.time-selector-container {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.time-card {
+  padding: 12px 8px;
   text-align: center;
-  padding: 0 12px;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  flex: 1;
-  position: relative;
-  overflow: hidden;
+  font-weight: 500;
+  font-size: 14px;
+  background: #f8f9fa;
+  border: 2px solid transparent;
 }
 
-.date-option::before, .time-option::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #53d22c;
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-  z-index: 0;
-}
-
-.date-option.active::before, .time-option.active::before {
-  transform: scaleX(1);
-}
-
-.date-option span, .time-option span {
-  position: relative;
-  z-index: 1;
-}
-
-.date-option.inactive, .time-option.inactive {
-  color: #6d8566;
-  background: transparent;
-}
-
-.date-option.active, .time-option.active {
-  color: white;
-  background: #53d22c;
-  box-shadow: 0 2px 8px rgba(83, 210, 44, 0.3);
-  transform: translateY(-1px);
-}
-
-.date-option:hover:not(.active), .time-option:hover:not(.active) {
+.time-card:hover {
   background: #e9f5e6;
   color: #53d22c;
-  transform: translateY(-1px);
+  transform: scale(1.05);
+}
+
+.time-card.active {
+  background: #53d22c;
+  color: white;
+  box-shadow: 0 2px 8px rgba(83, 210, 44, 0.3);
 }
 
 .players-input-container {
-  display: flex;
-  max-width: 480px;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: 16px;
-  padding: 0 16px 12px 16px;
+  padding: 0 16px;
 }
 
-.players-input-label {
-  display: flex;
-  flex-direction: column;
-  min-width: 160px;
-  flex: 1;
+.input-wrapper {
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6d8566;
+  z-index: 1;
 }
 
 .players-input {
-  display: flex;
   width: 100%;
-  min-width: 0;
-  flex: 1;
-  resize: none;
-  overflow: hidden;
-  border-radius: 12px;
-  color: #131712;
+  border: none;
   outline: none;
-  border: 2px solid transparent;
-  background: #f1f4f1;
-  height: 56px;
-  padding: 16px;
+  padding: 16px 16px 16px 48px;
   font-size: 16px;
-  font-weight: normal;
-  line-height: normal;
+  background: transparent;
+  color: #131712;
   transition: all 0.3s ease;
 }
 
 .players-input:focus {
-  border-color: #53d22c;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(83, 210, 44, 0.1);
+  background: #f8f9fa;
 }
 
 .players-input::placeholder {
@@ -352,119 +395,152 @@ function handleContinue() {
 }
 
 .payment-options {
+  padding: 0 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 0 16px;
+  gap: 16px;
 }
 
-.payment-option {
+.payment-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 16px;
-  border-radius: 12px;
-  border: 2px solid #dee4dc;
-  padding: 15px;
-  flex-direction: row-reverse;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: white;
 }
 
-.payment-option:hover {
-  border-color: #53d22c;
-  background: #f8f9fa;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.payment-radio {
-  height: 20px;
-  width: 20px;
-  border: 2px solid #dee4dc;
-  background: transparent;
-  color: transparent;
-  border-radius: 50%;
-  outline: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.payment-radio:checked {
-  border-color: #53d22c;
-  background: #53d22c;
-  background-image: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27white%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3ccircle cx=%278%27 cy=%278%27 r=%273%27/%3e%3c/svg%3e');
-  transform: scale(1.1);
-}
-
-.payment-info {
-  display: flex;
-  flex-grow: 1;
-  flex-direction: column;
-}
-
-.payment-name {
-  color: #131712;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: normal;
-}
-
-.payment-price {
-  color: #6d8566;
-  font-size: 14px;
-  font-weight: normal;
-  line-height: normal;
-}
-
-.continue-button-container {
-  display: flex;
-  padding: 0 16px 12px 16px;
-}
-
-.continue-button {
-  display: flex;
-  min-width: 84px;
-  max-width: 480px;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 12px;
-  height: 48px;
-  padding: 0 20px;
-  flex: 1;
-  background: #53d22c;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  line-height: normal;
-  letter-spacing: 0.015em;
-  border: none;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.continue-button::before {
+.payment-card::before {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s ease;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #53d22c 0%, #4bc026 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
 }
 
-.continue-button:hover::before {
-  left: 100%;
+.payment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.payment-card.active {
+  border-color: #53d22c;
+  box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
+}
+
+.payment-card.active::before {
+  opacity: 1;
+}
+
+.payment-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.deposit-icon {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+}
+
+.full-icon {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  color: white;
+}
+
+.group-icon {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  color: #131712;
+}
+
+.payment-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.payment-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #131712;
+}
+
+.payment-description {
+  font-size: 14px;
+  color: #6d8566;
+  margin: 0 0 8px 0;
+}
+
+.payment-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #53d22c;
+}
+
+.payment-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #53d22c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+}
+
+.payment-card.active .payment-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.continue-button-container {
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.continue-button {
+  width: 100%;
+  background: linear-gradient(135deg, #53d22c 0%, #4bc026 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
 }
 
 .continue-button:hover {
-  background: #4bc026;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(83, 210, 44, 0.3);
+  box-shadow: 0 6px 20px rgba(83, 210, 44, 0.4);
 }
 
 .continue-button:active {
