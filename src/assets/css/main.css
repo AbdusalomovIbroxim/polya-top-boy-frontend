@@ -1,15 +1,12 @@
-/* Main CSS File - Imports all component and page styles */
-
-/* App Styles */
 @import './app.css';
 
-/* Component Styles */
 @import './components/filters-row.css';
 @import './components/hello-world.css';
 @import './components/loading.css';
 @import './components/navbar.css';
 @import './components/tabbar.css';
 
-/* Page Styles */
 @import './pages/home.css';
-@import './pages/profile.css'; 
+@import './pages/profile.css';
+
+@import 'mapbox-gl/dist/mapbox-gl.css';
