@@ -12,13 +12,18 @@ api.interceptors.request.use(config => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  console.log('DEBUG: API REQUEST', config);
   return config;
 });
 
 // Response interceptor для обработки ошибок авторизации
 api.interceptors.response.use(
-  response => response,
+  response => {
+    console.log('DEBUG: API RESPONSE', response);
+    return response;
+  },
   error => {
+    console.log('DEBUG: API ERROR', error);
     if (error.response?.status === 401) {
       // Удаляем токены при ошибке авторизации
       localStorage.removeItem('access');

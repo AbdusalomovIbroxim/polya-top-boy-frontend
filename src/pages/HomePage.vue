@@ -1,6 +1,7 @@
 <template>
   <div class="home-root">
     <Navbar title="Fields" />
+    <div>DEBUG: HomePage rendered</div>
     <div class="filters-bar">
       <FilterDropdown
         :items="regionOptions"
@@ -60,6 +61,7 @@ export default {
     ]);
 
     onMounted(async () => {
+      console.log('DEBUG: HomePage onMounted');
       loading.value = true;
       try {
         const [venues, reg, typ] = await Promise.all([
@@ -67,27 +69,34 @@ export default {
           getRegions(),
           getTypes()
         ]);
+        console.log('DEBUG: venues', venues);
+        console.log('DEBUG: reg', reg);
+        console.log('DEBUG: typ', typ);
         stadiums.value = venues.results;
         regions.value = reg.results || reg;
         types.value = typ.results || typ;
       } catch (e) {
-        console.error('Error loading data:', e);
+        console.error('DEBUG: Error loading data:', e);
         stadiums.value = [];
       } finally {
         loading.value = false;
+        console.log('DEBUG: loading.value', loading.value);
       }
     });
 
     // Добавляю реакцию на фильтры
     watch([selectedRegion, selectedType], async () => {
+      console.log('DEBUG: watch filter', selectedRegion.value, selectedType.value);
       loading.value = true;
       try {
         const params = {};
         if (selectedRegion.value) params.region = selectedRegion.value;
         if (selectedType.value) params.sport_venue_type = selectedType.value;
         const venues = await getSportVenues(params);
+        console.log('DEBUG: filtered venues', venues);
         stadiums.value = venues.results;
       } catch (e) {
+        console.error('DEBUG: Error loading filtered venues:', e);
         stadiums.value = [];
       } finally {
         loading.value = false;
@@ -95,11 +104,12 @@ export default {
     });
 
     function handleStadiumClick(stadium) {
-      console.log('Stadium clicked:', stadium);
+      console.log('DEBUG: Stadium clicked:', stadium);
     }
 
     function handleStadiumOpen(stadium) {
       if (stadium && stadium.id) {
+        console.log('DEBUG: Stadium open:', stadium.id);
         router.push(`/stadium/${stadium.id}`);
       }
     }

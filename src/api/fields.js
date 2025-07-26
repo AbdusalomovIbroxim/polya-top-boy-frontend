@@ -10,30 +10,38 @@ function withoutAuthHeaders(config) {
 }
 
 async function getSportVenues(params = {}) {
+  console.log('DEBUG: getSportVenues called', params);
   const config = { params };
   withoutAuthHeaders(config);
   const response = await api.get('/sport-venues/', config);
+  console.log('DEBUG: getSportVenues response', response);
   return response.data;
 }
 
 async function getSportVenue(id) {
+  console.log('DEBUG: getSportVenue called', id);
   const config = {};
   withoutAuthHeaders(config);
   const response = await api.get(`/sport-venues/${id}/`, config);
+  console.log('DEBUG: getSportVenue response', response);
   return response.data;
 }
 
 async function getRegions() {
+  console.log('DEBUG: getRegions called');
   const config = {};
   withoutAuthHeaders(config);
   const response = await api.get('/regions/', config);
+  console.log('DEBUG: getRegions response', response);
   return response.data;
 }
 
 async function getTypes() {
+  console.log('DEBUG: getTypes called');
   const config = {};
   withoutAuthHeaders(config);
   const response = await api.get('/types/', config);
+  console.log('DEBUG: getTypes response', response);
   return response.data;
 }
 

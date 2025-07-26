@@ -68,10 +68,12 @@ const isLoading = ref(false);
 export function useAuth() {
   // Авторизация пользователя
   async function login(loginData) {
+    console.log('DEBUG: login called', loginData);
     isLoading.value = true;
     authError.value = '';
     try {
       const response = await api.post('auth/login/', loginData);
+      console.log('DEBUG: login response', response);
       user.value = response.data.user;
       isAuth.value = true;
       
@@ -85,6 +87,7 @@ export function useAuth() {
       
       return response.data;
     } catch (error) {
+      console.error('DEBUG: login error', error);
       authError.value = error.response?.data?.message || 'Ошибка авторизации';
       throw error;
     } finally {
@@ -94,10 +97,12 @@ export function useAuth() {
 
   // Регистрация пользователя
   async function register(userData) {
+    console.log('DEBUG: register called', userData);
     isLoading.value = true;
     authError.value = '';
     try {
       const response = await api.post('auth/register/', userData);
+      console.log('DEBUG: register response', response);
       user.value = response.data.user;
       isAuth.value = true;
       
@@ -111,6 +116,7 @@ export function useAuth() {
       
       return response.data;
     } catch (error) {
+      console.error('DEBUG: register error', error);
       authError.value = error.response?.data?.message || 'Ошибка регистрации';
       throw error;
     } finally {
@@ -120,11 +126,13 @@ export function useAuth() {
 
   // Выход пользователя
   async function logout() {
+    console.log('DEBUG: logout called');
     isLoading.value = true;
     try {
       await api.post('auth/logout/');
+      console.log('DEBUG: logout success');
     } catch (error) {
-      console.error('Ошибка при выходе:', error);
+      console.error('DEBUG: logout error', error);
     } finally {
       user.value = null;
       isAuth.value = false;
@@ -137,13 +145,16 @@ export function useAuth() {
 
   // Получение текущего пользователя
   async function getCurrentUser() {
+    console.log('DEBUG: getCurrentUser called');
     isLoading.value = true;
     try {
       const response = await api.get('users/me/');
+      console.log('DEBUG: getCurrentUser response', response);
       user.value = response.data;
       isAuth.value = true;
       return response.data;
     } catch (error) {
+      console.error('DEBUG: getCurrentUser error', error);
       user.value = null;
       isAuth.value = false;
       // Если токен недействителен, удаляем его
@@ -157,12 +168,13 @@ export function useAuth() {
 
   // Проверка авторизации при загрузке
   async function checkAuth() {
+    console.log('DEBUG: checkAuth called');
     const accessToken = localStorage.getItem('access');
     if (accessToken) {
       try {
         await getCurrentUser();
       } catch (error) {
-        console.error('Ошибка проверки авторизации:', error);
+        console.error('DEBUG: checkAuth error', error);
         // Если токен недействителен, очищаем состояние
         user.value = null;
         isAuth.value = false;
@@ -174,6 +186,7 @@ export function useAuth() {
 
   // Функция для проверки авторизации в компонентах
   function requireAuth() {
+    console.log('DEBUG: requireAuth called, isAuth:', isAuth.value);
     if (!isAuth.value) {
       // Сохраняем текущий путь для возврата после авторизации
       localStorage.setItem('redirectAfterLogin', window.location.pathname);
