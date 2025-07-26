@@ -26,7 +26,7 @@ export default {
     }
   },
   setup() {
-    const { requireAuth } = useAuth();
+    const { checkAuthOnDemand } = useAuth();
     const router = useRouter();
 
     function getTabLink(tab) {
@@ -36,10 +36,11 @@ export default {
       return tab.id === 'home' ? '/' : (tab.id === 'profile' ? '/profile' : '#');
     }
 
-    function handleTabClick(tab, event) {
+    async function handleTabClick(tab, event) {
       if (tab.id === 'profile') {
         event.preventDefault();
-        if (requireAuth()) {
+        const isAuth = await checkAuthOnDemand();
+        if (isAuth) {
           router.push('/profile');
         }
       }

@@ -93,6 +93,57 @@ async function verifyToken(token) {
   }
 }
 
+// --- ON-DEMAND AUTH CHECK ---
+async function checkAuthOnDemand() {
+  console.log('DEBUG: checkAuthOnDemand called');
+  
+  // 1. Проверяем есть ли токены в localStorage
+  const access = localStorage.getItem('access');
+  const refresh = localStorage.getItem('refresh');
+  
+  if (!access && !refresh) {
+    console.log('DEBUG: No tokens found, redirecting to login');
+    window.location.hash = '#/login';
+    return false;
+  }
+  
+  // 2. Проверяем access токен
+  if (access) {
+    const isValid = await verifyToken(access);
+    if (isValid) {
+      try {
+        await getCurrentUser();
+        console.log('DEBUG: Access token valid, user loaded');
+        return true;
+      } catch (error) {
+        console.log('DEBUG: Failed to get user with valid access token');
+        // Если не удалось получить пользователя, попробуем refresh
+      }
+    }
+  }
+  
+  // 3. Если access токен невалиден, пробуем refresh
+  if (refresh) {
+    console.log('DEBUG: Trying to refresh token');
+    const newAccess = await refreshToken();
+    if (newAccess) {
+      try {
+        await getCurrentUser();
+        console.log('DEBUG: Token refreshed, user loaded');
+        return true;
+      } catch (error) {
+        console.log('DEBUG: Failed to get user after token refresh');
+      }
+    }
+  }
+  
+  // 4. Если ничего не работает, редиректим на логин
+  console.log('DEBUG: All auth methods failed, redirecting to login');
+  await logout();
+  window.location.hash = '#/login';
+  return false;
+}
+
 // --- SESSION RESTORE ---
 async function checkAuth() {
   const access = localStorage.getItem('access');
@@ -127,6 +178,7 @@ async function checkAuth() {
 }
 
 function requireAuth() {
+  console.log('DEBUG: requireAuth called, isAuth:', isAuth.value);
   if (!isAuth.value) {
     localStorage.setItem('redirectAfterLogin', window.location.pathname);
     window.location.hash = '#/login';
@@ -160,6 +212,7 @@ export function useAuth() {
     logout,
     getCurrentUser,
     checkAuth,
+    checkAuthOnDemand,
     requireAuth,
     refreshToken,
     verifyToken,
