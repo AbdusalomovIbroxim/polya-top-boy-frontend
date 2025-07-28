@@ -150,7 +150,10 @@ const successMessage = ref('');
 
 // Генерация 7 дней календаря
 const calendarDays = ref([]);
-const availableTimes = ref(['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00']);
+const availableTimes = ref([
+  '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+  '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
+]);
 
 // Инициализация календаря
 function initCalendar() {
@@ -414,17 +417,16 @@ watch([isAuth, isLoading], ([auth, loading]) => {
 }
 
 .calendar {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
   gap: 8px;
-  overflow-x: auto;
   padding: 4px 0;
 }
 
 .calendar-day {
-  min-width: 80px;
   background: white;
-  border-radius: 12px;
-  padding: 12px 8px;
+  border-radius: 16px;
+  padding: 16px 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid transparent;
@@ -432,13 +434,16 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   text-align: center;
+  min-height: 80px;
+  justify-content: center;
 }
 
 .calendar-day:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  border-color: #53d22c;
 }
 
 .calendar-day.active {
@@ -449,32 +454,40 @@ watch([isAuth, isLoading], ([auth, loading]) => {
 }
 
 .day-name {
-  font-size: 12px;
-  font-weight: 500;
-  opacity: 0.8;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .day-number {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .day-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
-  opacity: 0.9;
+  opacity: 0.8;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .time-slots {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 4px 0;
 }
 
 .time-slot {
   background: white;
   border-radius: 12px;
-  padding: 16px 12px;
+  padding: 12px 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid transparent;
@@ -483,6 +496,7 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   justify-content: center;
   align-items: center;
   text-align: center;
+  min-height: 50px;
 }
 
 .time-slot:hover {
