@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.VUE_APP_API_URL || '/api',
+  baseURL: process.env.VUE_APP_API_URL || 'https://polya-top-bot-backend.onrender.com/api/',
   timeout: 10000,
 });
 
