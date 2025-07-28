@@ -54,7 +54,21 @@
       <!-- Time Selection -->
       <div v-if="selectedDateIndex !== null" class="form-section">
         <h3 class="section-title">Выберите время</h3>
-        <div class="time-slots">
+        
+        <!-- Loading availability -->
+        <div v-if="isLoadingAvailability" class="loading-availability">
+          <div class="loading-spinner-small"></div>
+          <p>Загрузка доступности...</p>
+        </div>
+        
+        <!-- No available times -->
+        <div v-else-if="availableTimes.length === 0" class="no-availability">
+          <div class="no-availability-icon">📅</div>
+          <p>Нет доступного времени на эту дату</p>
+        </div>
+        
+        <!-- Available times -->
+        <div v-else class="time-slots">
           <div 
             v-for="(time, index) in availableTimes" 
             :key="index"
@@ -126,7 +140,7 @@
       <button
         @click="handleBooking"
         class="booking-button"
-        :disabled="selectedDateIndex === null || selectedStartTimeIndex === null || selectedEndTimeIndex === null || isSubmitting"
+        :disabled="selectedDateIndex === null || selectedStartTimeIndex === null || selectedEndTimeIndex === null || isSubmitting || isLoadingAvailability || availableTimes.length === 0"
       >
         <div v-if="isSubmitting" class="button-spinner"></div>
         <span v-else>{{ isSubmitting ? 'Creating Booking...' : 'Create Booking' }}</span>
@@ -139,7 +153,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
-import { createBooking } from '../api/fields.js';
+import { createBooking, getSportVenueAvailability } from '../api/fields.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -154,10 +168,9 @@ const successMessage = ref('');
 
 // Генерация 7 дней календаря
 const calendarDays = ref([]);
-const availableTimes = ref([
-  '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
-  '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
-]);
+const availableTimes = ref([]);
+const availabilityData = ref(null);
+const isLoadingAvailability = ref(false);
 
 // Инициализация календаря
 function initCalendar() {
@@ -195,10 +208,37 @@ function initCalendar() {
   calendarDays.value = days;
 }
 
+// Получение доступности для выбранной даты
+async function loadAvailability(date) {
+  if (!date) return;
+  
+  isLoadingAvailability.value = true;
+  try {
+    const data = await getSportVenueAvailability(route.params.stadiumId, date);
+    availabilityData.value = data;
+    
+    // Фильтруем только доступные временные слоты
+    const availableSlots = data.time_points.filter(point => point.is_available);
+    availableTimes.value = availableSlots.map(slot => slot.time);
+    
+    console.log('Available times:', availableTimes.value);
+  } catch (error) {
+    console.error('Error loading availability:', error);
+    errorMessage.value = 'Ошибка загрузки доступности. Попробуйте еще раз.';
+    availableTimes.value = [];
+  } finally {
+    isLoadingAvailability.value = false;
+  }
+}
+
 function selectDate(index) {
   selectedDateIndex.value = index;
   selectedStartTimeIndex.value = null; // Сброс выбора времени при смене даты
   selectedEndTimeIndex.value = null;
+  
+  // Загружаем доступность для выбранной даты
+  const selectedDate = calendarDays.value[index];
+  loadAvailability(selectedDate.date);
 }
 
 function selectTime(index) {
@@ -562,6 +602,60 @@ watch([isAuth, isLoading], ([auth, loading]) => {
 .time-value {
   font-weight: 600;
   font-size: 16px;
+}
+
+.loading-availability {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.loading-spinner-small {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #53d22c;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+.loading-availability p {
+  color: #6d8566;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.no-availability {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 2px dashed #e9ecef;
+}
+
+.no-availability-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.no-availability p {
+  color: #6d8566;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
 }
 
 .summary-card {

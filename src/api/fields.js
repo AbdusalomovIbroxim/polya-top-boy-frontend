@@ -27,6 +27,15 @@ async function getSportVenue(id) {
   return response.data;
 }
 
+async function getSportVenueAvailability(id, date) {
+  console.log('DEBUG: getSportVenueAvailability called', id, date);
+  const config = { params: { date } };
+  withoutAuthHeaders(config);
+  const response = await api.get(`/sport-venues/${id}/check_availability/`, config);
+  console.log('DEBUG: getSportVenueAvailability response', response);
+  return response.data;
+}
+
 async function getRegions() {
   console.log('DEBUG: getRegions called');
   const config = {};
@@ -58,5 +67,5 @@ export async function createBooking(bookingData) {
   }
 }
 
-export { getSportVenues, getSportVenue, getRegions, getTypes };
+export { getSportVenues, getSportVenue, getSportVenueAvailability, getRegions, getTypes };
 
