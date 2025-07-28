@@ -161,7 +161,7 @@ function initCalendar() {
   const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
   const monthNames = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
   
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 8; i++) {
     const date = new Date();
     date.setDate(date.getDate() + i);
     
@@ -418,7 +418,7 @@ watch([isAuth, isLoading], ([auth, loading]) => {
 
 .calendar {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   padding: 4px 0;
 }
