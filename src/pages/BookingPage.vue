@@ -202,16 +202,27 @@ function initCalendar() {
         month: 'long', 
         day: 'numeric' 
       }),
-      date: date.toISOString().split('T')[0]
+      date: formatDateForAPI(date)
     });
   }
   
   calendarDays.value = days;
 }
 
+// Форматирование даты для API (YYYY-MM-DD)
+function formatDateForAPI(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // Получение доступности для выбранной даты
 async function loadAvailability(date) {
   if (!date) return;
+  
+  console.log('Loading availability for date:', date);
+  console.log('Stadium ID:', route.params.stadiumId);
   
   isLoadingAvailability.value = true;
   try {
@@ -221,6 +232,7 @@ async function loadAvailability(date) {
     // Показываем все временные слоты из API
     availableTimes.value = data.time_points.map(slot => slot.time);
     
+    console.log('API response:', data);
     console.log('All time slots:', availableTimes.value);
   } catch (error) {
     console.error('Error loading availability:', error);
