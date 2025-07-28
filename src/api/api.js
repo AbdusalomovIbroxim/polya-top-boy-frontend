@@ -1,41 +1,74 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://polya-top-bot-backend.onrender.com/api/',
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  baseURL: process.env.VUE_APP_API_URL || '/api',
+  timeout: 10000,
 });
 
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('access');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  console.log('DEBUG: API REQUEST', config);
-  return config;
-});
+// --- AUTH STATE ---
+let authState = {
+  isAuth: false,
+  isLoading: true,
+  user: null,
+};
 
-// Response interceptor для обработки ошибок авторизации
-api.interceptors.response.use(
-  response => {
-    console.log('DEBUG: API RESPONSE', response);
-    return response;
+function setAuthState(newState) {
+  authState = { ...authState, ...newState };
+  localStorage.setItem('isAuth', authState.isAuth ? '1' : '0');
+  if (authState.user) {
+    localStorage.setItem('user', JSON.stringify(authState.user));
+  } else {
+    localStorage.removeItem('user');
+  }
+}
+
+function clearAuthState() {
+  authState = { isAuth: false, isLoading: false, user: null };
+  localStorage.removeItem('isAuth');
+  localStorage.removeItem('user');
+  localStorage.removeItem('access');
+  localStorage.removeItem('refresh');
+}
+
+function isAuthenticated() {
+  // Быстрая проверка по localStorage (для SSR/SPA)
+  return localStorage.getItem('isAuth') === '1';
+}
+
+async function getCurrentUser() {
+  try {
+    const access = localStorage.getItem('access');
+    if (!access) throw new Error('No access token');
+    const res = await api.get('/users/me/');
+    setAuthState({ isAuth: true, isLoading: false, user: res.data });
+    return res.data;
+  } catch (e) {
+    clearAuthState();
+    throw e;
+  }
+}
+
+// --- AXIOS INTERCEPTORS ---
+api.interceptors.request.use(
+  config => {
+    const access = localStorage.getItem('access');
+    if (access) {
+      config.headers['Authorization'] = `Bearer ${access}`;
+    }
+    return config;
   },
+  error => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  response => response,
   error => {
-    console.log('DEBUG: API ERROR', error);
-    if (error.response?.status === 401) {
-      // Удаляем токены при ошибке авторизации
-      localStorage.removeItem('access');
-      localStorage.removeItem('refresh');
-      
-      // Если не на странице логина, перенаправляем туда
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
+    if (error.response && error.response.status === 401) {
+      clearAuthState();
+      window.location.hash = '#/login';
     }
     return Promise.reject(error);
   }
 );
 
-export default api;
+export { api, getCurrentUser, isAuthenticated, setAuthState, clearAuthState };

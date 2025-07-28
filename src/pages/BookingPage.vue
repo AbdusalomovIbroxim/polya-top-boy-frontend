@@ -124,7 +124,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 import { createBooking } from '../api/fields.js';
@@ -133,35 +133,17 @@ const route = useRoute();
 const router = useRouter();
 const { isAuth, isLoading, checkAuth } = useAuth();
 
-// Reactive data
 const selectedTimeSlotIndex = ref(null);
 const isSubmitting = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-// Available time slots
 const availableTimeSlots = ref([
-  { 
-    date: 'Today', 
-    time: '10:00',
-    value: new Date().toISOString().split('T')[0],
-    startTime: '10:00'
-  },
-  { 
-    date: 'Tomorrow', 
-    time: '10:30',
-    value: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-    startTime: '10:30'
-  },
-  { 
-    date: 'Sun, Jul 21', 
-    time: '11:00',
-    value: new Date(Date.now() + 172800000).toISOString().split('T')[0],
-    startTime: '11:00'
-  }
+  { date: 'Today', time: '10:00', value: new Date().toISOString().split('T')[0], startTime: '10:00' },
+  { date: 'Tomorrow', time: '10:30', value: new Date(Date.now() + 86400000).toISOString().split('T')[0], startTime: '10:30' },
+  { date: 'Sun, Jul 21', time: '11:00', value: new Date(Date.now() + 172800000).toISOString().split('T')[0], startTime: '11:00' }
 ]);
 
-// Methods
 function selectTimeSlot(index) {
   selectedTimeSlotIndex.value = index;
 }
@@ -175,36 +157,24 @@ function formatDateTime(date, time) {
 
 async function handleBooking() {
   if (selectedTimeSlotIndex.value === null || isSubmitting.value) return;
-
   isSubmitting.value = true;
   errorMessage.value = '';
   successMessage.value = '';
-
   try {
     const selectedSlot = availableTimeSlots.value[selectedTimeSlotIndex.value];
-    
     const startDateTime = formatDateTime(selectedSlot.value, selectedSlot.startTime);
     const endDateTime = formatDateTime(selectedSlot.value, '11:00'); // 1 hour duration
-
     const bookingData = {
       sport_venue: parseInt(route.params.stadiumId),
       start_time: startDateTime,
       end_time: endDateTime
     };
-
-    console.log('Creating booking with data:', bookingData);
-    
-    const result = await createBooking(bookingData);
-    
+    await createBooking(bookingData);
     successMessage.value = 'Booking created successfully!';
-    
-    // Redirect to profile or home after successful booking
     setTimeout(() => {
       router.push('/profile');
     }, 2000);
-
   } catch (error) {
-    console.error('Error creating booking:', error);
     errorMessage.value = error.response?.data?.message || 'Failed to create booking. Please try again.';
   } finally {
     isSubmitting.value = false;
@@ -215,17 +185,12 @@ function goBack() {
   router.back();
 }
 
-// Lifecycle
 onMounted(async () => {
   await checkAuth();
-  if (!isAuth.value && !isLoading.value) {
-    router.push('/login');
-  }
 });
 
-// Watchers
 watch([isAuth, isLoading], ([auth, loading]) => {
-  if (!auth && !loading) {
+  if (!loading && !auth) {
     router.push('/login');
   }
 });
