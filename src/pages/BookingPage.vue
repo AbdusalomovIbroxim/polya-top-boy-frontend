@@ -252,6 +252,16 @@ function hasAvailableTimes() {
   return availabilityData.value.time_points.some(point => point.is_available);
 }
 
+function selectDate(index) {
+  selectedDateIndex.value = index;
+  selectedStartTimeIndex.value = null; // Сброс выбора времени при смене даты
+  selectedEndTimeIndex.value = null;
+  
+  // Загружаем доступность для выбранной даты
+  const selectedDate = calendarDays.value[index];
+  loadAvailability(selectedDate.date);
+}
+
 function selectTime(index) {
   // Проверяем, что время доступно
   if (!isTimeAvailable(index)) {
