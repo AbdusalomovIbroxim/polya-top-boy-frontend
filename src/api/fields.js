@@ -45,5 +45,18 @@ async function getTypes() {
   return response.data;
 }
 
+// Создание брони
+export async function createBooking(bookingData) {
+  try {
+    console.log('DEBUG: Creating booking with data:', bookingData);
+    const response = await api.post('/bookings/', bookingData);
+    console.log('DEBUG: Booking created successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('DEBUG: Error creating booking:', error);
+    throw error;
+  }
+}
+
 export { getSportVenues, getSportVenue, getRegions, getTypes };
 
