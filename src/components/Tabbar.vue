@@ -26,25 +26,28 @@ export default {
     }
   },
   setup() {
-    const { checkAuthOnDemand } = useAuth();
+    const { checkAuth } = useAuth();
     const router = useRouter();
 
     function getTabLink(tab) {
       if (tab.id === 'profile') {
-        return '#'; // Временно ставим #, обработка будет в handleTabClick
+        return '/profile';
       }
       if (tab.id === 'bookings') {
         return '/bookings';
       }
-      return tab.id === 'home' ? '/' : (tab.id === 'profile' ? '/profile' : '#');
+      return tab.id === 'home' ? '/' : '#';
     }
 
     async function handleTabClick(tab, event) {
       if (tab.id === 'profile') {
         event.preventDefault();
-        const isAuth = await checkAuthOnDemand();
-        if (isAuth) {
+        try {
+          await checkAuth();
           router.push('/profile');
+        } catch (error) {
+          console.error('Auth check failed:', error);
+          router.push('/login');
         }
       }
     }
