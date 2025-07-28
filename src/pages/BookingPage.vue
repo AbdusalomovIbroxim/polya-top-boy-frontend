@@ -59,7 +59,10 @@
             v-for="(time, index) in availableTimes" 
             :key="index"
             @click="selectTime(index)"
-            :class="['time-slot', { active: selectedTimeIndex === index }]"
+            :class="['time-slot', { 
+              active: isTimeSelected(index),
+              'in-range': isTimeInRange(index) && !isTimeSelected(index)
+            }]"
           >
             <div class="time-value">{{ time }}</div>
           </div>
@@ -67,7 +70,7 @@
       </div>
 
       <!-- Booking Summary -->
-      <div v-if="selectedDateIndex !== null && selectedTimeIndex !== null" class="form-section">
+      <div v-if="selectedDateIndex !== null && selectedStartTimeIndex !== null && selectedEndTimeIndex !== null" class="form-section">
         <h3 class="section-title">Детали бронирования</h3>
         <div class="summary-card">
           <div class="summary-header">
@@ -81,11 +84,11 @@
             </div>
             <div class="summary-row">
               <span class="summary-label">Время:</span>
-              <span class="summary-value">{{ availableTimes[selectedTimeIndex] }}</span>
+              <span class="summary-value">{{ availableTimes[selectedStartTimeIndex] }} - {{ availableTimes[selectedEndTimeIndex] }}</span>
             </div>
             <div class="summary-row total">
               <span class="summary-label">Длительность:</span>
-              <span class="summary-value">1 час</span>
+              <span class="summary-value">{{ getDuration() }} {{ getDuration() === 1 ? 'час' : getDuration() < 5 ? 'часа' : 'часов' }}</span>
             </div>
           </div>
         </div>
@@ -123,7 +126,7 @@
       <button
         @click="handleBooking"
         class="booking-button"
-        :disabled="selectedDateIndex === null || selectedTimeIndex === null || isSubmitting"
+        :disabled="selectedDateIndex === null || selectedStartTimeIndex === null || selectedEndTimeIndex === null || isSubmitting"
       >
         <div v-if="isSubmitting" class="button-spinner"></div>
         <span v-else>{{ isSubmitting ? 'Creating Booking...' : 'Create Booking' }}</span>
@@ -143,7 +146,8 @@ const router = useRouter();
 const { isAuth, isLoading, checkAuth } = useAuth();
 
 const selectedDateIndex = ref(null);
-const selectedTimeIndex = ref(null);
+const selectedStartTimeIndex = ref(null);
+const selectedEndTimeIndex = ref(null);
 const isSubmitting = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
@@ -193,11 +197,45 @@ function initCalendar() {
 
 function selectDate(index) {
   selectedDateIndex.value = index;
-  selectedTimeIndex.value = null; // Сброс выбора времени при смене даты
+  selectedStartTimeIndex.value = null; // Сброс выбора времени при смене даты
+  selectedEndTimeIndex.value = null;
 }
 
 function selectTime(index) {
-  selectedTimeIndex.value = index;
+  // Если не выбран начальный час, устанавливаем его
+  if (selectedStartTimeIndex.value === null) {
+    selectedStartTimeIndex.value = index;
+    selectedEndTimeIndex.value = null;
+  } 
+  // Если начальный час выбран, но конечный нет
+  else if (selectedEndTimeIndex.value === null) {
+    // Проверяем, что конечное время после начального
+    if (index > selectedStartTimeIndex.value) {
+      selectedEndTimeIndex.value = index;
+    } else {
+      // Если выбрано время раньше начального, меняем начальное
+      selectedStartTimeIndex.value = index;
+      selectedEndTimeIndex.value = null;
+    }
+  } 
+  // Если оба времени выбраны, начинаем новый выбор
+  else {
+    selectedStartTimeIndex.value = index;
+    selectedEndTimeIndex.value = null;
+  }
+}
+
+// Проверяем, является ли время выбранным
+function isTimeSelected(index) {
+  return selectedStartTimeIndex.value === index || selectedEndTimeIndex.value === index;
+}
+
+// Проверяем, находится ли время в выбранном диапазоне
+function isTimeInRange(index) {
+  if (selectedStartTimeIndex.value === null || selectedEndTimeIndex.value === null) {
+    return false;
+  }
+  return index >= selectedStartTimeIndex.value && index <= selectedEndTimeIndex.value;
 }
 
 function formatDateTime(date, time) {
@@ -208,16 +246,17 @@ function formatDateTime(date, time) {
 }
 
 async function handleBooking() {
-  if (selectedDateIndex.value === null || selectedTimeIndex.value === null || isSubmitting.value) return;
+  if (selectedDateIndex.value === null || selectedStartTimeIndex.value === null || selectedEndTimeIndex.value === null || isSubmitting.value) return;
   isSubmitting.value = true;
   errorMessage.value = '';
   successMessage.value = '';
   try {
     const selectedDate = calendarDays.value[selectedDateIndex.value];
-    const selectedTime = availableTimes.value[selectedTimeIndex.value];
+    const selectedStartTime = availableTimes.value[selectedStartTimeIndex.value];
+    const selectedEndTime = availableTimes.value[selectedEndTimeIndex.value];
     
-    const startDateTime = formatDateTime(selectedDate.date, selectedTime);
-    const endDateTime = formatDateTime(selectedDate.date, getEndTime(selectedTime)); // 1 hour duration
+    const startDateTime = formatDateTime(selectedDate.date, selectedStartTime);
+    const endDateTime = formatDateTime(selectedDate.date, selectedEndTime);
     
     const bookingData = {
       sport_venue: parseInt(route.params.stadiumId),
@@ -236,10 +275,12 @@ async function handleBooking() {
   }
 }
 
-function getEndTime(startTime) {
-  const [hours, minutes] = startTime.split(':');
-  const endHours = parseInt(hours) + 1;
-  return `${endHours.toString().padStart(2, '0')}:${minutes}`;
+// Вычисление длительности в часах
+function getDuration() {
+  if (selectedStartTimeIndex.value === null || selectedEndTimeIndex.value === null) {
+    return 0;
+  }
+  return selectedEndTimeIndex.value - selectedStartTimeIndex.value;
 }
 
 function goBack() {
@@ -479,7 +520,7 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  max-height: 300px;
+  /* max-height: 300px; */
   overflow-y: auto;
   padding: 4px 0;
 }
@@ -509,6 +550,13 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   background: linear-gradient(135deg, #53d22c 0%, #4bc026 100%);
   color: white;
   box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
+}
+
+.time-slot.in-range {
+  border-color: #53d22c;
+  background: linear-gradient(135deg, rgba(83, 210, 44, 0.1) 0%, rgba(75, 192, 38, 0.1) 100%);
+  color: #53d22c;
+  box-shadow: 0 2px 8px rgba(83, 210, 44, 0.1);
 }
 
 .time-value {
