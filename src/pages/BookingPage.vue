@@ -34,98 +34,24 @@
         <div class="header-spacer"></div>
       </div>
 
-      <!-- Stadium Info -->
-      <div v-if="stadium" class="stadium-section">
-        <div class="stadium-card">
-          <div class="stadium-image">
-            <img v-if="stadium.image" :src="stadium.image" :alt="stadium.name" />
-            <div v-else class="stadium-placeholder">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9,22 9,12 15,12 15,22"></polyline>
-              </svg>
-            </div>
-          </div>
-          <div class="stadium-info">
-            <h2 class="stadium-name">{{ stadium.name }}</h2>
-            <p class="stadium-address">{{ stadium.address }}</p>
-            <div class="stadium-price">${{ stadium.price_per_hour }}/hour</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Date Selection -->
-      <div class="form-section">
-        <h3 class="section-title">Choose Date</h3>
-        <div class="date-grid">
-          <div 
-            v-for="(date, index) in availableDates" 
-            :key="index"
-            @click="selectDate(index)"
-            :class="['date-option', { active: selectedDateIndex === index }]"
-          >
-            <div class="date-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-            </div>
-            <div class="date-text">
-              <span class="date-label">{{ date.label }}</span>
-              <span class="date-value">{{ date.value }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Time Selection -->
       <div class="form-section">
-        <h3 class="section-title">Choose Time</h3>
-        
-        <!-- Start Time -->
-        <div class="time-section">
-          <h4 class="time-label">Start Time</h4>
-          <div class="time-grid">
-            <div 
-              v-for="(time, index) in availableStartTimes" 
-              :key="index"
-              @click="selectStartTime(index)"
-              :class="['time-option', { active: selectedStartTimeIndex === index }]"
-            >
-              {{ time }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Duration -->
-        <div class="time-section">
-          <h4 class="time-label">Duration</h4>
-          <div class="duration-grid">
-            <div 
-              v-for="(duration, index) in availableDurations" 
-              :key="index"
-              @click="selectDuration(index)"
-              :class="['duration-option', { active: selectedDurationIndex === index }]"
-            >
-              <div class="duration-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12,6 12,12 16,14"></polyline>
-                </svg>
-              </div>
-              <div class="duration-info">
-                <span class="duration-label">{{ duration.label }}</span>
-                <span class="duration-price">{{ duration.price }}</span>
-              </div>
-            </div>
+        <h3 class="section-title">Select a time</h3>
+        <div class="time-slots">
+          <div 
+            v-for="(slot, index) in availableTimeSlots" 
+            :key="index"
+            @click="selectTimeSlot(index)"
+            :class="['time-slot', { active: selectedTimeSlotIndex === index }]"
+          >
+            <div class="slot-date">{{ slot.date }}</div>
+            <div class="slot-time">{{ slot.time }}</div>
           </div>
         </div>
       </div>
 
       <!-- Booking Summary -->
-      <div v-if="selectedStartTimeIndex !== null && selectedDurationIndex !== null" class="form-section">
+      <div v-if="selectedTimeSlotIndex !== null" class="form-section">
         <h3 class="section-title">Booking Summary</h3>
         <div class="summary-card">
           <div class="summary-header">
@@ -142,120 +68,15 @@
           <div class="summary-details">
             <div class="summary-row">
               <span class="summary-label">Date:</span>
-              <span class="summary-value">{{ availableDates[selectedDateIndex].label }}</span>
+              <span class="summary-value">{{ availableTimeSlots[selectedTimeSlotIndex].date }}</span>
             </div>
             <div class="summary-row">
               <span class="summary-label">Time:</span>
-              <span class="summary-value">{{ availableStartTimes[selectedStartTimeIndex] }} - {{ getEndTime() }}</span>
-            </div>
-            <div class="summary-row">
-              <span class="summary-label">Duration:</span>
-              <span class="summary-value">{{ availableDurations[selectedDurationIndex].label }}</span>
+              <span class="summary-value">{{ availableTimeSlots[selectedTimeSlotIndex].time }}</span>
             </div>
             <div class="summary-row total">
-              <span class="summary-label">Total Price:</span>
-              <span class="summary-value price">{{ availableDurations[selectedDurationIndex]?.price || '$0' }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Number of Players -->
-      <div class="form-section">
-        <h3 class="section-title">Number of Players</h3>
-        <div class="input-section">
-          <div class="input-wrapper">
-            <div class="input-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-            </div>
-            <input
-              v-model="numberOfPlayers"
-              class="players-input"
-              placeholder="Enter number of players"
-              type="number"
-              min="1"
-              max="20"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Payment Options -->
-      <div class="form-section">
-        <h3 class="section-title">Payment Method</h3>
-        <div class="payment-section">
-          <div 
-            @click="paymentOption = 'deposit'"
-            :class="['payment-option', { active: paymentOption === 'deposit' }]"
-          >
-            <div class="payment-icon deposit">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-                <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                <line x1="15" y1="9" x2="15.01" y2="9"></line>
-              </svg>
-            </div>
-            <div class="payment-info">
-              <h4 class="payment-title">Deposit</h4>
-              <p class="payment-desc">Pay only $20 to secure your booking</p>
-              <div class="payment-price">$20</div>
-            </div>
-            <div class="payment-check">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <polyline points="20,6 9,17 4,12"></polyline>
-              </svg>
-            </div>
-          </div>
-
-          <div 
-            @click="paymentOption = 'full'"
-            :class="['payment-option', { active: paymentOption === 'full' }]"
-          >
-            <div class="payment-icon full">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <line x1="12" y1="1" x2="12" y2="23"></line>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-              </svg>
-            </div>
-            <div class="payment-info">
-              <h4 class="payment-title">Full Payment</h4>
-              <p class="payment-desc">Pay the full amount upfront</p>
-              <div class="payment-price">{{ availableDurations[selectedDurationIndex]?.price || '$0' }}</div>
-            </div>
-            <div class="payment-check">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <polyline points="20,6 9,17 4,12"></polyline>
-              </svg>
-            </div>
-          </div>
-
-          <div 
-            @click="paymentOption = 'group'"
-            :class="['payment-option', { active: paymentOption === 'group' }]"
-          >
-            <div class="payment-icon group">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-            </div>
-            <div class="payment-info">
-              <h4 class="payment-title">Group Payment</h4>
-              <p class="payment-desc">Split the cost among players</p>
-              <div class="payment-price">$10 per person</div>
-            </div>
-            <div class="payment-check">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <polyline points="20,6 9,17 4,12"></polyline>
-              </svg>
+              <span class="summary-label">Duration:</span>
+              <span class="summary-value">1 hour</span>
             </div>
           </div>
         </div>
@@ -293,7 +114,7 @@
       <button
         @click="handleBooking"
         class="booking-button"
-        :disabled="!canContinue || isSubmitting"
+        :disabled="selectedTimeSlotIndex === null || isSubmitting"
       >
         <div v-if="isSubmitting" class="button-spinner"></div>
         <span v-else>{{ isSubmitting ? 'Creating Booking...' : 'Create Booking' }}</span>
@@ -306,89 +127,43 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
-import { getSportVenue, createBooking } from '../api/fields.js';
+import { createBooking } from '../api/fields.js';
 
 const route = useRoute();
 const router = useRouter();
 const { isAuth, isLoading, checkAuth } = useAuth();
 
 // Reactive data
-const stadium = ref(null);
-const numberOfPlayers = ref('');
-const paymentOption = ref('deposit');
-const selectedDateIndex = ref(0);
-const selectedStartTimeIndex = ref(null);
-const selectedDurationIndex = ref(null);
+const selectedTimeSlotIndex = ref(null);
 const isSubmitting = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-// Available options
-const availableDates = ref([
-  { label: 'Today', value: new Date().toISOString().split('T')[0] },
-  { label: 'Tomorrow', value: new Date(Date.now() + 86400000).toISOString().split('T')[0] },
-  { label: 'Day after tomorrow', value: new Date(Date.now() + 172800000).toISOString().split('T')[0] }
+// Available time slots
+const availableTimeSlots = ref([
+  { 
+    date: 'Today', 
+    time: '10:00',
+    value: new Date().toISOString().split('T')[0],
+    startTime: '10:00'
+  },
+  { 
+    date: 'Tomorrow', 
+    time: '10:30',
+    value: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    startTime: '10:30'
+  },
+  { 
+    date: 'Sun, Jul 21', 
+    time: '11:00',
+    value: new Date(Date.now() + 172800000).toISOString().split('T')[0],
+    startTime: '11:00'
+  }
 ]);
-
-const availableStartTimes = ref([
-  '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', 
-  '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', 
-  '20:00', '21:00', '22:00'
-]);
-
-const availableDurations = ref([
-  { label: '1 hour', value: 1, price: '$25' },
-  { label: '2 hours', value: 2, price: '$45' },
-  { label: '3 hours', value: 3, price: '$65' },
-  { label: '4 hours', value: 4, price: '$80' }
-]);
-
-// Computed properties
-const canContinue = computed(() => {
-  return selectedStartTimeIndex.value !== null && 
-         selectedDurationIndex.value !== null && 
-         numberOfPlayers.value.trim() !== '' &&
-         stadium.value;
-});
 
 // Methods
-async function loadStadium() {
-  try {
-    const stadiumId = route.params.stadiumId;
-    if (stadiumId) {
-      const stadiumData = await getSportVenue(stadiumId);
-      stadium.value = stadiumData;
-    }
-  } catch (error) {
-    console.error('Error loading stadium:', error);
-    errorMessage.value = 'Failed to load stadium information';
-  }
-}
-
-function selectDate(index) {
-  selectedDateIndex.value = index;
-}
-
-function selectStartTime(index) {
-  selectedStartTimeIndex.value = index;
-}
-
-function selectDuration(index) {
-  selectedDurationIndex.value = index;
-}
-
-function getEndTime() {
-  if (selectedStartTimeIndex.value === null || selectedDurationIndex.value === null) {
-    return '';
-  }
-  
-  const startTime = availableStartTimes.value[selectedStartTimeIndex.value];
-  const duration = availableDurations.value[selectedDurationIndex.value].value;
-  
-  const [hours, minutes] = startTime.split(':').map(Number);
-  const endHours = hours + duration;
-  
-  return `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+function selectTimeSlot(index) {
+  selectedTimeSlotIndex.value = index;
 }
 
 function formatDateTime(date, time) {
@@ -399,19 +174,17 @@ function formatDateTime(date, time) {
 }
 
 async function handleBooking() {
-  if (!canContinue.value || isSubmitting.value) return;
+  if (selectedTimeSlotIndex.value === null || isSubmitting.value) return;
 
   isSubmitting.value = true;
   errorMessage.value = '';
   successMessage.value = '';
 
   try {
-    const selectedDate = availableDates.value[selectedDateIndex.value];
-    const startTime = availableStartTimes.value[selectedStartTimeIndex.value];
-    const duration = availableDurations.value[selectedDurationIndex.value];
-
-    const startDateTime = formatDateTime(selectedDate.value, startTime);
-    const endDateTime = formatDateTime(selectedDate.value, getEndTime());
+    const selectedSlot = availableTimeSlots.value[selectedTimeSlotIndex.value];
+    
+    const startDateTime = formatDateTime(selectedSlot.value, selectedSlot.startTime);
+    const endDateTime = formatDateTime(selectedSlot.value, '11:00'); // 1 hour duration
 
     const bookingData = {
       sport_venue: parseInt(route.params.stadiumId),
@@ -447,8 +220,6 @@ onMounted(async () => {
   await checkAuth();
   if (!isAuth.value && !isLoading.value) {
     router.push('/login');
-  } else {
-    await loadStadium();
   }
 });
 
@@ -606,67 +377,6 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   width: 40px;
 }
 
-.stadium-section {
-  padding: 20px;
-}
-
-.stadium-card {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.stadium-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.stadium-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.stadium-placeholder {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #53d22c 0%, #4bc026 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.stadium-info {
-  flex: 1;
-}
-
-.stadium-name {
-  font-size: 18px;
-  font-weight: bold;
-  color: #131712;
-  margin: 0 0 4px 0;
-}
-
-.stadium-address {
-  font-size: 14px;
-  color: #6d8566;
-  margin: 0 0 8px 0;
-}
-
-.stadium-price {
-  font-size: 16px;
-  font-weight: 600;
-  color: #53d22c;
-}
-
 .form-section {
   padding: 0 20px 24px 20px;
 }
@@ -679,169 +389,45 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   letter-spacing: -0.015em;
 }
 
-.date-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.time-slots {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
-.date-option {
+.time-slot {
   background: white;
   border-radius: 12px;
-  padding: 16px;
+  padding: 16px 20px;
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid transparent;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  text-align: center;
 }
 
-.date-option:hover {
+.time-slot:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
-.date-option.active {
+.time-slot.active {
   border-color: #53d22c;
   background: linear-gradient(135deg, #53d22c 0%, #4bc026 100%);
   color: white;
   box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
 }
 
-.date-icon {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,255,255,0.2);
-  border-radius: 8px;
-}
-
-.date-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.date-label {
+.slot-date {
   font-weight: 600;
-  font-size: 14px;
-}
-
-.date-value {
-  font-size: 12px;
-  opacity: 0.8;
-}
-
-.time-section {
-  margin-bottom: 20px;
-}
-
-.time-label {
-  color: #131712;
   font-size: 16px;
+}
+
+.slot-time {
   font-weight: 600;
-  margin-bottom: 12px;
-}
-
-.time-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-}
-
-.time-option {
-  padding: 12px 8px;
-  text-align: center;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-  font-size: 14px;
-  background: white;
-  border: 2px solid transparent;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.time-option:hover {
-  background: #e9f5e6;
-  color: #53d22c;
-  transform: scale(1.05);
-}
-
-.time-option.active {
-  background: #53d22c;
-  color: white;
-  box-shadow: 0 2px 8px rgba(83, 210, 44, 0.3);
-}
-
-.duration-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.duration-option {
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.duration-option:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-
-.duration-option.active {
-  border-color: #53d22c;
-  background: linear-gradient(135deg, #53d22c 0%, #4bc026 100%);
-  color: white;
-  box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
-}
-
-.duration-icon {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,255,255,0.2);
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-
-.duration-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.duration-label {
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.duration-price {
-  font-weight: 700;
   font-size: 16px;
-  color: #53d22c;
-}
-
-.duration-option.active .duration-price {
-  color: white;
 }
 
 .summary-card {
@@ -911,175 +497,6 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   font-size: 14px;
   color: #131712;
   font-weight: 600;
-}
-
-.summary-value.price {
-  color: #53d22c;
-  font-weight: 700;
-  font-size: 16px;
-}
-
-.input-section {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.input-wrapper {
-  position: relative;
-}
-
-.input-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6d8566;
-  z-index: 1;
-}
-
-.players-input {
-  width: 100%;
-  border: 2px solid #e9ecef;
-  border-radius: 12px;
-  outline: none;
-  padding: 16px 16px 16px 48px;
-  font-size: 16px;
-  background: transparent;
-  color: #131712;
-  transition: all 0.3s ease;
-}
-
-.players-input:focus {
-  border-color: #53d22c;
-  box-shadow: 0 0 0 3px rgba(83, 210, 44, 0.1);
-}
-
-.players-input::placeholder {
-  color: #6d8566;
-}
-
-.payment-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.payment-option {
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.payment-option::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #53d22c 0%, #4bc026 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 0;
-}
-
-.payment-option:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-
-.payment-option.active {
-  border-color: #53d22c;
-  box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
-}
-
-.payment-option.active::before {
-  opacity: 1;
-}
-
-.payment-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 1;
-  flex-shrink: 0;
-}
-
-.payment-icon.deposit {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-  color: white;
-}
-
-.payment-icon.full {
-  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-  color: white;
-}
-
-.payment-icon.group {
-  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-  color: #131712;
-}
-
-.payment-info {
-  flex: 1;
-  position: relative;
-  z-index: 1;
-}
-
-.payment-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  color: #131712;
-}
-
-.payment-desc {
-  font-size: 14px;
-  color: #6d8566;
-  margin: 0 0 8px 0;
-}
-
-.payment-price {
-  font-size: 18px;
-  font-weight: 700;
-  color: #53d22c;
-}
-
-.payment-check {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #53d22c;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  position: relative;
-  z-index: 1;
-  opacity: 0;
-  transform: scale(0);
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-}
-
-.payment-option.active .payment-check {
-  opacity: 1;
-  transform: scale(1);
 }
 
 .message {
