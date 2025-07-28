@@ -62,7 +62,7 @@
         </div>
         
         <!-- No available times -->
-        <div v-else-if="availableTimes.length === 0" class="no-availability">
+        <div v-else-if="availableTimes.length === 0 || !hasAvailableTimes()" class="no-availability">
           <div class="no-availability-icon">📅</div>
           <p>Нет доступного времени на эту дату</p>
         </div>
@@ -75,7 +75,8 @@
             @click="selectTime(index)"
             :class="['time-slot', { 
               active: isTimeSelected(index),
-              'in-range': isTimeInRange(index) && !isTimeSelected(index)
+              'in-range': isTimeInRange(index) && !isTimeSelected(index),
+              'unavailable': !isTimeAvailable(index)
             }]"
           >
             <div class="time-value">{{ time }}</div>
@@ -140,7 +141,7 @@
       <button
         @click="handleBooking"
         class="booking-button"
-        :disabled="selectedDateIndex === null || selectedStartTimeIndex === null || selectedEndTimeIndex === null || isSubmitting || isLoadingAvailability || availableTimes.length === 0"
+        :disabled="selectedDateIndex === null || selectedStartTimeIndex === null || selectedEndTimeIndex === null || isSubmitting || isLoadingAvailability || availableTimes.length === 0 || !hasAvailableTimes()"
       >
         <div v-if="isSubmitting" class="button-spinner"></div>
         <span v-else>{{ isSubmitting ? 'Creating Booking...' : 'Create Booking' }}</span>
@@ -217,11 +218,10 @@ async function loadAvailability(date) {
     const data = await getSportVenueAvailability(route.params.stadiumId, date);
     availabilityData.value = data;
     
-    // Фильтруем только доступные временные слоты
-    const availableSlots = data.time_points.filter(point => point.is_available);
-    availableTimes.value = availableSlots.map(slot => slot.time);
+    // Показываем все временные слоты из API
+    availableTimes.value = data.time_points.map(slot => slot.time);
     
-    console.log('Available times:', availableTimes.value);
+    console.log('All time slots:', availableTimes.value);
   } catch (error) {
     console.error('Error loading availability:', error);
     errorMessage.value = 'Ошибка загрузки доступности. Попробуйте еще раз.';
@@ -231,17 +231,33 @@ async function loadAvailability(date) {
   }
 }
 
-function selectDate(index) {
-  selectedDateIndex.value = index;
-  selectedStartTimeIndex.value = null; // Сброс выбора времени при смене даты
-  selectedEndTimeIndex.value = null;
-  
-  // Загружаем доступность для выбранной даты
-  const selectedDate = calendarDays.value[index];
-  loadAvailability(selectedDate.date);
+// Проверяем, доступно ли время
+function isTimeAvailable(index) {
+  if (!availabilityData.value || !availabilityData.value.time_points) {
+    return false;
+  }
+  return availabilityData.value.time_points[index]?.is_available || false;
+}
+
+// Проверяем, можно ли выбрать время (только доступные)
+function canSelectTime(index) {
+  return isTimeAvailable(index);
+}
+
+// Проверяем, есть ли доступные слоты
+function hasAvailableTimes() {
+  if (!availabilityData.value || !availabilityData.value.time_points) {
+    return false;
+  }
+  return availabilityData.value.time_points.some(point => point.is_available);
 }
 
 function selectTime(index) {
+  // Проверяем, что время доступно
+  if (!isTimeAvailable(index)) {
+    return; // Нельзя выбрать недоступное время
+  }
+  
   // Если не выбран начальный час, устанавливаем его
   if (selectedStartTimeIndex.value === null) {
     selectedStartTimeIndex.value = index;
@@ -597,6 +613,19 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   background: linear-gradient(135deg, rgba(83, 210, 44, 0.1) 0%, rgba(75, 192, 38, 0.1) 100%);
   color: #53d22c;
   box-shadow: 0 2px 8px rgba(83, 210, 44, 0.1);
+}
+
+.time-slot.unavailable {
+  background: #f8f9fa;
+  border-color: #e9ecef;
+  color: #adb5bd;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.time-slot.unavailable:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .time-value {
