@@ -277,7 +277,15 @@ function selectTime(index) {
   else if (selectedEndTimeIndex.value === null) {
     // Проверяем, что конечное время после начального
     if (index > selectedStartTimeIndex.value) {
-      selectedEndTimeIndex.value = index;
+      // Проверяем, что все слоты между начальным и конечным доступны
+      const allSlotsAvailable = checkRangeAvailability(selectedStartTimeIndex.value, index);
+      if (allSlotsAvailable) {
+        selectedEndTimeIndex.value = index;
+      } else {
+        // Если есть недоступные слоты в диапазоне, начинаем новый выбор
+        selectedStartTimeIndex.value = index;
+        selectedEndTimeIndex.value = null;
+      }
     } else {
       // Если выбрано время раньше начального, меняем начальное
       selectedStartTimeIndex.value = index;
@@ -291,6 +299,16 @@ function selectTime(index) {
   }
 }
 
+// Проверяем, что все слоты в диапазоне доступны
+function checkRangeAvailability(startIndex, endIndex) {
+  for (let i = startIndex; i <= endIndex; i++) {
+    if (!isTimeAvailable(i)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // Проверяем, является ли время выбранным
 function isTimeSelected(index) {
   return selectedStartTimeIndex.value === index || selectedEndTimeIndex.value === index;
@@ -301,7 +319,10 @@ function isTimeInRange(index) {
   if (selectedStartTimeIndex.value === null || selectedEndTimeIndex.value === null) {
     return false;
   }
-  return index >= selectedStartTimeIndex.value && index <= selectedEndTimeIndex.value;
+  // Проверяем, что слот находится в диапазоне И доступен
+  return index >= selectedStartTimeIndex.value && 
+         index <= selectedEndTimeIndex.value && 
+         isTimeAvailable(index);
 }
 
 function formatDateTime(date, time) {
