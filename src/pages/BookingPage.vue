@@ -101,10 +101,23 @@
               <span class="summary-label">Время:</span>
               <span class="summary-value">{{ availableTimes[selectedStartTimeIndex] }} - {{ availableTimes[selectedEndTimeIndex] }}</span>
             </div>
-            <div class="summary-row total">
+            <div class="summary-row">
               <span class="summary-label">Длительность:</span>
               <span class="summary-value">{{ getDuration() }} {{ getDuration() === 1 ? 'час' : getDuration() < 5 ? 'часа' : 'часов' }}</span>
             </div>
+            <!-- <div class="summary-row">
+              <span class="summary-label">Цена за час:</span>
+              <span class="summary-value">{{ formatPrice(stadiumData?.price_per_hour || 0) }}</span>
+            </div> -->
+            <div class="summary-row total">
+              <span class="summary-label">Общая стоимость:</span>
+              <span class="summary-value">{{ formatPrice(calculateTotalPrice()) }}</span>
+            </div>
+            <div class="summary-row deposit">
+              <span class="summary-label">Депозит (1 час):</span>
+              <span class="summary-value">{{ formatPrice(calculateDeposit()) }}</span>
+            </div>
+
           </div>
         </div>
       </div>
@@ -154,7 +167,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
-import { createBooking, getSportVenueAvailability } from '../api/fields.js';
+import { createBooking, getSportVenueAvailability, getSportVenueWithPrice } from '../api/fields.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -172,6 +185,7 @@ const calendarDays = ref([]);
 const availableTimes = ref([]);
 const availabilityData = ref(null);
 const isLoadingAvailability = ref(false);
+const stadiumData = ref(null);
 
 // Инициализация календаря
 function initCalendar() {
@@ -209,6 +223,17 @@ function initCalendar() {
   calendarDays.value = days;
 }
 
+// Загрузка данных стадиона
+async function loadStadiumData() {
+  try {
+    const data = await getSportVenueWithPrice(route.params.stadiumId);
+    stadiumData.value = data;
+    console.log('Stadium data:', data);
+  } catch (error) {
+    console.error('Error loading stadium data:', error);
+  }
+}
+
 // Форматирование даты для API (YYYY-MM-DD)
 function formatDateForAPI(date) {
   const year = date.getFullYear();
@@ -241,6 +266,35 @@ async function loadAvailability(date) {
   } finally {
     isLoadingAvailability.value = false;
   }
+}
+
+// Вычисление стоимости бронирования
+function calculateTotalPrice() {
+  if (!stadiumData.value || selectedStartTimeIndex.value === null || selectedEndTimeIndex.value === null) {
+    return 0;
+  }
+  
+  const duration = getDuration();
+  const pricePerHour = stadiumData.value.price_per_hour || 0;
+  return duration * pricePerHour;
+}
+
+// Вычисление депозита (1 час)
+function calculateDeposit() {
+  if (!stadiumData.value) {
+    return 0;
+  }
+  
+  return stadiumData.value.price_per_hour || 0;
+}
+
+// Форматирование цены
+function formatPrice(price) {
+  return new Intl.NumberFormat('ru-RU', {
+    style: 'currency',
+    currency: 'UZS',
+    minimumFractionDigits: 0
+  }).format(price);
 }
 
 // Проверяем, доступно ли время
@@ -389,6 +443,7 @@ function goBack() {
 onMounted(async () => {
   await checkAuth();
   initCalendar();
+  loadStadiumData();
 });
 
 watch([isAuth, isLoading], ([auth, loading]) => {
@@ -785,6 +840,27 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   border-top: 2px solid #53d22c;
   padding-top: 12px;
   margin-top: 8px;
+  font-weight: 600;
+}
+
+.summary-row.deposit {
+  border-top: 1px solid #ffc107;
+  padding-top: 12px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px -12px 0 -12px;
+}
+
+.summary-row.deposit .summary-label {
+  color: #856404;
+  font-weight: 600;
+}
+
+.summary-row.deposit .summary-value {
+  color: #856404;
+  font-weight: 700;
 }
 
 .summary-label {
