@@ -4,6 +4,7 @@ import ProfilePage from './pages/ProfilePage.vue';
 import StadiumPage from './pages/StadiumPage.vue';
 import LoginPage from './pages/LoginPage.vue';
 import BookingPage from './pages/BookingPage.vue';
+import BookingsPage from './pages/BookingsPage.vue';
 import { useAuth } from './composables/useAuth';
 
 const routes = [
@@ -12,6 +13,7 @@ const routes = [
   { path: '/stadium/:id', name: 'stadium', component: StadiumPage },
   { path: '/login', name: 'login', component: LoginPage },
   { path: '/booking/:stadiumId', name: 'booking', component: BookingPage, meta: { requiresAuth: true } },
+  { path: '/bookings', name: 'bookings', component: BookingsPage, meta: { requiresAuth: true } },
 ];
 
 const router = createRouter({

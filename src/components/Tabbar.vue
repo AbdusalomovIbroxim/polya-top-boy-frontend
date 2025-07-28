@@ -33,6 +33,9 @@ export default {
       if (tab.id === 'profile') {
         return '#'; // Временно ставим #, обработка будет в handleTabClick
       }
+      if (tab.id === 'bookings') {
+        return '/bookings';
+      }
       return tab.id === 'home' ? '/' : (tab.id === 'profile' ? '/profile' : '#');
     }
 

@@ -167,7 +167,8 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
-import { createBooking, getSportVenueAvailability, getSportVenueWithPrice } from '../api/fields.js';
+import { getSportVenueAvailability, getSportVenueWithPrice } from '../api/fields.js';
+import { createBooking } from '../api/bookings.js';
 
 const route = useRoute();
 const router = useRouter();
