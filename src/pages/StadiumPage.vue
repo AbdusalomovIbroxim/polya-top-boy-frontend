@@ -54,7 +54,7 @@ import { useAuth } from '../composables/useAuth';
 
 const route = useRoute();
 const router = useRouter();
-const { requireAuth } = useAuth();
+const { isAuth } = useAuth();
 const stadium = ref(null);
 const activeImage = ref('');
 const mapContainer = ref(null);
@@ -74,9 +74,12 @@ function formatPrice(value) {
 }
 
 function handleBookStadium() {
-  if (requireAuth()) {
-    // Переходим на страницу бронирования
+  if (isAuth.value) {
+    // Пользователь авторизован - переходим на страницу бронирования
     router.push(`/booking/${stadium.value.id}`);
+  } else {
+    // Пользователь не авторизован - перенаправляем на логин
+    router.push('/login');
   }
 }
 
