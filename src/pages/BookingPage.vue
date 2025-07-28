@@ -34,49 +34,58 @@
         <div class="header-spacer"></div>
       </div>
 
-      <!-- Time Selection -->
+      <!-- Date Selection -->
       <div class="form-section">
-        <h3 class="section-title">Select a time</h3>
+        <h3 class="section-title">Выберите дату</h3>
+        <div class="calendar">
+          <div 
+            v-for="(day, index) in calendarDays" 
+            :key="index"
+            @click="selectDate(index)"
+            :class="['calendar-day', { active: selectedDateIndex === index }]"
+          >
+            <div class="day-name">{{ day.dayName }}</div>
+            <div class="day-number">{{ day.dayNumber }}</div>
+            <div class="day-label">{{ day.label }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time Selection -->
+      <div v-if="selectedDateIndex !== null" class="form-section">
+        <h3 class="section-title">Выберите время</h3>
         <div class="time-slots">
           <div 
-            v-for="(slot, index) in availableTimeSlots" 
+            v-for="(time, index) in availableTimes" 
             :key="index"
-            @click="selectTimeSlot(index)"
-            :class="['time-slot', { active: selectedTimeSlotIndex === index }]"
+            @click="selectTime(index)"
+            :class="['time-slot', { active: selectedTimeIndex === index }]"
           >
-            <div class="slot-date">{{ slot.date }}</div>
-            <div class="slot-time">{{ slot.time }}</div>
+            <div class="time-value">{{ time }}</div>
           </div>
         </div>
       </div>
 
       <!-- Booking Summary -->
-      <div v-if="selectedTimeSlotIndex !== null" class="form-section">
-        <h3 class="section-title">Booking Summary</h3>
+      <div v-if="selectedDateIndex !== null && selectedTimeIndex !== null" class="form-section">
+        <h3 class="section-title">Детали бронирования</h3>
         <div class="summary-card">
           <div class="summary-header">
-            <div class="summary-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-            </div>
-            <h4 class="summary-title">Your Booking</h4>
+            <div class="summary-icon">📅</div>
+            <div class="summary-title">Бронирование</div>
           </div>
           <div class="summary-details">
             <div class="summary-row">
-              <span class="summary-label">Date:</span>
-              <span class="summary-value">{{ availableTimeSlots[selectedTimeSlotIndex].date }}</span>
+              <span class="summary-label">Дата:</span>
+              <span class="summary-value">{{ calendarDays[selectedDateIndex].fullDate }}</span>
             </div>
             <div class="summary-row">
-              <span class="summary-label">Time:</span>
-              <span class="summary-value">{{ availableTimeSlots[selectedTimeSlotIndex].time }}</span>
+              <span class="summary-label">Время:</span>
+              <span class="summary-value">{{ availableTimes[selectedTimeIndex] }}</span>
             </div>
             <div class="summary-row total">
-              <span class="summary-label">Duration:</span>
-              <span class="summary-value">1 hour</span>
+              <span class="summary-label">Длительность:</span>
+              <span class="summary-value">1 час</span>
             </div>
           </div>
         </div>
@@ -114,7 +123,7 @@
       <button
         @click="handleBooking"
         class="booking-button"
-        :disabled="selectedTimeSlotIndex === null || isSubmitting"
+        :disabled="selectedDateIndex === null || selectedTimeIndex === null || isSubmitting"
       >
         <div v-if="isSubmitting" class="button-spinner"></div>
         <span v-else>{{ isSubmitting ? 'Creating Booking...' : 'Create Booking' }}</span>
@@ -133,19 +142,59 @@ const route = useRoute();
 const router = useRouter();
 const { isAuth, isLoading, checkAuth } = useAuth();
 
-const selectedTimeSlotIndex = ref(null);
+const selectedDateIndex = ref(null);
+const selectedTimeIndex = ref(null);
 const isSubmitting = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-const availableTimeSlots = ref([
-  { date: 'Today', time: '10:00', value: new Date().toISOString().split('T')[0], startTime: '10:00' },
-  { date: 'Tomorrow', time: '10:30', value: new Date(Date.now() + 86400000).toISOString().split('T')[0], startTime: '10:30' },
-  { date: 'Sun, Jul 21', time: '11:00', value: new Date(Date.now() + 172800000).toISOString().split('T')[0], startTime: '11:00' }
-]);
+// Генерация 7 дней календаря
+const calendarDays = ref([]);
+const availableTimes = ref(['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00']);
 
-function selectTimeSlot(index) {
-  selectedTimeSlotIndex.value = index;
+// Инициализация календаря
+function initCalendar() {
+  const days = [];
+  const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+  const monthNames = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+  
+  for (let i = 0; i < 7; i++) {
+    const date = new Date();
+    date.setDate(date.getDate() + i);
+    
+    const dayName = dayNames[date.getDay()];
+    const dayNumber = date.getDate();
+    const monthName = monthNames[date.getMonth()];
+    
+    let label = '';
+    if (i === 0) label = 'Сегодня';
+    else if (i === 1) label = 'Завтра';
+    else label = `${dayName}, ${dayNumber} ${monthName}`;
+    
+    days.push({
+      dayName,
+      dayNumber,
+      label,
+      fullDate: date.toLocaleDateString('ru-RU', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }),
+      date: date.toISOString().split('T')[0]
+    });
+  }
+  
+  calendarDays.value = days;
+}
+
+function selectDate(index) {
+  selectedDateIndex.value = index;
+  selectedTimeIndex.value = null; // Сброс выбора времени при смене даты
+}
+
+function selectTime(index) {
+  selectedTimeIndex.value = index;
 }
 
 function formatDateTime(date, time) {
@@ -156,29 +205,38 @@ function formatDateTime(date, time) {
 }
 
 async function handleBooking() {
-  if (selectedTimeSlotIndex.value === null || isSubmitting.value) return;
+  if (selectedDateIndex.value === null || selectedTimeIndex.value === null || isSubmitting.value) return;
   isSubmitting.value = true;
   errorMessage.value = '';
   successMessage.value = '';
   try {
-    const selectedSlot = availableTimeSlots.value[selectedTimeSlotIndex.value];
-    const startDateTime = formatDateTime(selectedSlot.value, selectedSlot.startTime);
-    const endDateTime = formatDateTime(selectedSlot.value, '11:00'); // 1 hour duration
+    const selectedDate = calendarDays.value[selectedDateIndex.value];
+    const selectedTime = availableTimes.value[selectedTimeIndex.value];
+    
+    const startDateTime = formatDateTime(selectedDate.date, selectedTime);
+    const endDateTime = formatDateTime(selectedDate.date, getEndTime(selectedTime)); // 1 hour duration
+    
     const bookingData = {
       sport_venue: parseInt(route.params.stadiumId),
       start_time: startDateTime,
       end_time: endDateTime
     };
     await createBooking(bookingData);
-    successMessage.value = 'Booking created successfully!';
+    successMessage.value = 'Бронирование создано успешно!';
     setTimeout(() => {
       router.push('/profile');
     }, 2000);
   } catch (error) {
-    errorMessage.value = error.response?.data?.message || 'Failed to create booking. Please try again.';
+    errorMessage.value = error.response?.data?.message || 'Ошибка создания бронирования. Попробуйте еще раз.';
   } finally {
     isSubmitting.value = false;
   }
+}
+
+function getEndTime(startTime) {
+  const [hours, minutes] = startTime.split(':');
+  const endHours = parseInt(hours) + 1;
+  return `${endHours.toString().padStart(2, '0')}:${minutes}`;
 }
 
 function goBack() {
@@ -187,6 +245,7 @@ function goBack() {
 
 onMounted(async () => {
   await checkAuth();
+  initCalendar();
 });
 
 watch([isAuth, isLoading], ([auth, loading]) => {
@@ -354,23 +413,76 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   letter-spacing: -0.015em;
 }
 
-.time-slots {
+.calendar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.calendar-day {
+  min-width: 80px;
+  background: white;
+  border-radius: 12px;
+  padding: 12px 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.calendar-day:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.calendar-day.active {
+  border-color: #53d22c;
+  background: linear-gradient(135deg, #53d22c 0%, #4bc026 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
+}
+
+.day-name {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.day-number {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.day-label {
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.time-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
 .time-slot {
   background: white;
   border-radius: 12px;
-  padding: 16px 20px;
+  padding: 16px 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid transparent;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
 .time-slot:hover {
@@ -385,12 +497,7 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   box-shadow: 0 4px 16px rgba(83, 210, 44, 0.3);
 }
 
-.slot-date {
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.slot-time {
+.time-value {
   font-weight: 600;
   font-size: 16px;
 }
