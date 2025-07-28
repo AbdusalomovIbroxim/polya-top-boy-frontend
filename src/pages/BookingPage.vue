@@ -765,6 +765,7 @@ watch([isAuth, isLoading], ([auth, loading]) => {
   padding: 16px 20px;
   box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
   z-index: 10;
+  margin-bottom: 70px;
 }
 
 .booking-button {
