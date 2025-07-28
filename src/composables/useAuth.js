@@ -186,7 +186,7 @@ function parseAuthError(error) {
     if (typeof data === 'string') return data;
     if (typeof data === 'object') {
       return Object.values(data).flat().join(' ');
-    }
+  }
   }
   return 'Ошибка авторизации';
 }
