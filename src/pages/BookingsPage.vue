@@ -71,57 +71,57 @@
       </div>
 
       <!-- Bookings list -->
-              <div v-else>
-          <div v-if="filteredBookings.length === 0" class="empty-state">
-            <div class="empty-icon">📅</div>
-            <h3 class="empty-title">
-              {{ activeTab === 'upcoming' ? 'Нет предстоящих бронирований' : 'Нет прошедших бронирований' }}
-            </h3>
-            <p class="empty-text">
-              {{ activeTab === 'upcoming' 
-                ? 'У вас пока нет предстоящих бронирований.' 
-                : 'У вас пока нет прошедших бронирований.' 
-              }}
-            </p>
+      <div v-else class="bookings-grid">
+        <div 
+          v-for="(booking, index) in filteredBookings" 
+          :key="booking?.id || index"
+          class="booking-card"
+        >
+          <!-- Card Header -->
+          <div class="card-header">
+            <div class="venue-image" :style="getBookingImageStyle(booking)"></div>
+            <div class="venue-info">
+              <h3 class="venue-title">{{ getBookingTitle(booking) }}</h3>
+              <span class="booking-status" :class="getStatusClass(booking)">
+                {{ getBookingStatus(booking) }}
+              </span>
+            </div>
           </div>
-          
-          <div v-else>
-            <div 
-              v-for="(booking, index) in filteredBookings" 
-              :key="booking?.id || index"
-              class="booking-item"
-            >
-              <div class="booking-image" :style="getBookingImageStyle(booking)"></div>
-              <div class="booking-info">
-                <div class="booking-header">
-                  <h3 class="booking-title">{{ getBookingTitle(booking) }}</h3>
-                  <span class="booking-status" :class="getStatusClass(booking)">
-                    {{ getBookingStatus(booking) }}
-                  </span>
-                </div>
-                <p class="booking-details">{{ getBookingDetails(booking) }}</p>
-                <div class="booking-price-info">
-                  <span class="price-label">Стоимость:</span>
-                  <span class="price-value">{{ getBookingPrice(booking) }}</span>
-                </div>
-                <div class="booking-deposit-info">
-                  <span class="deposit-label">Депозит:</span>
-                  <span class="deposit-value">{{ getBookingDeposit(booking) }}</span>
-                </div>
+
+          <!-- Card Content -->
+          <div class="card-content">
+            <div class="booking-details">
+              <div class="detail-item">
+                <span class="detail-icon">📅</span>
+                <span class="detail-text">{{ getBookingDetails(booking) }}</span>
               </div>
-              <div class="booking-actions">
-                <button 
-                  v-if="activeTab === 'upcoming' && canCancelBooking(booking)"
-                  @click="cancelBookingById(booking.id)"
-                  :disabled="cancelingBookingId === booking.id"
-                  class="cancel-button"
-                >
-                  {{ cancelingBookingId === booking.id ? 'Отмена...' : 'Отменить' }}
-                </button>
+              <div class="detail-item">
+                <span class="detail-icon">💰</span>
+                <span class="detail-text">{{ getBookingPrice(booking) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-icon">💳</span>
+                <span class="detail-text">{{ getBookingDeposit(booking) }}</span>
               </div>
             </div>
           </div>
+
+          <!-- Card Actions -->
+          <div class="card-actions">
+            <button 
+              v-if="activeTab === 'upcoming' && canCancelBooking(booking)"
+              @click="cancelBookingById(booking.id)"
+              :disabled="cancelingBookingId === booking.id"
+              class="cancel-button"
+            >
+              <span class="button-icon">❌</span>
+              <span class="button-text">
+                {{ cancelingBookingId === booking.id ? 'Отмена...' : 'Отменить' }}
+              </span>
+            </button>
+          </div>
         </div>
+      </div>
     </div>
   </div>
 </template>
