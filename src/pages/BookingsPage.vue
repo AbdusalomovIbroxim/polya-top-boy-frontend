@@ -77,25 +77,38 @@
 
       <!-- Bookings list -->
       <div v-else>
-        <div 
-          v-for="booking in filteredBookings" 
-          :key="booking.id"
-          class="booking-item"
-        >
-          <div class="booking-image" :style="getBookingImageStyle(booking)"></div>
-          <div class="booking-info">
-            <p class="booking-title">{{ getBookingTitle(booking) }}</p>
-            <p class="booking-details">{{ getBookingDetails(booking) }}</p>
-          </div>
-          <div class="booking-actions">
-            <button 
-              v-if="activeTab === 'upcoming' && canCancelBooking(booking)"
-              @click="cancelBookingById(booking.id)"
-              :disabled="cancelingBookingId === booking.id"
-              class="cancel-button"
-            >
-              {{ cancelingBookingId === booking.id ? 'Canceling...' : 'Cancel' }}
-            </button>
+        <div v-if="filteredBookings.length === 0" class="empty-state">
+          <div class="empty-icon">📅</div>
+          <h3 class="empty-title">No {{ activeTab }} bookings found</h3>
+          <p class="empty-text">
+            {{ activeTab === 'upcoming' 
+              ? 'You don\'t have any upcoming bookings yet.' 
+              : 'You don\'t have any past bookings yet.' 
+            }}
+          </p>
+        </div>
+        
+        <div v-else>
+          <div 
+            v-for="(booking, index) in filteredBookings" 
+            :key="booking?.id || index"
+            class="booking-item"
+          >
+            <div class="booking-image" :style="getBookingImageStyle(booking)"></div>
+            <div class="booking-info">
+              <p class="booking-title">{{ getBookingTitle(booking) }}</p>
+              <p class="booking-details">{{ getBookingDetails(booking) }}</p>
+            </div>
+            <div class="booking-actions">
+              <button 
+                v-if="activeTab === 'upcoming' && canCancelBooking(booking)"
+                @click="cancelBookingById(booking.id)"
+                :disabled="cancelingBookingId === booking.id"
+                class="cancel-button"
+              >
+                {{ cancelingBookingId === booking.id ? 'Canceling...' : 'Cancel' }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -129,10 +142,34 @@ async function loadBookings() {
     console.log('DEBUG: loadBookings called');
     const data = await getUserBookings();
     console.log('DEBUG: Bookings data received:', data);
-    bookings.value = data;
-    console.log('DEBUG: Bookings loaded:', data);
+    
+    // Проверяем структуру данных
+    if (data && Array.isArray(data)) {
+      console.log('DEBUG: Data is array with length:', data.length);
+      bookings.value = data;
+    } else if (data && typeof data === 'object') {
+      console.log('DEBUG: Data is object, checking for results property');
+      if (data.results && Array.isArray(data.results)) {
+        console.log('DEBUG: Using data.results array');
+        bookings.value = data.results;
+      } else {
+        console.log('DEBUG: Data is object but no results array, using as single item');
+        bookings.value = [data];
+      }
+    } else {
+      console.log('DEBUG: Data is not array or object, setting empty array');
+      bookings.value = [];
+    }
+    
+    console.log('DEBUG: Final bookings.value:', bookings.value);
   } catch (err) {
     console.error('DEBUG: Error loading bookings:', err);
+    console.error('DEBUG: Error details:', {
+      message: err.message,
+      response: err.response,
+      status: err.response?.status,
+      data: err.response?.data
+    });
     error.value = err.response?.data?.message || err.message || 'Failed to load bookings. Please try again.';
   } finally {
     isLoading.value = false;
@@ -141,46 +178,111 @@ async function loadBookings() {
 
 // Фильтрация бронирований по активному табу
 const filteredBookings = computed(() => {
+  console.log('DEBUG: filteredBookings computed called');
+  console.log('DEBUG: bookings.value:', bookings.value);
+  console.log('DEBUG: activeTab.value:', activeTab.value);
+  
+  if (!bookings.value || !Array.isArray(bookings.value)) {
+    console.log('DEBUG: bookings is not array, returning empty array');
+    return [];
+  }
+  
   const now = new Date();
   
-  return bookings.value.filter(booking => {
+  const filtered = bookings.value.filter(booking => {
+    console.log('DEBUG: Processing booking:', booking);
+    
+    if (!booking.start_time) {
+      console.log('DEBUG: Booking has no start_time:', booking);
+      return false;
+    }
+    
     const bookingDate = new Date(booking.start_time);
+    console.log('DEBUG: Booking date:', bookingDate);
     
     if (activeTab.value === 'upcoming') {
-      return bookingDate >= now;
+      const isUpcoming = bookingDate >= now;
+      console.log('DEBUG: Is upcoming:', isUpcoming);
+      return isUpcoming;
     } else {
-      return bookingDate < now;
+      const isPast = bookingDate < now;
+      console.log('DEBUG: Is past:', isPast);
+      return isPast;
     }
   });
+  
+  console.log('DEBUG: Filtered bookings:', filtered);
+  return filtered;
 });
 
 // Получение заголовка бронирования
 function getBookingTitle(booking) {
-  return booking.sport_venue?.name || 'Unknown Field';
+  console.log('DEBUG: getBookingTitle called with:', booking);
+  if (!booking) {
+    console.log('DEBUG: booking is null/undefined');
+    return 'Unknown Field';
+  }
+  const title = booking.sport_venue?.name || 'Unknown Field';
+  console.log('DEBUG: Booking title:', title);
+  return title;
 }
 
 // Получение деталей бронирования
 function getBookingDetails(booking) {
+  console.log('DEBUG: getBookingDetails called with:', booking);
+  if (!booking) {
+    console.log('DEBUG: booking is null/undefined');
+    return 'Unknown Stadium · Unknown Time';
+  }
+  
   const venue = booking.sport_venue?.name || 'Unknown Stadium';
   const startTime = formatTime(booking.start_time);
   const endTime = formatTime(booking.end_time);
   
-  return `${venue} · ${startTime} - ${endTime}`;
+  const details = `${venue} · ${startTime} - ${endTime}`;
+  console.log('DEBUG: Booking details:', details);
+  return details;
 }
 
 // Форматирование времени
 function formatTime(dateString) {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString('ru-RU', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  });
+  console.log('DEBUG: formatTime called with:', dateString);
+  if (!dateString) {
+    console.log('DEBUG: dateString is empty, returning "Unknown"');
+    return 'Unknown';
+  }
+  
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      console.log('DEBUG: Invalid date, returning "Invalid"');
+      return 'Invalid';
+    }
+    const formatted = date.toLocaleTimeString('ru-RU', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+    console.log('DEBUG: Formatted time:', formatted);
+    return formatted;
+  } catch (error) {
+    console.error('DEBUG: Error formatting time:', error);
+    return 'Error';
+  }
 }
 
 // Получение стиля изображения
 function getBookingImageStyle(booking) {
+  console.log('DEBUG: getBookingImageStyle called with:', booking);
+  if (!booking) {
+    console.log('DEBUG: booking is null/undefined');
+    return {
+      backgroundImage: 'url(https://via.placeholder.com/56x56/53d22c/ffffff?text=🏟️)'
+    };
+  }
+  
   const imageUrl = booking.sport_venue?.image || 'https://via.placeholder.com/56x56/53d22c/ffffff?text=🏟️';
+  console.log('DEBUG: Image URL:', imageUrl);
   return {
     backgroundImage: `url(${imageUrl})`
   };
@@ -188,12 +290,32 @@ function getBookingImageStyle(booking) {
 
 // Проверка возможности отмены
 function canCancelBooking(booking) {
-  const bookingDate = new Date(booking.start_time);
-  const now = new Date();
-  const hoursUntilBooking = (bookingDate - now) / (1000 * 60 * 60);
+  console.log('DEBUG: canCancelBooking called with:', booking);
+  if (!booking || !booking.start_time) {
+    console.log('DEBUG: booking is null or has no start_time');
+    return false;
+  }
   
-  // Можно отменить за 2 часа до начала
-  return hoursUntilBooking > 2;
+  try {
+    const bookingDate = new Date(booking.start_time);
+    if (isNaN(bookingDate.getTime())) {
+      console.log('DEBUG: Invalid booking date');
+      return false;
+    }
+    
+    const now = new Date();
+    const hoursUntilBooking = (bookingDate - now) / (1000 * 60 * 60);
+    
+    console.log('DEBUG: Hours until booking:', hoursUntilBooking);
+    
+    // Можно отменить за 2 часа до начала
+    const canCancel = hoursUntilBooking > 2;
+    console.log('DEBUG: Can cancel:', canCancel);
+    return canCancel;
+  } catch (error) {
+    console.error('DEBUG: Error in canCancelBooking:', error);
+    return false;
+  }
 }
 
 // Отмена бронирования
