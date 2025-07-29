@@ -14,20 +14,23 @@ export async function createBooking(bookingData) {
 }
 
 // Получение списка бронирований пользователя
-async function getUserBookings() {
+export async function getUserBookings() {
   try {
     console.log('DEBUG: getUserBookings called');
     const response = await api.get('/bookings/');
     console.log('DEBUG: getUserBookings response', response);
+    console.log('DEBUG: Response data:', response.data);
     return response.data;
   } catch (error) {
     console.error('DEBUG: Error getting user bookings:', error);
+    console.error('DEBUG: Error response:', error.response);
+    console.error('DEBUG: Error message:', error.message);
     throw error;
   }
 }
 
 // Отмена бронирования
-async function cancelBooking(bookingId) {
+export async function cancelBooking(bookingId) {
   try {
     console.log('DEBUG: cancelBooking called', bookingId);
     const response = await api.delete(`/bookings/${bookingId}/`);
@@ -37,6 +40,4 @@ async function cancelBooking(bookingId) {
     console.error('DEBUG: Error canceling booking:', error);
     throw error;
   }
-}
-
-export { getUserBookings, cancelBooking }; 
+} 

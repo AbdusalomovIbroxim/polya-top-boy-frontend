@@ -1,5 +1,22 @@
 <template>
   <div class="bookings-page">
+    <!-- Debug info -->
+    <div v-if="debug" style="background: yellow; padding: 10px; margin: 10px;">
+      <p>DEBUG: isLoading = {{ isLoading }}</p>
+      <p>DEBUG: error = {{ error }}</p>
+      <p>DEBUG: bookings.length = {{ bookings.length }}</p>
+      <p>DEBUG: filteredBookings.length = {{ filteredBookings.length }}</p>
+      <p>DEBUG: activeTab = {{ activeTab }}</p>
+      <p>DEBUG: isAuth = {{ isAuth }}</p>
+    </div>
+    
+    <!-- Simple test content -->
+    <div style="padding: 20px;">
+      <h1>Bookings Page Test</h1>
+      <p>If you see this, the component is loading correctly.</p>
+      <button @click="loadBookings">Load Bookings</button>
+    </div>
+    
     <!-- Header -->
     <div class="bookings-header">
       <button class="back-button" @click="goBack">
@@ -90,15 +107,18 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getUserBookings, cancelBooking } from '../api/bookings.js';
+import { useAuth } from '../composables/useAuth.js';
 import '../assets/css/bookings.css';
 
 const router = useRouter();
+const { isAuth, checkAuth } = useAuth();
 
 const activeTab = ref('upcoming');
 const bookings = ref([]);
 const isLoading = ref(false);
 const error = ref('');
 const cancelingBookingId = ref(null);
+const debug = ref(true); // Временно включим для отладки
 
 // Загрузка бронирований
 async function loadBookings() {
@@ -106,12 +126,14 @@ async function loadBookings() {
   error.value = '';
   
   try {
+    console.log('DEBUG: loadBookings called');
     const data = await getUserBookings();
+    console.log('DEBUG: Bookings data received:', data);
     bookings.value = data;
-    console.log('Bookings loaded:', data);
+    console.log('DEBUG: Bookings loaded:', data);
   } catch (err) {
-    console.error('Error loading bookings:', err);
-    error.value = 'Failed to load bookings. Please try again.';
+    console.error('DEBUG: Error loading bookings:', err);
+    error.value = err.response?.data?.message || err.message || 'Failed to load bookings. Please try again.';
   } finally {
     isLoading.value = false;
   }
@@ -200,7 +222,24 @@ function goBack() {
   router.back();
 }
 
-onMounted(() => {
-  loadBookings();
+onMounted(async () => {
+  console.log('DEBUG: BookingsPage mounted');
+  console.log('DEBUG: Component is loading...');
+  
+  // Простая проверка без редиректа для тестирования
+  try {
+    await checkAuth();
+    console.log('DEBUG: Auth check completed, isAuth =', isAuth.value);
+    
+    if (isAuth.value) {
+      console.log('DEBUG: User authenticated, loading bookings');
+      await loadBookings();
+    } else {
+      console.log('DEBUG: User not authenticated, but not redirecting for testing');
+    }
+  } catch (error) {
+    console.error('DEBUG: Auth check failed:', error);
+    // Не редиректим для тестирования
+  }
 });
 </script> 
