@@ -10,13 +10,6 @@
       <p>DEBUG: isAuth = {{ isAuth }}</p>
     </div>
     
-    <!-- Simple test content -->
-    <div style="padding: 20px;">
-      <h1>Bookings Page Test</h1>
-      <p>If you see this, the component is loading correctly.</p>
-      <button @click="loadBookings">Load Bookings</button>
-    </div>
-    
     <!-- Header -->
     <div class="bookings-header">
       <button class="back-button" @click="goBack">
@@ -24,7 +17,7 @@
           <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
         </svg>
       </button>
-      <h2 class="bookings-title">My Bookings</h2>
+      <h2 class="bookings-title">Мои бронирования</h2>
     </div>
 
     <!-- Tabs -->
@@ -34,13 +27,13 @@
           @click="activeTab = 'upcoming'"
           :class="['tab', { active: activeTab === 'upcoming' }]"
         >
-          <span class="tab-text">Upcoming</span>
+          <span class="tab-text">Предстоящие</span>
         </button>
         <button 
           @click="activeTab = 'past'"
           :class="['tab', { active: activeTab === 'past' }]"
         >
-          <span class="tab-text">Past</span>
+          <span class="tab-text">Прошедшие</span>
         </button>
       </div>
     </div>
@@ -50,68 +43,85 @@
       <!-- Loading state -->
       <div v-if="isLoading" class="loading-container">
         <div class="loading-spinner"></div>
-        <p class="loading-text">Loading bookings...</p>
+        <p class="loading-text">Загрузка бронирований...</p>
       </div>
 
       <!-- Error state -->
       <div v-else-if="error" class="error-container">
         <div class="error-icon">⚠️</div>
-        <h3 class="error-title">Error loading bookings</h3>
+        <h3 class="error-title">Ошибка загрузки</h3>
         <p class="error-text">{{ error }}</p>
         <button @click="loadBookings" class="retry-button">
-          Try Again
+          Попробовать снова
         </button>
       </div>
 
       <!-- Empty state -->
       <div v-else-if="filteredBookings.length === 0" class="empty-state">
         <div class="empty-icon">📅</div>
-        <h3 class="empty-title">No {{ activeTab }} bookings</h3>
+        <h3 class="empty-title">
+          {{ activeTab === 'upcoming' ? 'Нет предстоящих бронирований' : 'Нет прошедших бронирований' }}
+        </h3>
         <p class="empty-text">
           {{ activeTab === 'upcoming' 
-            ? 'You don\'t have any upcoming bookings yet.' 
-            : 'You don\'t have any past bookings yet.' 
+            ? 'У вас пока нет предстоящих бронирований.' 
+            : 'У вас пока нет прошедших бронирований.' 
           }}
         </p>
       </div>
 
       <!-- Bookings list -->
-      <div v-else>
-        <div v-if="filteredBookings.length === 0" class="empty-state">
-          <div class="empty-icon">📅</div>
-          <h3 class="empty-title">No {{ activeTab }} bookings found</h3>
-          <p class="empty-text">
-            {{ activeTab === 'upcoming' 
-              ? 'You don\'t have any upcoming bookings yet.' 
-              : 'You don\'t have any past bookings yet.' 
-            }}
-          </p>
-        </div>
-        
-        <div v-else>
-          <div 
-            v-for="(booking, index) in filteredBookings" 
-            :key="booking?.id || index"
-            class="booking-item"
-          >
-            <div class="booking-image" :style="getBookingImageStyle(booking)"></div>
-            <div class="booking-info">
-              <p class="booking-title">{{ getBookingTitle(booking) }}</p>
-              <p class="booking-details">{{ getBookingDetails(booking) }}</p>
-            </div>
-            <div class="booking-actions">
-              <button 
-                v-if="activeTab === 'upcoming' && canCancelBooking(booking)"
-                @click="cancelBookingById(booking.id)"
-                :disabled="cancelingBookingId === booking.id"
-                class="cancel-button"
-              >
-                {{ cancelingBookingId === booking.id ? 'Canceling...' : 'Cancel' }}
-              </button>
+              <div v-else>
+          <div v-if="filteredBookings.length === 0" class="empty-state">
+            <div class="empty-icon">📅</div>
+            <h3 class="empty-title">
+              {{ activeTab === 'upcoming' ? 'Нет предстоящих бронирований' : 'Нет прошедших бронирований' }}
+            </h3>
+            <p class="empty-text">
+              {{ activeTab === 'upcoming' 
+                ? 'У вас пока нет предстоящих бронирований.' 
+                : 'У вас пока нет прошедших бронирований.' 
+              }}
+            </p>
+          </div>
+          
+          <div v-else>
+            <div 
+              v-for="(booking, index) in filteredBookings" 
+              :key="booking?.id || index"
+              class="booking-item"
+            >
+              <div class="booking-image" :style="getBookingImageStyle(booking)"></div>
+              <div class="booking-info">
+                <div class="booking-header">
+                  <h3 class="booking-title">{{ getBookingTitle(booking) }}</h3>
+                  <span class="booking-status" :class="getStatusClass(booking)">
+                    {{ getBookingStatus(booking) }}
+                  </span>
+                </div>
+                <p class="booking-details">{{ getBookingDetails(booking) }}</p>
+                <div class="booking-price-info">
+                  <span class="price-label">Стоимость:</span>
+                  <span class="price-value">{{ getBookingPrice(booking) }}</span>
+                </div>
+                <div class="booking-deposit-info">
+                  <span class="deposit-label">Депозит:</span>
+                  <span class="deposit-value">{{ getBookingDeposit(booking) }}</span>
+                </div>
+              </div>
+              <div class="booking-actions">
+                <button 
+                  v-if="activeTab === 'upcoming' && canCancelBooking(booking)"
+                  @click="cancelBookingById(booking.id)"
+                  :disabled="cancelingBookingId === booking.id"
+                  class="cancel-button"
+                >
+                  {{ cancelingBookingId === booking.id ? 'Отмена...' : 'Отменить' }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
     </div>
   </div>
 </template>
@@ -131,7 +141,7 @@ const bookings = ref([]);
 const isLoading = ref(false);
 const error = ref('');
 const cancelingBookingId = ref(null);
-const debug = ref(true); // Временно включим для отладки
+const debug = ref(false); // Отключим debug режим
 
 // Загрузка бронирований
 async function loadBookings() {
@@ -222,7 +232,9 @@ function getBookingTitle(booking) {
     console.log('DEBUG: booking is null/undefined');
     return 'Unknown Field';
   }
-  const title = booking.sport_venue?.name || 'Unknown Field';
+  
+  // Используем sport_venue_details.name если доступно
+  const title = booking.sport_venue_details?.name || booking.sport_venue?.name || 'Unknown Field';
   console.log('DEBUG: Booking title:', title);
   return title;
 }
@@ -235,13 +247,37 @@ function getBookingDetails(booking) {
     return 'Unknown Stadium · Unknown Time';
   }
   
-  const venue = booking.sport_venue?.name || 'Unknown Stadium';
+  const venue = booking.sport_venue_details?.name || booking.sport_venue?.name || 'Unknown Stadium';
   const startTime = formatTime(booking.start_time);
   const endTime = formatTime(booking.end_time);
+  const date = formatDate(booking.start_time);
   
-  const details = `${venue} · ${startTime} - ${endTime}`;
+  const details = `${venue} · ${date} · ${startTime} - ${endTime}`;
   console.log('DEBUG: Booking details:', details);
   return details;
+}
+
+// Форматирование даты
+function formatDate(dateString) {
+  console.log('DEBUG: formatDate called with:', dateString);
+  if (!dateString) {
+    return 'Unknown Date';
+  }
+  
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+    return date.toLocaleDateString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  } catch (error) {
+    console.error('DEBUG: Error formatting date:', error);
+    return 'Error';
+  }
 }
 
 // Форматирование времени
@@ -281,11 +317,79 @@ function getBookingImageStyle(booking) {
     };
   }
   
-  const imageUrl = booking.sport_venue?.image || 'https://via.placeholder.com/56x56/53d22c/ffffff?text=🏟️';
+  // Используем первое изображение из массива images
+  let imageUrl = 'https://via.placeholder.com/56x56/53d22c/ffffff?text=🏟️';
+  
+  if (booking.sport_venue_details?.images && booking.sport_venue_details.images.length > 0) {
+    imageUrl = booking.sport_venue_details.images[0].image;
+  } else if (booking.sport_venue?.image) {
+    imageUrl = booking.sport_venue.image;
+  }
+  
   console.log('DEBUG: Image URL:', imageUrl);
   return {
     backgroundImage: `url(${imageUrl})`
   };
+}
+
+// Получение статуса бронирования
+function getBookingStatus(booking) {
+  if (!booking) return 'Unknown';
+  
+  const status = booking.status;
+  const paymentStatus = booking.payment_status;
+  
+  if (status === 'PENDING' && paymentStatus === 'PENDING') {
+    return 'Ожидает оплаты';
+  } else if (status === 'CONFIRMED') {
+    return 'Подтверждено';
+  } else if (status === 'CANCELLED') {
+    return 'Отменено';
+  } else if (status === 'COMPLETED') {
+    return 'Завершено';
+  }
+  
+  return status || 'Unknown';
+}
+
+// Получение цены бронирования
+function getBookingPrice(booking) {
+  if (!booking || !booking.total_price) return 'Цена не указана';
+  
+  const price = parseFloat(booking.total_price);
+  if (isNaN(price)) return 'Цена не указана';
+  
+  return `${price.toLocaleString('ru-RU')} сум`;
+}
+
+// Получение депозита
+function getBookingDeposit(booking) {
+  if (!booking || !booking.deposit_amount) return 'Депозит не указан';
+  
+  const deposit = parseFloat(booking.deposit_amount);
+  if (isNaN(deposit)) return 'Депозит не указан';
+  
+  return `${deposit.toLocaleString('ru-RU')} сум`;
+}
+
+// Получение CSS класса для статуса
+function getStatusClass(booking) {
+  if (!booking) return 'status-unknown';
+  
+  const status = booking.status;
+  const paymentStatus = booking.payment_status;
+  
+  if (status === 'PENDING' && paymentStatus === 'PENDING') {
+    return 'status-pending';
+  } else if (status === 'CONFIRMED') {
+    return 'status-confirmed';
+  } else if (status === 'CANCELLED') {
+    return 'status-cancelled';
+  } else if (status === 'COMPLETED') {
+    return 'status-completed';
+  }
+  
+  return 'status-unknown';
 }
 
 // Проверка возможности отмены

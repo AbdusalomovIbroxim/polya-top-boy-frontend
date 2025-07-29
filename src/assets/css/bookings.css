@@ -1,6 +1,6 @@
 .bookings-page {
   min-height: 100vh;
-  background: white;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   font-family: 'Manrope', 'Noto Sans', sans-serif;
   display: flex;
   flex-direction: column;
@@ -9,13 +9,15 @@
 .bookings-header {
   display: flex;
   align-items: center;
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
   padding: 16px;
   padding-bottom: 8px;
   justify-content: space-between;
   position: sticky;
   top: 0;
   z-index: 10;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .back-button {
@@ -39,14 +41,15 @@
 }
 
 .bookings-title {
-  color: #131712;
-  font-size: 18px;
-  font-weight: bold;
+  color: #2c3e50;
+  font-size: 20px;
+  font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.015em;
   flex: 1;
   text-align: center;
   padding-right: 48px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .tabs-container {
@@ -55,9 +58,11 @@
 
 .tabs {
   display: flex;
-  border-bottom: 1px solid #dee4dc;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   padding: 0 16px;
   gap: 32px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
 }
 
 .tab {
@@ -66,15 +71,22 @@
   align-items: center;
   justify-content: center;
   border-bottom: 3px solid transparent;
-  color: #6d8566;
+  color: #7f8c8d;
   padding: 16px 0 13px 0;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .tab.active {
-  border-bottom-color: #131712;
-  color: #131712;
+  border-bottom-color: #3498db;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.tab:hover {
+  color: #3498db;
+  transform: translateY(-1px);
 }
 
 .tab-text {
@@ -93,11 +105,21 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  background: white;
-  padding: 16px;
-  min-height: 72px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  min-height: 120px;
   justify-content: space-between;
-  border-bottom: 1px solid #f1f4f1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  margin: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.booking-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .booking-item:last-child {
@@ -105,13 +127,15 @@
 }
 
 .booking-image {
-  width: 56px;
-  height: 56px;
-  border-radius: 8px;
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 .booking-info {
@@ -120,6 +144,8 @@
   justify-content: center;
   flex: 1;
   min-width: 0;
+  gap: 8px;
+  padding: 0 8px;
 }
 
 .booking-title {
@@ -134,13 +160,86 @@
 }
 
 .booking-details {
-  color: #6d8566;
+  color: #7f8c8d;
   font-size: 14px;
   font-weight: normal;
   line-height: normal;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.booking-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.booking-title {
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.booking-status {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-confirmed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status-completed {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-unknown {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.booking-price-info,
+.booking-deposit-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.price-label,
+.deposit-label {
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.price-value,
+.deposit-value {
+  color: #2c3e50;
+  font-weight: 600;
 }
 
 .cancel-button {
@@ -152,21 +251,23 @@
   justify-content: center;
   overflow: hidden;
   border-radius: 8px;
-  height: 32px;
+  height: 36px;
   padding: 0 16px;
-  background: #f1f4f1;
-  color: #131712;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: white;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: normal;
   border: none;
   transition: all 0.3s ease;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
 }
 
 .cancel-button:hover {
-  background: #e9ecef;
+  background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
 }
 
 .cancel-button:active {
