@@ -37,10 +37,10 @@
           class="stadium-card"
         >
           <!-- Stadium Image -->
-          <div class="stadium-image" :style="getStadiumImageStyle(stadium)" @click="goToStadium(stadium.id)"></div>
+          <div class="stadium-image" :style="getStadiumImageStyle(stadium)" @click="goToStadium(stadium)"></div>
           
           <!-- Stadium Info -->
-          <div class="stadium-info" @click="goToStadium(stadium.id)">
+          <div class="stadium-info" @click="goToStadium(stadium)">
             <h3 class="stadium-title">{{ getStadiumTitle(stadium) }}</h3>
             <div class="stadium-details">
               <span class="distance">{{ getStadiumDistance(stadium) }}</span>
@@ -51,7 +51,7 @@
           </div>
           
           <!-- Price -->
-          <div class="stadium-price" @click="goToStadium(stadium.id)">
+          <div class="stadium-price" @click="goToStadium(stadium)">
             <span class="price-value">{{ getStadiumPrice(stadium) }}</span>
             <span class="price-unit">/час</span>
           </div>
@@ -59,7 +59,7 @@
           <!-- Remove from favorites button -->
           <button 
             class="remove-favorite-btn"
-            @click.stop="removeFromFavoritesHandler(stadium.id)"
+            @click.stop="removeFromFavoritesHandler(stadium.sport_venue || stadium.sport_venue_details?.id || stadium.id)"
             title="Удалить из избранного"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -132,12 +132,15 @@ function getStadiumImageStyle(stadium) {
     };
   }
   
+  // Получаем данные стадиона из структуры API
+  const stadiumData = stadium.sport_venue_details || stadium;
+  
   let imageUrl = 'https://via.placeholder.com/80x80/53d22c/ffffff?text=🏟️';
   
-  if (stadium.image) {
-    imageUrl = stadium.image;
-  } else if (stadium.images && stadium.images.length > 0) {
-    imageUrl = stadium.images[0].image;
+  if (stadiumData.image) {
+    imageUrl = stadiumData.image;
+  } else if (stadiumData.images && stadiumData.images.length > 0) {
+    imageUrl = stadiumData.images[0].image;
   }
   
   return {
@@ -148,35 +151,44 @@ function getStadiumImageStyle(stadium) {
 // Получение названия стадиона
 function getStadiumTitle(stadium) {
   if (!stadium) return 'Unknown Stadium';
-  return stadium.name || 'Unknown Stadium';
+  const stadiumData = stadium.sport_venue_details || stadium;
+  return stadiumData.name || 'Unknown Stadium';
 }
 
 // Получение расстояния до стадиона
 function getStadiumDistance(stadium) {
   if (!stadium) return 'Unknown';
-  return stadium.distance || 'Unknown';
+  const stadiumData = stadium.sport_venue_details || stadium;
+  return stadiumData.distance || 'Unknown';
 }
 
 // Получение рейтинга стадиона
 function getStadiumRating(stadium) {
-  if (!stadium || !stadium.rating) return '0.0';
-  return stadium.rating.toFixed(1);
+  if (!stadium) return '0.0';
+  const stadiumData = stadium.sport_venue_details || stadium;
+  if (!stadiumData.rating) return '0.0';
+  return stadiumData.rating.toFixed(1);
 }
 
 // Получение количества отзывов
 function getStadiumReviews(stadium) {
-  if (!stadium || !stadium.reviews) return '0';
-  return stadium.reviews;
+  if (!stadium) return '0';
+  const stadiumData = stadium.sport_venue_details || stadium;
+  return stadiumData.reviews || '0';
 }
 
 // Получение цены стадиона
 function getStadiumPrice(stadium) {
-  if (!stadium || !stadium.price) return '0';
-  return stadium.price.toLocaleString('ru-RU');
+  if (!stadium) return '0';
+  const stadiumData = stadium.sport_venue_details || stadium;
+  if (!stadiumData.price_per_hour) return '0';
+  return parseInt(stadiumData.price_per_hour).toLocaleString('ru-RU');
 }
 
 // Переход к стадиону
-function goToStadium(stadiumId) {
+function goToStadium(stadium) {
+  // Получаем ID стадиона из структуры API
+  const stadiumId = stadium.sport_venue || stadium.sport_venue_details?.id || stadium.id;
   router.push(`/stadium/${stadiumId}`);
 }
 

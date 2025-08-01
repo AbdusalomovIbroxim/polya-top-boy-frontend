@@ -43,18 +43,23 @@ export async function removeFromFavorites(stadiumId) {
 }
 
 // Проверка, находится ли стадион в избранном
+// Получаем весь список избранного и проверяем, есть ли там нужный стадион
 export async function checkFavoriteStatus(stadiumId) {
   try {
     console.log('DEBUG: checkFavoriteStatus called', stadiumId);
-    const response = await api.get(`/favorites/${stadiumId}/`);
+    const response = await api.get('/favorites/');
     console.log('DEBUG: checkFavoriteStatus response', response);
-    return response.data;
+    
+    // Проверяем, есть ли стадион в списке избранного
+    const favorites = response.data;
+    const isFavorite = favorites.some(favorite => 
+      favorite.sport_venue === stadiumId || 
+      favorite.sport_venue_details?.id === stadiumId
+    );
+    
+    return { is_favorite: isFavorite };
   } catch (error) {
     console.error('DEBUG: Error checking favorite status:', error);
-    // Если стадион не в избранном, API может вернуть 404
-    if (error.response && error.response.status === 404) {
-      return { is_favorite: false };
-    }
-    throw error;
+    return { is_favorite: false };
   }
 } 
