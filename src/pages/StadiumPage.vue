@@ -41,7 +41,21 @@
       ></iframe>
     </div>
     <p class="description">{{ stadium.description }}</p>
-    <button class="book-btn" @click="handleBookStadium">Забронировать</button>
+    <div class="action-buttons">
+      <button class="book-btn" @click="handleBookStadium">Забронировать</button>
+      <button 
+        class="favorite-btn" 
+        :class="{ 'favorite-active': isFavorite }"
+        @click="toggleFavorite"
+        :disabled="isFavoriteLoading"
+      >
+        <svg v-if="!isFavoriteLoading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path v-if="isFavorite" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          <path v-else d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <div v-else class="loading-spinner-small"></div>
+      </button>
+    </div>
   </div>
   <StadiumSkeleton v-else />
 </template>
@@ -52,6 +66,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { getSportVenue } from '../api/fields';
 import { useAuth } from '../composables/useAuth';
 import { StadiumSkeleton } from '../components';
+import { addToFavorites, removeFromFavorites, checkFavoriteStatus } from '../api/favorites';
 
 const route = useRoute();
 const router = useRouter();
@@ -59,6 +74,8 @@ const { isAuth } = useAuth();
 const stadium = ref(null);
 const activeImage = ref('');
 const mapContainer = ref(null);
+const isFavorite = ref(false);
+const isFavoriteLoading = ref(false);
 let mapInstance = null;
 let mapboxgl;
 
@@ -81,6 +98,48 @@ function handleBookStadium() {
   } else {
     // Пользователь не авторизован - перенаправляем на логин
     router.push('/login');
+  }
+}
+
+// Проверка статуса избранного
+async function checkFavorite() {
+  if (!isAuth.value || !stadium.value) return;
+  
+  try {
+    isFavoriteLoading.value = true;
+    const data = await checkFavoriteStatus(stadium.value.id);
+    isFavorite.value = data.is_favorite || false;
+  } catch (error) {
+    console.error('Error checking favorite status:', error);
+    isFavorite.value = false;
+  } finally {
+    isFavoriteLoading.value = false;
+  }
+}
+
+// Добавление/удаление из избранного
+async function toggleFavorite() {
+  if (!isAuth.value) {
+    router.push('/login');
+    return;
+  }
+  
+  if (!stadium.value) return;
+  
+  try {
+    isFavoriteLoading.value = true;
+    
+    if (isFavorite.value) {
+      await removeFromFavorites(stadium.value.id);
+      isFavorite.value = false;
+    } else {
+      await addToFavorites(stadium.value.id);
+      isFavorite.value = true;
+    }
+  } catch (error) {
+    console.error('Error toggling favorite:', error);
+  } finally {
+    isFavoriteLoading.value = false;
   }
 }
 
@@ -137,6 +196,9 @@ onMounted(async () => {
       if (stadium.value.latitude && stadium.value.longitude) {
         await initMap();
       }
+      
+      // Проверяем статус избранного после загрузки стадиона
+      await checkFavorite();
     } catch (e) {
       stadium.value = null;
     }
@@ -280,6 +342,12 @@ watch(() => stadium.value, async (val) => {
   border-radius: 10px;
   padding: 12px 16px;
 }
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
 .book-btn {
   background: #36d900;
   color: #fff;
@@ -288,14 +356,63 @@ watch(() => stadium.value, async (val) => {
   padding: 14px 24px;
   font-size: 1.1em;
   cursor: pointer;
-  width: 100%;
-  margin-top: 18px;
+  flex: 1;
   transition: background 0.2s;
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(54,217,0,0.07);
 }
+
 .book-btn:hover {
   background: #28a700;
+}
+
+.favorite-btn {
+  background: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #e9ecef;
+  padding: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+}
+
+.favorite-btn:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.favorite-btn.favorite-active {
+  background: #fee;
+  color: #c33;
+  border-color: #fcc;
+}
+
+.favorite-btn.favorite-active:hover {
+  background: #fcc;
+  border-color: #c33;
+}
+
+.favorite-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e9ecef;
+  border-top: 2px solid #6c757d;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 .stadium-loading {
   text-align: center;

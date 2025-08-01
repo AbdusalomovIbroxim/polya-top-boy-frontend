@@ -48,6 +48,8 @@
   background: #ffffff;
   border-radius: 12px;
   cursor: pointer;
+  position: relative;
+  padding: 12px;
 }
 
 /* Stadium Image */
@@ -302,5 +304,50 @@
   
   .price-unit {
     font-size: 10px;
+  }
+}
+
+/* Remove from favorites button */
+.remove-favorite-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #c33;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.remove-favorite-btn:hover {
+  background: #fcc;
+  border-color: #c33;
+  transform: scale(1.1);
+}
+
+.remove-favorite-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive adjustments for remove button */
+@media (max-width: 480px) {
+  .remove-favorite-btn {
+    width: 28px;
+    height: 28px;
+    top: 6px;
+    right: 6px;
+  }
+  
+  .remove-favorite-btn svg {
+    width: 14px;
+    height: 14px;
   }
 } 

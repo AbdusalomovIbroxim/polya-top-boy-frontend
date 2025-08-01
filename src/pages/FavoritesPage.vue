@@ -35,13 +35,12 @@
           v-for="(stadium, index) in favorites" 
           :key="stadium?.id || index"
           class="stadium-card"
-          @click="goToStadium(stadium.id)"
         >
           <!-- Stadium Image -->
-          <div class="stadium-image" :style="getStadiumImageStyle(stadium)"></div>
+          <div class="stadium-image" :style="getStadiumImageStyle(stadium)" @click="goToStadium(stadium.id)"></div>
           
           <!-- Stadium Info -->
-          <div class="stadium-info">
+          <div class="stadium-info" @click="goToStadium(stadium.id)">
             <h3 class="stadium-title">{{ getStadiumTitle(stadium) }}</h3>
             <div class="stadium-details">
               <span class="distance">{{ getStadiumDistance(stadium) }}</span>
@@ -52,10 +51,21 @@
           </div>
           
           <!-- Price -->
-          <div class="stadium-price">
+          <div class="stadium-price" @click="goToStadium(stadium.id)">
             <span class="price-value">{{ getStadiumPrice(stadium) }}</span>
             <span class="price-unit">/час</span>
           </div>
+          
+          <!-- Remove from favorites button -->
+          <button 
+            class="remove-favorite-btn"
+            @click.stop="removeFromFavoritesHandler(stadium.id)"
+            title="Удалить из избранного"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -67,6 +77,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth.js';
 import { FavoritesSkeleton } from '../components';
+import { getUserFavorites, removeFromFavorites } from '../api/favorites.js';
 import '../assets/css/favorites.css';
 
 const router = useRouter();
@@ -82,41 +93,29 @@ async function loadFavorites() {
   error.value = '';
   
   try {
-    // TODO: Заменить на реальный API вызов
-    // const data = await getFavorites();
+    console.log('DEBUG: Loading favorites from API');
+    const data = await getUserFavorites();
+    console.log('DEBUG: Favorites data received:', data);
     
-    // Временные данные для демонстрации
-    const mockData = [
-      {
-        id: 1,
-        name: "Stadium A",
-        image: "https://via.placeholder.com/80x80/53d22c/ffffff?text=🏟️",
-        distance: "1.2 км",
-        rating: 5.0,
-        reviews: 120,
-        price: 20000
-      },
-      {
-        id: 2,
-        name: "Stadium B", 
-        image: "https://via.placeholder.com/80x80/53d22c/ffffff?text=🏟️",
-        distance: "2.5 км",
-        rating: 4.8,
-        reviews: 85,
-        price: 25000
-      },
-      {
-        id: 3,
-        name: "Stadium C",
-        image: "https://via.placeholder.com/80x80/53d22c/ffffff?text=🏟️", 
-        distance: "3.1 км",
-        rating: 4.5,
-        reviews: 60,
-        price: 30000
+    // Проверяем структуру данных
+    if (data && Array.isArray(data)) {
+      console.log('DEBUG: Data is array with length:', data.length);
+      favorites.value = data;
+    } else if (data && typeof data === 'object') {
+      console.log('DEBUG: Data is object, checking for results property');
+      if (data.results && Array.isArray(data.results)) {
+        console.log('DEBUG: Using data.results array');
+        favorites.value = data.results;
+      } else {
+        console.log('DEBUG: Data is object but no results array, using as single item');
+        favorites.value = [data];
       }
-    ];
+    } else {
+      console.log('DEBUG: Data is not array or object, setting empty array');
+      favorites.value = [];
+    }
     
-    favorites.value = mockData;
+    console.log('DEBUG: Final favorites.value:', favorites.value);
   } catch (err) {
     console.error('Error loading favorites:', err);
     error.value = err.response?.data?.message || err.message || 'Failed to load favorites. Please try again.';
@@ -179,6 +178,21 @@ function getStadiumPrice(stadium) {
 // Переход к стадиону
 function goToStadium(stadiumId) {
   router.push(`/stadium/${stadiumId}`);
+}
+
+// Удаление из избранного
+async function removeFromFavoritesHandler(stadiumId) {
+  try {
+    console.log('DEBUG: Removing from favorites:', stadiumId);
+    await removeFromFavorites(stadiumId);
+    console.log('DEBUG: Successfully removed from favorites');
+    
+    // Обновляем список избранного
+    await loadFavorites();
+  } catch (err) {
+    console.error('Error removing from favorites:', err);
+    error.value = err.response?.data?.message || err.message || 'Failed to remove from favorites. Please try again.';
+  }
 }
 
 onMounted(async () => {
