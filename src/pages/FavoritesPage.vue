@@ -59,7 +59,7 @@
           <!-- Remove from favorites button -->
           <button 
             class="remove-favorite-btn"
-            @click.stop="removeFromFavoritesHandler(stadium.sport_venue || stadium.sport_venue_details?.id || stadium.id)"
+            @click.stop="removeFromFavoritesHandler(stadium.id)"
             title="Удалить из избранного"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">

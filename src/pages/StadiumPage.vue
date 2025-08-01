@@ -140,6 +140,8 @@ async function toggleFavorite() {
     }
   } catch (error) {
     console.error('Error toggling favorite:', error);
+    // Показываем пользователю ошибку, если что-то пошло не так
+    // Можно добавить toast уведомление здесь
   } finally {
     isFavoriteLoading.value = false;
   }

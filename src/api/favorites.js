@@ -25,6 +25,13 @@ export async function addToFavorites(stadiumId) {
     return response.data;
   } catch (error) {
     console.error('DEBUG: Error adding to favorites:', error);
+    
+    // Если стадион уже в избранном, считаем это успехом
+    if (error.response && error.response.status === 400) {
+      console.log('DEBUG: Stadium already in favorites, treating as success');
+      return { success: true, message: 'Stadium already in favorites' };
+    }
+    
     throw error;
   }
 }
@@ -38,6 +45,13 @@ export async function removeFromFavorites(stadiumId) {
     return response.data;
   } catch (error) {
     console.error('DEBUG: Error removing from favorites:', error);
+    
+    // Если стадион не найден в избранном, считаем это успехом
+    if (error.response && error.response.status === 404) {
+      console.log('DEBUG: Stadium not found in favorites, treating as success');
+      return { success: true, message: 'Stadium not in favorites' };
+    }
+    
     throw error;
   }
 }
