@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage.vue';
 import BookingPage from './pages/BookingPage.vue';
 import BookingsPage from './pages/BookingsPage.vue';
 import FavoritesPage from './pages/FavoritesPage.vue';
+import MapPage from './pages/MapPage.vue';
 import { useAuth } from './composables/useAuth';
 
 const routes = [
@@ -16,6 +17,7 @@ const routes = [
   { path: '/booking/:stadiumId', name: 'booking', component: BookingPage, meta: { requiresAuth: true } },
   { path: '/bookings', name: 'bookings', component: BookingsPage, meta: { requiresAuth: true } },
   { path: '/favorites', name: 'favorites', component: FavoritesPage, meta: { requiresAuth: true } },
+  { path: '/map', name: 'map', component: MapPage },
 ];
 
 const router = createRouter({

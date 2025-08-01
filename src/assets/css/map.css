@@ -1,0 +1,127 @@
+/* Основные стили страницы */
+.map-page {
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: 'Manrope', 'Noto Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
+  color: #2c3e50;
+}
+
+/* Header */
+.map-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e5e5;
+  z-index: 100;
+}
+
+.map-title {
+  color: #2c3e50;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+}
+
+/* Map Container */
+.map-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+/* Loading overlay */
+.map-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e5e5e5;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Stadium popup styles */
+.stadium-popup {
+  padding: 12px;
+  max-width: 200px;
+}
+
+.stadium-popup h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.stadium-popup p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+.stadium-popup button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.stadium-popup button:hover {
+  background: #5a6fd8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .map-header {
+    padding: 16px 20px;
+  }
+  
+  .map-title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-header {
+    padding: 12px 16px;
+  }
+  
+  .map-title {
+    font-size: 18px;
+  }
+} 
