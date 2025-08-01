@@ -103,12 +103,17 @@ function handleBookStadium() {
 
 // Проверка статуса избранного
 async function checkFavorite() {
-  if (!isAuth.value || !stadium.value) return;
+  if (!isAuth.value || !stadium.value) {
+    isFavorite.value = false;
+    return;
+  }
   
   try {
     isFavoriteLoading.value = true;
+    console.log('DEBUG: Checking favorite status for stadium:', stadium.value.id);
     const data = await checkFavoriteStatus(stadium.value.id);
     isFavorite.value = data.is_favorite || false;
+    console.log('DEBUG: Favorite status result:', isFavorite.value);
   } catch (error) {
     console.error('Error checking favorite status:', error);
     isFavorite.value = false;
@@ -130,11 +135,15 @@ async function toggleFavorite() {
     isFavoriteLoading.value = true;
     
     if (isFavorite.value) {
+      console.log('DEBUG: Removing from favorites:', stadium.value.id);
       await removeFromFavorites(stadium.value.id);
       isFavorite.value = false;
+      console.log('DEBUG: Successfully removed from favorites');
     } else {
+      console.log('DEBUG: Adding to favorites:', stadium.value.id);
       await addToFavorites(stadium.value.id);
       isFavorite.value = true;
+      console.log('DEBUG: Successfully added to favorites');
     }
   } catch (error) {
     console.error('Error toggling favorite:', error);
@@ -210,6 +219,17 @@ onMounted(async () => {
 watch(() => stadium.value, async (val) => {
   if (val && val.latitude && val.longitude) {
     await initMap();
+  }
+});
+
+// Следим за изменением статуса авторизации
+watch(() => isAuth.value, async (newAuth) => {
+  if (newAuth && stadium.value) {
+    // Если пользователь авторизовался, проверяем статус избранного
+    await checkFavorite();
+  } else if (!newAuth) {
+    // Если пользователь вышел, сбрасываем статус избранного
+    isFavorite.value = false;
   }
 });
 </script>
