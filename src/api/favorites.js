@@ -20,7 +20,7 @@ export async function getUserFavorites() {
 export async function addToFavorites(stadiumId) {
   try {
     console.log('DEBUG: addToFavorites called', stadiumId);
-    const response = await api.post('/favorites/', { stadium_id: stadiumId });
+    const response = await api.post('/favorites/', { sport_venue: stadiumId });
     console.log('DEBUG: addToFavorites response', response);
     return response.data;
   } catch (error) {
