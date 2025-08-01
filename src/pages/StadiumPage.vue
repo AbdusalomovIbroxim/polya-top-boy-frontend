@@ -1,12 +1,26 @@
 <template>
   <div class="stadium-page" v-if="stadium">
-    <!-- Кнопка назад -->
-    <div class="back-button-container">
-      <button @click="goBack" class="back-button">
+    <!-- Навбар -->
+    <div class="stadium-navbar">
+      <button @click="goBack" class="nav-back-button">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
-        Назад
+      </button>
+      
+      <h1 class="nav-title">{{ stadium.name }}</h1>
+      
+      <button 
+        class="nav-favorite-btn" 
+        :class="{ 'favorite-active': isFavorite }"
+        @click="toggleFavorite"
+        :disabled="isFavoriteLoading"
+      >
+        <svg v-if="!isFavoriteLoading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path v-if="isFavorite" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          <path v-else d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <div v-else class="loading-spinner-small"></div>
       </button>
     </div>
 
@@ -43,18 +57,6 @@
     <p class="description">{{ stadium.description }}</p>
     <div class="action-buttons">
       <button class="book-btn" @click="handleBookStadium">Забронировать</button>
-      <button 
-        class="favorite-btn" 
-        :class="{ 'favorite-active': isFavorite }"
-        @click="toggleFavorite"
-        :disabled="isFavoriteLoading"
-      >
-        <svg v-if="!isFavoriteLoading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path v-if="isFavorite" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          <path v-else d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-        </svg>
-        <div v-else class="loading-spinner-small"></div>
-      </button>
     </div>
   </div>
   <StadiumSkeleton v-else />
@@ -222,32 +224,92 @@ watch(() => stadium.value, async (val) => {
   box-shadow: 0 2px 16px rgba(0,0,0,0.06);
 }
 
-.back-button-container {
-  margin-bottom: 16px;
-}
-
-.back-button {
+.stadium-navbar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  padding: 16px 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.nav-back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #f8f9fa;
   border: 1px solid #e9ecef;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 8px;
   color: #6c757d;
-  font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
+  min-width: 40px;
+  height: 40px;
 }
 
-.back-button:hover {
+.nav-back-button:hover {
   background: #e9ecef;
   color: #495057;
 }
 
-.back-button svg {
-  width: 16px;
-  height: 16px;
+.nav-back-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.nav-title {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #131712;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 12px;
+}
+
+.nav-favorite-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 8px;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 40px;
+  height: 40px;
+}
+
+.nav-favorite-btn:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.nav-favorite-btn.favorite-active {
+  background: #fee;
+  color: #c33;
+  border-color: #fcc;
+}
+
+.nav-favorite-btn.favorite-active:hover {
+  background: #fcc;
+  border-color: #c33;
+}
+
+.nav-favorite-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.nav-favorite-btn svg {
+  width: 20px;
+  height: 20px;
 }
 
 .gallery-block {
@@ -343,8 +405,6 @@ watch(() => stadium.value, async (val) => {
   padding: 12px 16px;
 }
 .action-buttons {
-  display: flex;
-  gap: 12px;
   margin-top: 18px;
 }
 
@@ -356,7 +416,7 @@ watch(() => stadium.value, async (val) => {
   padding: 14px 24px;
   font-size: 1.1em;
   cursor: pointer;
-  flex: 1;
+  width: 100%;
   transition: background 0.2s;
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(54,217,0,0.07);
@@ -364,41 +424,6 @@ watch(() => stadium.value, async (val) => {
 
 .book-btn:hover {
   background: #28a700;
-}
-
-.favorite-btn {
-  background: #f8f9fa;
-  color: #6c757d;
-  border: 1px solid #e9ecef;
-  padding: 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 56px;
-}
-
-.favorite-btn:hover {
-  background: #e9ecef;
-  color: #495057;
-}
-
-.favorite-btn.favorite-active {
-  background: #fee;
-  color: #c33;
-  border-color: #fcc;
-}
-
-.favorite-btn.favorite-active:hover {
-  background: #fcc;
-  border-color: #c33;
-}
-
-.favorite-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .loading-spinner-small {
