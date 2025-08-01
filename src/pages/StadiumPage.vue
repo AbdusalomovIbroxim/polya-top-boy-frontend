@@ -439,9 +439,57 @@ watch(() => stadium.value, async (val) => {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
 .stadium-loading {
   text-align: center;
   padding: 40px;
   font-size: 1.2em;
+}
+
+/* Адаптивные стили для мобильных устройств */
+@media (max-width: 768px) {
+  .stadium-navbar {
+    padding: 12px 0;
+  }
+  
+  .nav-title {
+    font-size: 1.1em;
+    padding: 0 8px;
+  }
+  
+  .nav-back-button,
+  .nav-favorite-btn {
+    min-width: 36px;
+    height: 36px;
+  }
+  
+  .nav-back-button svg,
+  .nav-favorite-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stadium-navbar {
+    padding: 8px 0;
+  }
+  
+  .nav-title {
+    font-size: 1em;
+    padding: 0 4px;
+  }
+  
+  .nav-back-button,
+  .nav-favorite-btn {
+    min-width: 32px;
+    height: 32px;
+  }
+  
+  .nav-back-button svg,
+  .nav-favorite-btn svg {
+    width: 16px;
+    height: 16px;
+  }
 }
 </style> 
