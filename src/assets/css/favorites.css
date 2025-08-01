@@ -313,27 +313,35 @@
   right: 8px;
   width: 32px;
   height: 32px;
-  background: #fee;
-  border: 1px solid #fcc;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #c33;
-  transition: all 0.2s ease;
+  color: #e91e63;
+  transition: all 0.3s ease;
   z-index: 10;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .remove-favorite-btn:hover {
-  background: #fcc;
-  border-color: #c33;
-  transform: scale(1.1);
+  background: rgba(255, 255, 255, 1);
+  color: #c2185b;
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .remove-favorite-btn svg {
   width: 16px;
   height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.remove-favorite-btn:hover svg {
+  transform: scale(1.1);
 }
 
 /* Responsive adjustments for remove button */
@@ -349,4 +357,24 @@
     width: 14px;
     height: 14px;
   }
+}
+
+/* Анимация для кнопки удаления */
+.remove-favorite-btn:active {
+  transform: scale(0.95);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.stadium-card {
+  animation: fadeIn 0.3s ease-out;
 } 
