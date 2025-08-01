@@ -52,4 +52,11 @@ router.beforeEach(async (to, from, next) => {
   next();
 });
 
+// Автоматический скролл вверх при переходе между страницами
+router.afterEach((to, from) => {
+  if (to.path !== from.path) {
+    window.scrollTo(0, 0);
+  }
+});
+
 export default router;

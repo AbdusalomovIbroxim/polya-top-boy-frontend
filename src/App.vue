@@ -25,13 +25,25 @@ export default {
   },
   updated() {
     console.log('DEBUG: App.vue updated, current route:', this.$route.name);
+  },
+  watch: {
+    '$route'(to, from) {
+      // Дополнительная проверка для скролла вверх при смене маршрута
+      if (to.path !== from.path) {
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
+      }
+    }
   }
 }
 </script>
 
 <template>
   <div>
-    <router-view />
+    <div class="router-view-container">
+      <router-view />
+    </div>
     <div class="tabbar-space"></div>
     <Tabbar v-if="$route.name !== 'login'" />
   </div>

@@ -1,0 +1,36 @@
+/* Scroll Behavior Styles */
+
+/* Плавный скролл для всех переходов */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Предотвращение сохранения позиции скролла при навигации */
+.router-view-container {
+  min-height: 100vh;
+  scroll-behavior: auto;
+}
+
+/* Стили для страниц с контентом */
+.page-container {
+  min-height: 100vh;
+  padding-top: 1rem;
+  padding-bottom: 5rem; /* Место для таббара */
+}
+
+/* Стили для страниц без таббара (например, логин) */
+.page-container.no-tabbar {
+  padding-bottom: 1rem;
+}
+
+/* Автоматический скролл вверх для всех страниц */
+.page-scroll-top {
+  scroll-margin-top: 0;
+}
+
+/* Мобильные стили для лучшего поведения скролла */
+@media (max-width: 768px) {
+  .page-container {
+    padding-top: 0.5rem;
+  }
+} 

@@ -1,5 +1,5 @@
 <template>
-  <div class="login-page">
+  <div class="login-page page-container no-tabbar">
     <div class="login-container">
       <div class="login-header">
         <h1>{{ isLogin ? 'Вход' : 'Регистрация' }}</h1>
@@ -185,26 +185,27 @@ function toggleForm() {
 
 <style scoped>
 .login-page {
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 1rem;
+  box-sizing: border-box;
 }
 
 .login-container {
   background: white;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  padding: 1.5rem;
   width: 100%;
   max-width: 400px;
+  margin: auto;
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .login-header h1 {
@@ -221,7 +222,7 @@ function toggleForm() {
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .form-group {
@@ -237,7 +238,7 @@ function toggleForm() {
 }
 
 .form-group input {
-  padding: 0.75rem;
+  padding: 0.6rem;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 1rem;
@@ -253,12 +254,13 @@ function toggleForm() {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 0.75rem;
+  padding: 0.6rem;
   border-radius: 6px;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.2s;
+  margin-top: 0.5rem;
 }
 
 .submit-btn:hover:not(:disabled) {
@@ -280,7 +282,7 @@ function toggleForm() {
 }
 
 .form-switch {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   text-align: center;
 }
 
@@ -295,5 +297,29 @@ function toggleForm() {
 
 .switch-btn:hover {
   color: #5a6fd8;
+}
+
+/* Мобильные стили */
+@media (max-width: 480px) {
+  .login-page {
+    padding: 0.5rem;
+  }
+  
+  .login-container {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+  
+  .login-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .form-group input {
+    padding: 0.5rem;
+  }
+  
+  .submit-btn {
+    padding: 0.5rem;
+  }
 }
 </style> 
