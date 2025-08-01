@@ -40,7 +40,24 @@ export async function addToFavorites(stadiumId) {
 export async function removeFromFavorites(stadiumId) {
   try {
     console.log('DEBUG: removeFromFavorites called', stadiumId);
-    const response = await api.delete(`/favorites/${stadiumId}/`);
+    
+    // Сначала получаем список избранного, чтобы найти ID записи
+    const favoritesResponse = await api.get('/favorites/');
+    const favorites = favoritesResponse.data;
+    
+    // Ищем запись с нужным стадионом
+    const favoriteRecord = favorites.find(favorite => 
+      favorite.sport_venue === stadiumId || 
+      favorite.sport_venue_details?.id === stadiumId
+    );
+    
+    if (!favoriteRecord) {
+      console.log('DEBUG: Stadium not found in favorites');
+      return { success: true, message: 'Stadium not in favorites' };
+    }
+    
+    // Удаляем по ID записи избранного
+    const response = await api.delete(`/favorites/${favoriteRecord.id}/`);
     console.log('DEBUG: removeFromFavorites response', response);
     return response.data;
   } catch (error) {
@@ -60,16 +77,16 @@ export async function removeFromFavorites(stadiumId) {
 export async function checkFavoriteStatus(stadiumId) {
   try {
     console.log('DEBUG: checkFavoriteStatus called', stadiumId);
-    const response = await api.get(`/favorites/${stadiumId}/`);
+    const response = await api.get('/favorites/is-favorite/', {
+      params: {
+        sport_venue_id: stadiumId
+      }
+    });
     console.log('DEBUG: checkFavoriteStatus response', response);
-    return { is_favorite: true };
+    return response.data;
   } catch (error) {
     console.error('DEBUG: Error checking favorite status:', error);
-    // Если стадион не в избранном, API вернет 404
-    if (error.response && error.response.status === 404) {
-      return { is_favorite: false };
-    }
-    // Для других ошибок (сеть, сервер) возвращаем false
+    // Для любых ошибок (400, 404, сеть) возвращаем false
     return { is_favorite: false };
   }
 } 
