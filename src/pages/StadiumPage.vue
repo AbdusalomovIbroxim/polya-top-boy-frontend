@@ -8,8 +8,6 @@
         </svg>
       </button>
       
-      <h1 class="nav-title">{{ stadium.name }}</h1>
-      
       <button 
         class="nav-favorite-btn" 
         :class="{ 'favorite-active': isFavorite }"
@@ -37,7 +35,7 @@
         />
       </div>
     </div>
-    <h1 class="stadium-title">{{ stadium.name }}</h1>
+    <h1 class="stadium-title" style="text-overflow: none; white-space: none;">{{ stadium.name }}</h1>
     <div class="info-row">
       <span class="price">{{ formatPrice(stadium.price_per_hour) }} сум/час</span>
       <span class="address"><span class="icon">📍</span>{{ stadium.address }}</span>
