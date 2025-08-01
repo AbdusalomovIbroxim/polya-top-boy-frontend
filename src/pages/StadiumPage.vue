@@ -43,7 +43,7 @@
     <p class="description">{{ stadium.description }}</p>
     <button class="book-btn" @click="handleBookStadium">Забронировать</button>
   </div>
-  <div v-else class="stadium-loading">Загрузка...</div>
+  <StadiumSkeleton v-else />
 </template>
 
 <script setup>
@@ -51,6 +51,7 @@ import { ref, onMounted, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getSportVenue } from '../api/fields';
 import { useAuth } from '../composables/useAuth';
+import { StadiumSkeleton } from '../components';
 
 const route = useRoute();
 const router = useRouter();

@@ -41,10 +41,7 @@
     <!-- Content -->
     <div class="bookings-list">
       <!-- Loading state -->
-      <div v-if="isLoading" class="loading-container">
-        <div class="loading-spinner"></div>
-        <p class="loading-text">Загрузка бронирований...</p>
-      </div>
+      <BookingsSkeleton v-if="isLoading" />
 
       <!-- Error state -->
       <div v-else-if="error" class="error-container">
@@ -131,6 +128,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getUserBookings, cancelBooking } from '../api/bookings.js';
 import { useAuth } from '../composables/useAuth.js';
+import { BookingsSkeleton } from '../components';
 import '../assets/css/bookings.css';
 
 const router = useRouter();

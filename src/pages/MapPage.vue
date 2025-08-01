@@ -1,18 +1,15 @@
 <template>
   <div class="map-page">
-    <!-- Header -->
-    <div class="map-header">
-      <h2 class="map-title">Карта стадионов</h2>
-    </div>
+    <MapSkeleton v-if="isLoading" />
+    <div v-else>
+      <!-- Header -->
+      <div class="map-header">
+        <h2 class="map-title">Карта стадионов</h2>
+      </div>
 
-    <!-- Map Container -->
-    <div class="map-container">
-      <div ref="mapContainer" class="map"></div>
-      
-      <!-- Loading overlay -->
-      <div v-if="isLoading" class="map-loading">
-        <div class="loading-spinner"></div>
-        <p>Загрузка карты...</p>
+      <!-- Map Container -->
+      <div class="map-container">
+        <div ref="mapContainer" class="map"></div>
       </div>
     </div>
   </div>
@@ -22,6 +19,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getSportVenues } from '../api/fields.js';
+import { MapSkeleton } from '../components';
 import '../assets/css/map.css';
 
 const router = useRouter();

@@ -8,10 +8,7 @@
     <!-- Content -->
     <div class="favorites-list">
       <!-- Loading state -->
-      <div v-if="isLoading" class="loading-container">
-        <div class="loading-spinner"></div>
-        <p class="loading-text">Загрузка избранного...</p>
-      </div>
+      <FavoritesSkeleton v-if="isLoading" />
 
       <!-- Error state -->
       <div v-else-if="error" class="error-container">
@@ -69,6 +66,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth.js';
+import { FavoritesSkeleton } from '../components';
 import '../assets/css/favorites.css';
 
 const router = useRouter();

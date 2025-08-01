@@ -1,10 +1,7 @@
 <template>
   <div class="booking-page">
     <!-- Loading state -->
-    <div v-if="isLoading" class="loading-container">
-      <div class="loading-spinner"></div>
-      <p class="loading-text">Loading...</p>
-    </div>
+    <BookingSkeleton v-if="isLoading" />
 
     <!-- Not authorized state -->
     <div v-else-if="!isAuth" class="not-authorized-container">
@@ -169,6 +166,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 import { getSportVenueAvailability, getSportVenueWithPrice } from '../api/fields.js';
 import { createBooking } from '../api/bookings.js';
+import { BookingSkeleton } from '../components';
 
 const route = useRoute();
 const router = useRouter();

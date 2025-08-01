@@ -1,26 +1,29 @@
 <template>
   <div class="home-root">
-    <Navbar title="Fields" />
-    <div class="filters-bar">
-      <FilterDropdown
-        :items="regionOptions"
-        v-model="selectedRegion"
-        placeholder="Все регионы"
-        class="filter-dropdown-inline"
-      />
-      <FilterDropdown
-        :items="typeOptions"
-        v-model="selectedType"
-        placeholder="Все типы"
-        class="filter-dropdown-inline"
+    <HomeSkeleton v-if="loading" />
+    <div v-else>
+      <Navbar title="Fields" />
+      <div class="filters-bar">
+        <FilterDropdown
+          :items="regionOptions"
+          v-model="selectedRegion"
+          placeholder="Все регионы"
+          class="filter-dropdown-inline"
+        />
+        <FilterDropdown
+          :items="typeOptions"
+          v-model="selectedType"
+          placeholder="Все типы"
+          class="filter-dropdown-inline"
+        />
+      </div>
+      <StadiumList 
+        :stadiums="stadiums"
+        :loading="false"
+        @stadium-click="handleStadiumClick"
+        @stadium-open="handleStadiumOpen"
       />
     </div>
-    <StadiumList 
-      :stadiums="stadiums"
-      :loading="loading"
-      @stadium-click="handleStadiumClick"
-      @stadium-open="handleStadiumOpen"
-    />
   </div>
 </template>
 
@@ -31,7 +34,8 @@ import { getSportVenues, getRegions, getTypes } from '../api/fields';
 import { 
   Navbar, 
   StadiumList, 
-  FilterDropdown
+  FilterDropdown,
+  HomeSkeleton
 } from '../components';
 
 export default {
@@ -39,7 +43,8 @@ export default {
   components: {
     Navbar,
     StadiumList,
-    FilterDropdown
+    FilterDropdown,
+    HomeSkeleton
   },
   setup() {
     const stadiums = ref([]);

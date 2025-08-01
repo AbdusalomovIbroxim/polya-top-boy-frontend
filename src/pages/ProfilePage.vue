@@ -2,6 +2,7 @@
 import { useAuth } from '../composables/useAuth';
 import { onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { ProfileSkeleton } from '../components';
 const { user, logout, isAuth, isLoading, checkAuth } = useAuth();
 const router = useRouter();
 
@@ -57,7 +58,7 @@ function formatDate(dateString) {
 
 <template>
   <div class="profile-page">
-    <div v-if="isLoading" class="profile-loading">Загрузка...</div>
+    <ProfileSkeleton v-if="isLoading" />
     <div v-else-if="!isAuth" class="profile-not-auth">Вы не авторизованы</div>
     <div v-else-if="user" class="profile-container">
       <!-- Header с аватаром -->
