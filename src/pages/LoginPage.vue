@@ -305,11 +305,6 @@ function toggleForm() {
     padding: 0.5rem;
   }
   
-  .login-container {
-    padding: 1rem;
-    margin: 0.5rem;
-  }
-  
   .login-header h1 {
     font-size: 1.5rem;
   }
